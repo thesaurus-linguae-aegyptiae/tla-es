@@ -49,7 +49,7 @@ dependencies {
 
     implementation 'org.bbaw.aaew.tla:tla-common:0.0.2-SNAPSHOT'
 
-    implementation 'org.springframework.data:spring-data-elasticsearch:4.0.0.M2'
+    implementation 'org.springframework.data:spring-data-elasticsearch:3.2.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-web:2.3.0.M1'
 
     // Use JUnit Jupiter API for testing.
