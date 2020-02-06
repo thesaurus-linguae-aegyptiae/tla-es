@@ -6,34 +6,35 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(Include.NON_NULL)
 public class Translations {
 	
 	// https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html
 	
-	@JsonProperty("de")
-	@Field(type = FieldType.Text, analyzer = "german", name = "de")
-	private List<String> german;
+	@Field(type = FieldType.Text, analyzer = "german")
+	private List<String> de;
 
-	@JsonProperty("en")
-	@Field(type = FieldType.Text, analyzer = "english", name = "en")
-	private List<String> english;
+	@Field(type = FieldType.Text, analyzer = "english")
+	private List<String> en;
 
-	@JsonProperty("fr")
-	@Field(type = FieldType.Text, analyzer = "french", name = "fr")
-	private List<String> french;
+	@Field(type = FieldType.Text, analyzer = "french")
+	private List<String> fr;
 	
-	@JsonProperty("ar")
-	@Field(type = FieldType.Text, analyzer = "arabic", name = "ar")
-	private List<String> arabic;
+	@Field(type = FieldType.Text, analyzer = "arabic")
+	private List<String> ar;
 	
-	@JsonProperty("it")
-	@Field(type = FieldType.Text, analyzer = "italian", name = "it")
-	private List<String> italian;
+	@Field(type = FieldType.Text, analyzer = "italian")
+	private List<String> it;
 
 }
