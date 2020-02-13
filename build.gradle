@@ -38,25 +38,26 @@ publishing {
 repositories {
     mavenCentral()
     maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://jitpack.io' }
 }
 
 configurations {
     implementation.exclude module: 'spring-boot-starter-jetty'
     implementation.exclude module: 'spring-boot-starter-netty'
+    testImplementation.exclude module: 'junit-vintage-engine'
+    testImplementation.exclude group: 'org.junit.vintage'
 }
 
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.12'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
-    implementation 'org.bbaw.aaew.tla:tla-common:0.0.2-SNAPSHOT'
+    implementation 'com.github.jkatzwinkel:tla-common:master-SNAPSHOT'
 
     implementation 'org.springframework.data:spring-data-elasticsearch:3.2.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-web:2.3.0.M1'
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test:2.2.4.RELEASE') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.2.4.RELEASE'
     // Use JUnit Jupiter Engine for testing.
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
 }
