@@ -20,7 +20,7 @@ import tla.domain.model.Passport;
 
 @Data
 @Builder
-@NoArgsConstructor()
+@NoArgsConstructor
 @AllArgsConstructor
 @Document(indexName = "lemma", type = "lemma")
 public class Lemma {
