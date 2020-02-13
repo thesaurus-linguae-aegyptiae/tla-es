@@ -9,11 +9,13 @@
 plugins {
     id 'war'
     id 'java'
+    id 'jacoco'
     // Apply the application plugin to add support for building a CLI application.
     id 'application'
     id 'maven-publish'
     id 'org.springframework.boot' version '2.2.4.RELEASE'
     id 'com.github.ben-manes.versions' version '0.27.0'
+    id 'com.github.dawnwords.jacoco.badge' version '0.2.0'
 }
 
 group = 'org.bbaw.aaew.tla'
@@ -67,4 +69,13 @@ application {
 test {
     // Use junit platform for unit tests
     useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+    finalizedBy 'generateJacocoBadge'
 }
