@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tla.backend.es.model.Lemma;
 import tla.backend.es.repo.LemmaRepo;
-import tla.backend.es.model.EditorInfo;
+import tla.backend.error.ObjectNotFoundException;
 
 @RestController
 @RequestMapping("/lemma")
@@ -20,22 +20,14 @@ public class LemmaController {
     @Autowired
     private LemmaRepo repo;
 
-    public LemmaController() {
-        System.out.println("FUCK YOU!");
-    }
-
     @RequestMapping("/get/{id}")
-    public Lemma getLemmaById(@PathVariable String id) {
+    public Lemma getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
+        // https://stackoverflow.com/a/35402975/1933494
         Optional<Lemma> result = repo.findById(id);
         if (!result.isEmpty()) {
             return result.get();
         }
-        return Lemma.builder()
-            .id(id)
-            .editors(EditorInfo.builder()
-                .author("AAEW")
-                .build())
-            .build();
+        throw new ObjectNotFoundException();
     }    
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
