@@ -1,0 +1,9 @@
+---
+
+server:
+    error:
+        whitelabel:
+            enabled: false
+
+elasticsearch:
+    port: 9200
