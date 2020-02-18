@@ -3,6 +3,7 @@ package tla.backend.api;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +23,7 @@ public class LemmaController {
     @Autowired
     private LemmaRepo repo;
 
-    @RequestMapping(method = RequestMethod.GET, value  = "/get/{id}")
+    @RequestMapping(method = RequestMethod.GET, value = "/get/{id}")
     public Lemma getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
         // https://stackoverflow.com/a/35402975/1933494
         Optional<Lemma> result = repo.findById(id);
@@ -30,7 +31,12 @@ public class LemmaController {
             return result.get();
         }
         throw new ObjectNotFoundException();
-    }    
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/all")
+    public Iterable<Lemma> getAll() {
+        return repo.findAll(Sort.by("sortKey"));
+    }
 
     @RequestMapping(method = RequestMethod.POST, value = "/post")
     public ResponseEntity<Lemma> postLemma(@RequestBody Lemma lemma) {

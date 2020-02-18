@@ -6,5 +6,4 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 
 public interface LemmaRepo extends ElasticsearchRepository<Lemma, String> {
 
-    
 }

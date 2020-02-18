@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 @Data
 @Builder
@@ -22,18 +23,23 @@ public class Translations {
 	
 	// https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html
 	
+	@Singular("de")
 	@Field(type = FieldType.Text, analyzer = "german")
 	private List<String> de;
 
+	@Singular("en")
 	@Field(type = FieldType.Text, analyzer = "english")
 	private List<String> en;
 
+	@Singular("fr")
 	@Field(type = FieldType.Text, analyzer = "french")
 	private List<String> fr;
 	
+	@Singular("ar")
 	@Field(type = FieldType.Text, analyzer = "arabic")
 	private List<String> ar;
 	
+	@Singular("it")
 	@Field(type = FieldType.Text, analyzer = "italian")
 	private List<String> it;
 

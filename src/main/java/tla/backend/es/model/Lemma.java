@@ -51,7 +51,7 @@ public class Lemma {
     private String name;
 
     @Field(type = FieldType.Keyword)
-    @JsonAlias({"sort_string", "sort_key"})
+    @JsonAlias({"sortString", "sort_string", "sort_key"})
     private String sortKey;
 
     @Field(type = FieldType.Object)
