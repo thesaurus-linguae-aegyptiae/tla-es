@@ -3,6 +3,10 @@ package tla.backend.es.model;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -23,6 +27,7 @@ import tla.domain.model.Passport;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(indexName = "lemma", type = "lemma")
+@JsonInclude(Include.NON_NULL)
 public class Lemma {
 
     @Id
@@ -44,6 +49,10 @@ public class Lemma {
 
     @Field(type = FieldType.Text)
     private String name;
+
+    @Field(type = FieldType.Keyword)
+    @JsonAlias({"sort_string", "sort_key"})
+    private String sortKey;
 
     @Field(type = FieldType.Object)
     private Passport passport;
