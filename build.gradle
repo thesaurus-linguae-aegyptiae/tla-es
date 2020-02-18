@@ -44,6 +44,9 @@ repositories {
 configurations {
     implementation.exclude module: 'spring-boot-starter-jetty'
     implementation.exclude module: 'spring-boot-starter-netty'
+    // ES transport client stuff
+    implementation.exclude module: 'transport'
+    implementation.exclude module: 'transport-netty4-client'
     testImplementation.exclude module: 'junit-vintage-engine'
     testImplementation.exclude group: 'org.junit.vintage'
 }
