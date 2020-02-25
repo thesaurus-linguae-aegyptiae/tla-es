@@ -6,4 +6,4 @@ server:
             enabled: false
 
 elasticsearch:
-    port: 9200
+    port: ${ES_PORT:9200}

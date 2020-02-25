@@ -13,6 +13,9 @@ import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfig
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Configuration
 @EnableElasticsearchRepositories
 public class RepoConfig extends AbstractElasticsearchConfiguration {
@@ -29,6 +32,7 @@ public class RepoConfig extends AbstractElasticsearchConfiguration {
 
     @Override
     public RestHighLevelClient elasticsearchClient() {
+        log.info("create elasticsearch client for local instance at port " + env.getProperty("elasticsearch.port"));
         return RestClients.create(
             ClientConfiguration.create(
                 InetSocketAddress.createUnresolved(

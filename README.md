@@ -6,3 +6,17 @@ You can check for the newest version of package dependencies by running:
 
     ./gradlew dependencyUpdates
 
+
+Run a dockerized setup using Docker Compose:
+
+    docker-compose up -d
+
+
+In order to only use the Elasticsearch container and run the application via gradle:
+
+    docker-compose up -d elasticsearch
+    ./gradlew bootRun
+
+*Note:* You can configure the Elasticsearch HTTP port to which the application will try to connect.
+Both the Docker Compose configuration and the `bootRun` gradle task are able to read
+it from the local `.env` file.
