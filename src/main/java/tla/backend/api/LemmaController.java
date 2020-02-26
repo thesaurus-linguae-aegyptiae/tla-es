@@ -24,11 +24,14 @@ public class LemmaController {
     private LemmaRepo repo;
 
     @RequestMapping(method = RequestMethod.GET, value = "/get/{id}")
-    public LemmaEntity getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
+    public ResponseEntity<LemmaEntity> getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
         // https://stackoverflow.com/a/35402975/1933494
         Optional<LemmaEntity> result = repo.findById(id);
         if (!result.isEmpty()) {
-            return result.get();
+            return new ResponseEntity<LemmaEntity>(
+                result.get(),
+                HttpStatus.OK
+            );
         }
         throw new ObjectNotFoundException();
     }

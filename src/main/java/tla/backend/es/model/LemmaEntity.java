@@ -36,4 +36,17 @@ public class LemmaEntity extends TLAEntity {
     @Field(type = FieldType.Object)
     private Translations translations;
 
+    @Field(type = FieldType.Object)
+    @JsonAlias({"time_span"})
+    private AttestedTimeSpan timeSpan;
+
+    @Data
+    @AllArgsConstructor
+    private class AttestedTimeSpan {
+        @Field(type = FieldType.Integer)
+        private int begin;
+
+        @Field(type = FieldType.Integer)
+        private int end;
+    }
 }
