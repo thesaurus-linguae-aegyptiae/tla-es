@@ -66,6 +66,7 @@ application {
 test {
     // Use junit platform for unit tests
     useJUnitPlatform()
+    environment "ES_PORT", env.ES_PORT.orElse("9200")
     finalizedBy 'jacocoTestReport'
 }
 
