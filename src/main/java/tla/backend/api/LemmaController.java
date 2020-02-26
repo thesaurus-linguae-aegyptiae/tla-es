@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import tla.backend.es.model.Lemma;
+import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.error.ObjectNotFoundException;
 
@@ -24,9 +24,9 @@ public class LemmaController {
     private LemmaRepo repo;
 
     @RequestMapping(method = RequestMethod.GET, value = "/get/{id}")
-    public Lemma getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
+    public LemmaEntity getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
         // https://stackoverflow.com/a/35402975/1933494
-        Optional<Lemma> result = repo.findById(id);
+        Optional<LemmaEntity> result = repo.findById(id);
         if (!result.isEmpty()) {
             return result.get();
         }
@@ -34,13 +34,13 @@ public class LemmaController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/all")
-    public Iterable<Lemma> getAll() {
+    public Iterable<LemmaEntity> getAll() {
         return repo.findAll(Sort.by("sortKey"));
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/post")
-    public ResponseEntity<Lemma> postLemma(@RequestBody Lemma lemma) {
-        return new ResponseEntity<Lemma>(
+    public ResponseEntity<LemmaEntity> postLemma(@RequestBody LemmaEntity lemma) {
+        return new ResponseEntity<LemmaEntity>(
             repo.save(lemma),
             HttpStatus.OK
         );

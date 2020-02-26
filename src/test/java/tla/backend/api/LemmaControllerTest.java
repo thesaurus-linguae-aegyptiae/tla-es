@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import tla.backend.App;
 import tla.backend.Util;
-import tla.backend.es.model.Lemma;
+import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.Translations;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.es.model.EditorInfo;
@@ -44,7 +44,7 @@ public class LemmaControllerTest {
     @Test
     void nonNullFieldValidation() {
         assertThrows(NullPointerException.class,
-            () -> {Lemma.builder().build();},
+            () -> {LemmaEntity.builder().build();},
             "building lemma with null-ID should throw exception"
         );
     }
@@ -52,31 +52,32 @@ public class LemmaControllerTest {
     @Test
     void mapLemma() throws Exception {
         assertNotNull(mapper, "elasticsearch jackson-based mapper should not be null");
-        Lemma l = mapper.mapToObject("{\"id\":\"ID\",\"sort_string\":\"1\"}", Lemma.class);
+        LemmaEntity l = mapper.mapToObject("{\"id\":\"ID\",\"sort_string\":\"1\"}", LemmaEntity.class);
         assertEquals("1", l.getSortKey(), "sort_string should be deserialized correctly");
     }
 
     @Test
     void mapLemmaEquals() throws Exception {
-        Lemma l1 = Lemma.builder()
+        LemmaEntity l1 = LemmaEntity.builder()
             .id("1")
             .eclass("BTSLemmaEntry")
             .editors(EditorInfo.builder().author("author").updated(Util.date("1854-10-31")).build())
             .translations(Translations.builder().de("übersetzung").build())
             .build();
         String ser = new ObjectMapper().writeValueAsString(l1);
-        Lemma l2 = mapper.mapToObject(ser, Lemma.class);
-        assertAll("lemma instance serialized by object mapper and deserialized by ES entity mapper should be same as source",
-            () -> {assertEquals(l1, l2, "equals should return true");},
-            () -> {assertEquals(l1.hashCode(), l2.hashCode(), "hashCode should return equals");}
+        LemmaEntity l2 = mapper.mapToObject(ser, LemmaEntity.class);
+        assertAll("lemma instance created via lombok builder should be the same after being serialized by object mapper and deserialized by ES entity mapper",
+            () -> assertEquals(l1, l2, "equals should return true"),
+            () -> assertEquals(mapper.mapToString(l1), mapper.mapToString(l2), "ES entity mapper serializations should be equal"),
+            () -> assertEquals(l1.hashCode(), l2.hashCode(), "hashCode should return equals")
         );
     }
 
     @Test
     void postLemma() throws Exception {
         when(repo.save(any()))
-            .thenReturn(Lemma.builder().id("1").sortKey("A").build());
-        Lemma l = repo.save(Lemma.builder().id("2").build());
+            .thenReturn(LemmaEntity.builder().id("1").sortKey("A").build());
+        LemmaEntity l = repo.save(LemmaEntity.builder().id("2").build());
         assertEquals("1", l.getId(), "whatever is being saved by mock up repo, it should always return a lemma with ID '1'");
         mockMvc.perform(
             post("/lemma/post")
@@ -106,7 +107,7 @@ public class LemmaControllerTest {
         when(repo.findById(anyString()))
             .thenReturn(
                 Optional.of(
-                    Lemma.builder()
+                    LemmaEntity.builder()
                         .id("ID")
                         .eclass("BTSLemmaEntry")
                         .editors(

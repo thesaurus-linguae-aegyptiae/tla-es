@@ -3,32 +3,26 @@ package tla.backend.es.model;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.lang.NonNull;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tla.backend.es.model.EditorInfo;
+import lombok.experimental.SuperBuilder;
 import tla.domain.model.ExternalReference;
 import tla.domain.model.ObjectReference;
-import tla.domain.model.Passport;
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(indexName = "lemma", type = "lemma")
-@JsonInclude(Include.NON_NULL)
-public class Lemma {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class TLAEntity {
 
     @Id
     @NonNull
@@ -50,18 +44,8 @@ public class Lemma {
     @Field(type = FieldType.Text)
     private String name;
 
-    @Field(type = FieldType.Keyword)
-    @JsonAlias({"sortString", "sort_string", "sort_key"})
-    private String sortKey;
-
-    @Field(type = FieldType.Object)
-    private Passport passport;
-
     @Field(type = FieldType.Object)
     private EditorInfo editors;
-
-    @Field(type = FieldType.Object)
-    private Translations translations;
 
     @Field(type = FieldType.Object)
     private Map<String, List<ObjectReference>> relations;
