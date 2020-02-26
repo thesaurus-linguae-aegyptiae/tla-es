@@ -85,7 +85,7 @@ public class LemmaControllerTest {
                 .content("{\"id\":\"1\",\"sort_string\":\"A\"}")
         )
             .andExpect(
-                status().isOk()
+                status().isCreated()
             )
             .andExpect(jsonPath("$.id").value("1"))
             .andExpect(jsonPath("$.sortKey").value("A"));

@@ -42,7 +42,16 @@ public class LemmaController {
     public ResponseEntity<LemmaEntity> postLemma(@RequestBody LemmaEntity lemma) {
         return new ResponseEntity<LemmaEntity>(
             repo.save(lemma),
-            HttpStatus.OK
+            HttpStatus.CREATED
         );
     }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/batch")
+    public ResponseEntity<Iterable<LemmaEntity>> postLemma(@RequestBody Iterable<LemmaEntity> lemmata) {
+        return new ResponseEntity<Iterable<LemmaEntity>>(
+            repo.saveAll(lemmata),
+            HttpStatus.CREATED
+        );
+    }
+
 }
