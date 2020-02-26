@@ -1,0 +1,34 @@
+{
+  "index": {
+    "max_result_window": 100000,
+    "number_of_shards": "1",
+    "number_of_replicas": "0",
+    "analysis": {
+      "tokenizer": {
+        "hieroglyph_tokenizer": {
+          "type": "char_group",
+          "tokenize_on_chars": [
+            "whitespace",
+            "-",
+            ":",
+            "/",
+            "*"
+          ]
+        }
+      },
+      "analyzer": {
+        "lemmaname_analyzer": {
+          "type": "custom",
+          "tokenizer": "whitespace",
+          "filter": [
+            "lowercase"
+          ]
+        },
+        "hieroglyph_analyzer": {
+          "type": "custom",
+          "tokenizer": "hieroglyph_tokenizer"
+        }
+      }
+    }
+  }
+}

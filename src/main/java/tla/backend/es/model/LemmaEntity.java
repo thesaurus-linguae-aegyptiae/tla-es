@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ import tla.domain.model.Passport;
 @JsonInclude(Include.NON_NULL)
 @EqualsAndHashCode(callSuper = false)
 @Document(indexName = "lemma", type = "lemma")
+@Setting(settingPath = "/elasticsearch/settings/indices/lemma.json")
 public class LemmaEntity extends TLAEntity {
 
     @Field(type = FieldType.Keyword)

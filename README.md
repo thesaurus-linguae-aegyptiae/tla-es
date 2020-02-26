@@ -18,5 +18,5 @@ In order to only use the Elasticsearch container and run the application via gra
     ./gradlew bootRun
 
 *Note:* You can configure the Elasticsearch HTTP port to which the application will try to connect.
-Both the Docker Compose configuration and the `bootRun` gradle task are able to read
+Both the Docker Compose configuration and the `bootRun` and `test` gradle tasks are going to read
 it from the local `.env` file.
