@@ -6,13 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.elasticsearch.core.EntityMapper;
-import org.springframework.test.web.servlet.MockMvc;
 
-import tla.backend.App;
+import tla.backend.AbstractMockMvcTest;
 import tla.backend.Util;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.Translations;
@@ -28,12 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@SpringBootTest(classes = {App.class})
-@AutoConfigureMockMvc
-public class LemmaControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
+public class LemmaControllerTest extends AbstractMockMvcTest {
 
     @MockBean
     private LemmaRepo repo;

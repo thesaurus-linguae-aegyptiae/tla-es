@@ -13,6 +13,7 @@ import org.springframework.lang.NonNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 import tla.domain.model.ExternalReference;
 import tla.domain.model.ObjectReference;
@@ -22,7 +23,7 @@ import tla.domain.model.ObjectReference;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TLAEntity {
+public abstract class TLAEntity {
 
     @Id
     @NonNull
@@ -47,9 +48,11 @@ public class TLAEntity {
     @Field(type = FieldType.Object)
     private EditorInfo editors;
 
+    @Singular
     @Field(type = FieldType.Object)
     private Map<String, List<ObjectReference>> relations;
 
+    @Singular
     @Field(type = FieldType.Object)
     private Map<String, List<ExternalReference>> externalReferences;
 
