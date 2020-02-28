@@ -27,8 +27,8 @@ public class EditorInfo {
     @Field(type = FieldType.Text)
     private String author;
 
-    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd||epoch_millis")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private Date updated;
 
     @Field(type = FieldType.Keyword)
