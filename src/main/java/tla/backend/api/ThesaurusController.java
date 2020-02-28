@@ -42,4 +42,11 @@ public class ThesaurusController {
         );
     }
 
+    @RequestMapping(method = RequestMethod.POST, value = "/batch")
+    public ResponseEntity<Iterable<ThsEntryEntity>> postEntries(@RequestBody Iterable<ThsEntryEntity> entries) {
+        return new ResponseEntity<Iterable<ThsEntryEntity>>(
+            repo.saveAll(entries),
+            HttpStatus.CREATED
+        );
+    }
 }

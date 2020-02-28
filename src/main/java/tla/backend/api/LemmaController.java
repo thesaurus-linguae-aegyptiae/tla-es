@@ -1,5 +1,6 @@
 package tla.backend.api;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +43,18 @@ public class LemmaController {
             );
         }
         throw new ObjectNotFoundException();
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/get")
+    public ResponseEntity<Iterable<LemmaDto>> getLemmataById(@RequestParam List<String> ids) {
+        List<LemmaDto> results = new ArrayList<>();
+        repo.findAllById(ids).forEach(
+            entity -> {results.add(modelMapper.map(entity, LemmaDto.class));}
+        );
+        return new ResponseEntity<Iterable<LemmaDto>>(
+            results,
+            HttpStatus.OK
+        );
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/all")
