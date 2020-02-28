@@ -49,6 +49,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
     implementation 'com.github.jkatzwinkel:tla-common:master-SNAPSHOT'
+    implementation 'org.modelmapper:modelmapper:2.3.0'
 
     implementation 'org.springframework.data:spring-data-elasticsearch:3.2.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-web:2.3.0.M1'

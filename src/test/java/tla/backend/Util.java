@@ -1,7 +1,8 @@
 package tla.backend;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import tla.backend.es.model.ModelConfig;
 
 public class Util {
 
@@ -10,7 +11,7 @@ public class Util {
      */
     public static Date date(String date) {
         try {
-            return new SimpleDateFormat("yyyy-MM-dd").parse(date);
+            return ModelConfig.DATE_FORMAT.parse(date);
         } catch (Exception e) {
             return null;
         }

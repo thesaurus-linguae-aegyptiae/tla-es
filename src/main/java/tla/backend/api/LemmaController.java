@@ -1,7 +1,9 @@
 package tla.backend.api;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -10,10 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.repo.LemmaRepo;
+import tla.domain.dto.LemmaDto;
 import tla.backend.error.ObjectNotFoundException;
 
 @RestController
@@ -23,13 +27,17 @@ public class LemmaController {
     @Autowired
     private LemmaRepo repo;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
+
     @RequestMapping(method = RequestMethod.GET, value = "/get/{id}")
-    public ResponseEntity<LemmaEntity> getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
+    public ResponseEntity<LemmaDto> getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
         // https://stackoverflow.com/a/35402975/1933494
         Optional<LemmaEntity> result = repo.findById(id);
         if (!result.isEmpty()) {
-            return new ResponseEntity<LemmaEntity>(
-                result.get(),
+            return new ResponseEntity<LemmaDto>(
+                modelMapper.map(result.get(), LemmaDto.class),
                 HttpStatus.OK
             );
         }

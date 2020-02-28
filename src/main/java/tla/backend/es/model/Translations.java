@@ -2,7 +2,11 @@ package tla.backend.es.model;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
+import org.modelmapper.AbstractConverter;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
@@ -12,6 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
+
+import tla.domain.model.Language;
 
 @Data
 @Builder
@@ -50,6 +56,31 @@ public class Translations {
 		this.fr = Collections.emptyList();
 		this.ar = Collections.emptyList();
 		this.it = Collections.emptyList();
+	}
+
+	/**
+	 * Converts an instance to a Map with preserved key order.
+	 */
+	public SortedMap<Language, List<String>> toMap() {
+		return new TreeMap<Language, List<String>>(
+			Map.of(
+				Language.DE, this.getDe(),
+				Language.EN, this.getEn(),
+				Language.FR, this.getFr(),
+				Language.AR, this.getAr(),
+				Language.IT, this.getIt()
+			)
+		);
+	}
+
+	/**
+	 * ModelMapper converter converting Translations objects to the map structure used in DTO objects.
+	 */
+	public static class ToMapConverter extends AbstractConverter<Translations, SortedMap<Language, List<String>>> {
+		@Override
+		protected SortedMap<Language, List<String>> convert(Translations source) {
+			return source.toMap();
+		}
 	}
 
 }
