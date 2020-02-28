@@ -41,12 +41,14 @@ public class LemmaEntity extends TLAEntity {
     private AttestedTimeSpan timeSpan;
 
     @Data
+    @NoArgsConstructor
     @AllArgsConstructor
-    private class AttestedTimeSpan {
+    @JsonInclude(Include.NON_NULL)
+    private static class AttestedTimeSpan {
         @Field(type = FieldType.Integer)
-        private int begin;
+        private Integer begin;
 
         @Field(type = FieldType.Integer)
-        private int end;
+        private Integer end;
     }
 }
