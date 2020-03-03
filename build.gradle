@@ -2,11 +2,10 @@ plugins {
     id 'war'
     id 'java'
     id 'jacoco'
-    // Apply the application plugin to add support for building a CLI application.
     id 'application'
     id 'maven-publish'
-    id "co.uzzu.dotenv.gradle" version "1.0.2"
-    id 'org.springframework.boot' version '2.2.4.RELEASE'
+    id 'co.uzzu.dotenv.gradle' version '1.0.2'
+    id 'org.springframework.boot' version '2.2.5.RELEASE'
     id 'com.github.ben-manes.versions' version '0.28.0'
     id 'com.github.dawnwords.jacoco.badge' version '0.2.0'
 }
@@ -49,23 +48,20 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
     implementation 'com.github.jkatzwinkel:tla-common:master-SNAPSHOT'
-    implementation 'org.modelmapper:modelmapper:2.3.0'
+    implementation 'org.modelmapper:modelmapper:2.3.6'
 
     implementation 'org.springframework.data:spring-data-elasticsearch:3.2.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-web:2.3.0.M1'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.2.4.RELEASE'
-    // Use JUnit Jupiter Engine for testing.
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
 }
 
 application {
-    // Define the main class for the application.
     mainClassName = 'tla.backend.App'
 }
 
 test {
-    // Use junit platform for unit tests
     useJUnitPlatform()
     environment "ES_PORT", env.ES_PORT.orElse("9200")
     finalizedBy 'jacocoTestReport'
