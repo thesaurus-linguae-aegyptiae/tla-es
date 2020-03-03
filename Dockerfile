@@ -5,7 +5,7 @@ WORKDIR /home/gradle/src
 RUN gradle bootJar --no-daemon
 
 
-FROM openjdk:11-jdk
+FROM openjdk:11-jre-slim
 
 EXPOSE 8090
 ARG es_port
