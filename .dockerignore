@@ -1,0 +1,16 @@
+bin
+build
+docker-compose.yml
+.dockerignore
+.env.template
+.git
+.gitattributes
+.github
+.gitignore
+.gradle
+gradle
+gradlew
+gradlew.bat
+.project
+README.md
+.settings
