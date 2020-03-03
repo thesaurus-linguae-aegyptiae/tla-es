@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan
-@EnableAutoConfiguration(exclude={ElasticsearchDataAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = {ElasticsearchDataAutoConfiguration.class})
 public class App {
 
 	public static void main(String[] args) {

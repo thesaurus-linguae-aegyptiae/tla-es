@@ -1,0 +1,15 @@
+{
+    "groups": [
+        {
+            "name": "tla",
+            "description": "Backend application properties",
+            "type": "tla.backend.config.ApplicationProperties"
+        }
+    ],
+    "properties": [
+        {
+            "name": "tla.es",
+            "type": "tla.backend.config.ApplicationProperties.ElasticsearchProperties"
+        }
+    ]
+}
