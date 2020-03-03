@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.repo.LemmaRepo;
 import tla.domain.dto.LemmaDto;
 import tla.backend.error.ObjectNotFoundException;
 
+@Slf4j
 @RestController
 @RequestMapping("/lemma")
 public class LemmaController {
@@ -31,6 +33,14 @@ public class LemmaController {
     @Autowired
     private ModelMapper modelMapper;
 
+    @RequestMapping(method = RequestMethod.GET, value = "/count")
+    public ResponseEntity<Long> countLemmata() {
+        log.debug("counting lemmata: {}", repo.count());
+        return new ResponseEntity<Long>(
+            repo.count(),
+            HttpStatus.OK
+        );
+    }
 
     @RequestMapping(method = RequestMethod.GET, value = "/get/{id}")
     public ResponseEntity<LemmaDto> getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
@@ -42,6 +52,7 @@ public class LemmaController {
                 HttpStatus.OK
             );
         }
+        log.warn("could not find lemma with ID {}!", id);
         throw new ObjectNotFoundException();
     }
 
