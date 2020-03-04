@@ -27,7 +27,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.BucketOrder;
-import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -58,9 +58,9 @@ public class OccurrenceController {
             .terms("lemma_frequency")
             .field("lemma.id")
             .order(BucketOrder.count(false))
-            .size(100);
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.aggregation(aggs);
+            .size(100000);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
+            .aggregation(aggs);
         SearchRequest request = new SearchRequest()
             .indices(
                 ModelConfig.getIndexName(OccurrenceEntity.class)
@@ -73,7 +73,7 @@ public class OccurrenceController {
         );
         Aggregations lemmaFrequencies = response.getAggregations();
 
-        ParsedStringTerms top = (ParsedStringTerms) lemmaFrequencies.asMap().get("lemma_frequency");
+        Terms top = (Terms) lemmaFrequencies.asMap().get("lemma_frequency");
         Map<String, Long> data = top.getBuckets().stream()
             .collect(
                 Collectors.toMap(
