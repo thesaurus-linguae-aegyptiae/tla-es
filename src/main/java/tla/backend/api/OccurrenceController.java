@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
+import tla.backend.es.model.ModelConfig;
 import tla.backend.es.model.OccurrenceEntity;
 import tla.backend.es.repo.OccurrenceRepo;
 
@@ -56,11 +57,14 @@ public class OccurrenceController {
         TermsAggregationBuilder aggs = AggregationBuilders
             .terms("lemma_frequency")
             .field("lemma.id")
-            .order(BucketOrder.count(false));
+            .order(BucketOrder.count(false))
+            .size(100);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.aggregation(aggs);
         SearchRequest request = new SearchRequest()
-            .indices("occurrence")
+            .indices(
+                ModelConfig.getIndexName(OccurrenceEntity.class)
+            )
             .source(searchSourceBuilder)
             .requestCache(true);
         SearchResponse response = restTemplate.getClient().search(

@@ -5,13 +5,12 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.lang.NonNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
@@ -22,13 +21,9 @@ import tla.domain.model.ObjectReference;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper=true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class TLAEntity {
-
-    @Id
-    @NonNull
-    @Field(type = FieldType.Keyword)
-    private String id;
+public abstract class TLAEntity extends IndexedEntity {
 
     @Field(type = FieldType.Keyword)
     private String eclass;

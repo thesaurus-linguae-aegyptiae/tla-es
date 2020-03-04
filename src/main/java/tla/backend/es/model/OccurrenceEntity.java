@@ -2,15 +2,14 @@ package tla.backend.es.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.lang.NonNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 
@@ -18,13 +17,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Document(indexName = "occurrence", type = "occurrence")
-public class OccurrenceEntity {
-
-    @Id
-    @NonNull
-    @Field(type = FieldType.Keyword)
-    private String id;
+public class OccurrenceEntity extends IndexedEntity {
 
     @Field(type = FieldType.Object)
     private Flexion flexion;
