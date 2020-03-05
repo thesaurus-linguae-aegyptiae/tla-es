@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,22 +20,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.LemmaEntity;
-import tla.backend.es.model.ModelConfig;
 import tla.backend.es.model.OccurrenceEntity;
 import tla.backend.es.repo.LemmaRepo;
+import tla.backend.service.LemmaService;
 import tla.domain.dto.LemmaDto;
 import tla.backend.error.ObjectNotFoundException;
 
-import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 @Slf4j
 @RestController
@@ -47,7 +43,7 @@ public class LemmaController {
     private LemmaRepo repo;
 
     @Autowired
-    private ElasticsearchRestTemplate restTemplate;
+    private LemmaService queryService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -113,20 +109,11 @@ public class LemmaController {
             .field("location.textId")
             .order(BucketOrder.count(false))
             .size(100000);
-        SearchRequest request = new SearchRequest()
-            .indices(
-                ModelConfig.getIndexName(OccurrenceEntity.class)
-            )
-            .source(
-                new SearchSourceBuilder()
-                    .query(queryBuilder)
-                    .aggregation(aggrBuilder)
-            );
-        SearchResponse response = restTemplate.getClient()
-            .search(
-                request,
-                RequestOptions.DEFAULT
-            );
+        SearchResponse response = queryService.query(
+            OccurrenceEntity.class,
+            queryBuilder,
+            aggrBuilder
+        );
         Terms topTexts = (Terms) response.getAggregations().asMap().get("top_texts");
         List<String> result = topTexts.getBuckets().stream()
             .map(
