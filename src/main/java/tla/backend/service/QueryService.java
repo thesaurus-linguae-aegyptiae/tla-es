@@ -14,7 +14,7 @@ import tla.backend.es.model.IndexedEntity;
 import tla.backend.es.model.ModelConfig;
 
 @Slf4j
-public class QueryService {
+public abstract class QueryService {
 
     @Autowired
     private ElasticsearchRestTemplate restTemplate;
