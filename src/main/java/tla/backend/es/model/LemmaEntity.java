@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import tla.domain.model.Passport;
 
@@ -20,8 +21,9 @@ import tla.domain.model.Passport;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(callSuper = true)
 @JsonInclude(Include.NON_NULL)
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Document(indexName = "lemma", type = "lemma")
 @Setting(settingPath = "/elasticsearch/settings/indices/lemma.json")
 public class LemmaEntity extends TLAEntity {

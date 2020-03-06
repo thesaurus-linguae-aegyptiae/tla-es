@@ -1,5 +1,6 @@
 package tla.backend.es.model;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -11,17 +12,17 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.Singular;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import tla.domain.model.ExternalReference;
 import tla.domain.model.ObjectReference;
 
 @Data
 @SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper=true)
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class TLAEntity extends IndexedEntity {
 
@@ -50,5 +51,10 @@ public abstract class TLAEntity extends IndexedEntity {
     @Singular
     @Field(type = FieldType.Object)
     private Map<String, List<ExternalReference>> externalReferences;
+
+    public TLAEntity() {
+        this.relations = Collections.emptyMap();
+        this.externalReferences = Collections.emptyMap();
+    }
 
 }
