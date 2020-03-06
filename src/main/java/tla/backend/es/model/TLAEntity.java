@@ -1,5 +1,6 @@
 package tla.backend.es.model;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -12,16 +13,17 @@ import org.springframework.lang.NonNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.Singular;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+
 import tla.domain.model.ExternalReference;
 import tla.domain.model.ObjectReference;
 
 @Data
 @SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
+@ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class TLAEntity {
 
@@ -55,5 +57,10 @@ public abstract class TLAEntity {
     @Singular
     @Field(type = FieldType.Object)
     private Map<String, List<ExternalReference>> externalReferences;
+
+    public TLAEntity() {
+        this.relations = Collections.emptyMap();
+        this.externalReferences = Collections.emptyMap();
+    }
 
 }

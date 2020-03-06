@@ -9,6 +9,7 @@ import org.springframework.data.elasticsearch.core.EntityMapper;
 import tla.backend.App;
 import tla.backend.Util;
 import tla.domain.dto.LemmaDto;
+import tla.domain.model.Passport;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,6 +24,14 @@ public class ModelTest {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Test
+    void entitySuperClass_equality() throws Exception {
+        TLAEntity lemma = LemmaEntity.builder().id("ID").build();
+        TLAEntity term = ThsEntryEntity.builder().id("ID").build();
+        assertAll("entities of different subclass with same ID should not be equal",
+            () -> assertNotEquals(lemma, term, "lemma 'ID' should not equal ths term 'ID'")
+        );
+    }
 
     @Test
     void translationsEqual() throws Exception {
@@ -51,10 +60,31 @@ public class ModelTest {
         );
         ThsEntryEntity t_round = mapper.mapToObject(mapper.mapToString(t_built), ThsEntryEntity.class);
         assertAll("thesaurus entry instances should be equal regardless of creation method",
-            () -> assertEquals(t_built, t_read, "deserialized instance should be the same as built instance"),
+            () -> assertNotEquals(t_built, t_read, "deserialized instance should not be the same as built instance"),
             () -> assertEquals(t_built, t_round, "built instance should remain the same after serialization and deserialization via ES entity mapper"),
             () -> assertEquals(t_built.getEditors(), t_read.getEditors(), "edit infos should be equal")
         );
+    }
+
+    @Test
+    void lemmaEntriesEqual() throws Exception {
+        LemmaEntity l_built = LemmaEntity.builder()
+            .id("1")
+            .passport(new Passport())
+            .build();
+        LemmaEntity l_read = mapper.mapToObject(
+            "{\"id\":\"1\",\"passport\":{}}",
+            LemmaEntity.class
+        );
+        LemmaEntity l_round = mapper.mapToObject(
+            mapper.mapToString(l_built),
+            LemmaEntity.class
+        );
+        assertAll("lemma entry instances should be equal regardless of creation method",
+            () -> assertEquals(l_built, l_read, "deserialized lemma instance should be equal to built instance with the same properties"),
+            () -> assertEquals(l_built, l_round, "lemma instance serialized and then deserialized should equal itself")
+        );
+
     }
 
     @Test
