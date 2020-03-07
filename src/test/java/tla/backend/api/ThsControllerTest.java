@@ -31,6 +31,7 @@ public class ThsControllerTest extends AbstractMockMvcTest {
     void init() {
         this.thsEntry = ThsEntryEntity.builder()
         .id("1")
+        .eclass("BTSThsEntry")
         .name("wadi")
         .type("findSpot")
         .relation("partOf", Arrays.asList(

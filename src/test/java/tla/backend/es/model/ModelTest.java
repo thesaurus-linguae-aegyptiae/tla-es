@@ -26,8 +26,8 @@ public class ModelTest {
 
     @Test
     void entitySuperClass_equality() throws Exception {
-        IndexedEntity lemma = LemmaEntity.builder().id("ID").build();
-        IndexedEntity term = ThsEntryEntity.builder().id("ID").build();
+        IndexedEntity lemma = LemmaEntity.builder().id("ID").eclass("").build();
+        IndexedEntity term = ThsEntryEntity.builder().id("ID").eclass("").build();
         assertAll("entities of different subclass with same ID should not be equal",
             () -> assertTrue(!lemma.equals(term), "lemma 'ID' should not equal ths term 'ID'")
         );
@@ -51,11 +51,12 @@ public class ModelTest {
     void thesaurusEntriesEqual() throws Exception {
         ThsEntryEntity t_built = ThsEntryEntity.builder()
             .id("1")
+            .eclass("BTSThsEntry")
             .sortKey("1")
             .editors(EditorInfo.builder().author("author").updated(Util.date("2015-12-31")).build())
             .build();
         ThsEntryEntity t_read = mapper.mapToObject(
-            "{\"id\":\"ID\",\"sort_string\":\"1\",\"editors\":{\"author\":\"author\",\"updated\":\"2015-12-31\"}}",
+            "{\"id\":\"ID\",\"eclass\":\"BTSThsEntry\",\"sort_string\":\"1\",\"editors\":{\"author\":\"author\",\"updated\":\"2015-12-31\"}}",
             ThsEntryEntity.class
         );
         ThsEntryEntity t_round = mapper.mapToObject(mapper.mapToString(t_built), ThsEntryEntity.class);
@@ -67,13 +68,19 @@ public class ModelTest {
     }
 
     @Test
+    void btsAnnotatedEntitiesShouldAlwaysReturnEclass() throws Exception {
+        
+    }
+
+    @Test
     void lemmaEntriesEqual() throws Exception {
         LemmaEntity l_built = LemmaEntity.builder()
             .id("1")
+            .eclass("BTSLemmaEntry")
             .passport(new Passport())
             .build();
         LemmaEntity l_read = mapper.mapToObject(
-            "{\"id\":\"1\",\"passport\":{}}",
+            "{\"id\":\"1\",\"eclass\":\"BTSLemmaEntry\",\"passport\":{}}",
             LemmaEntity.class
         );
         LemmaEntity l_round = mapper.mapToObject(
@@ -81,6 +88,7 @@ public class ModelTest {
             LemmaEntity.class
         );
         assertAll("lemma entry instances should be equal regardless of creation method",
+            () -> assertEquals("BTSLemmaEntry", l_built.getEclass(), "superclass getEclass() method should return registered eClass value"),
             () -> assertEquals(l_built, l_read, "deserialized lemma instance should be equal to built instance with the same properties"),
             () -> assertEquals(l_built, l_round, "lemma instance serialized and then deserialized should equal itself")
         );

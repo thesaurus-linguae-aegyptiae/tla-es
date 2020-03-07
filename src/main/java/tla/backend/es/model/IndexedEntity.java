@@ -1,5 +1,7 @@
 package tla.backend.es.model;
 
+import java.lang.annotation.Annotation;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,6 +42,22 @@ public abstract class IndexedEntity {
             );
             return entity.id;
         }
+    }
+
+    /**
+     * Returns the object's <code>eClass</code> value specified via the {@link BTSeClass} annotation.
+     */
+    public String getEclass() {
+        for (Annotation annotation : this.getClass().getAnnotations()) {
+            if (annotation instanceof BTSeClass) {
+                return ((BTSeClass) annotation).value();
+            }
+        }
+        log.warn(
+            "eClass of {} instance not specified via @BTSeClass annotation. Returning class name",
+            this.getClass().getName()
+        );
+        return this.getClass().getName();
     }
 
 }

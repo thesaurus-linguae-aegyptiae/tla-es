@@ -68,8 +68,19 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
     @Test
     void postLemma() throws Exception {
         when(repo.save(any()))
-            .thenReturn(LemmaEntity.builder().id("1").sortKey("A").build());
-        LemmaEntity l = repo.save(LemmaEntity.builder().id("2").build());
+            .thenReturn(
+                LemmaEntity.builder()
+                    .id("1")
+                    .eclass("BTSLemmaEntry")
+                    .sortKey("A")
+                    .build()
+                );
+        LemmaEntity l = repo.save(
+            LemmaEntity.builder()
+                .id("2")
+                .eclass("BTSLemmaEntry")
+                .build()
+            );
         assertEquals("1", l.getId(), "whatever is being saved by mock up repo, it should always return a lemma with ID '1'");
         mockMvc.perform(
             post("/lemma/post")

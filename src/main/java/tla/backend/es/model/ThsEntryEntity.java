@@ -17,6 +17,7 @@ import tla.domain.model.Passport;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@BTSeClass("BTSThsEntry")
 @EqualsAndHashCode(callSuper = true)
 @Document(indexName = "ths", type = "ths")
 public class ThsEntryEntity extends TLAEntity {

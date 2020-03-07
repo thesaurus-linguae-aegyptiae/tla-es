@@ -21,6 +21,7 @@ import tla.domain.model.Passport;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@BTSeClass("BTSLemmaEntry")
 @ToString(callSuper = true)
 @JsonInclude(Include.NON_NULL)
 @EqualsAndHashCode(callSuper = true)
