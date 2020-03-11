@@ -1,5 +1,9 @@
 ---
 
+logging:
+    file:
+        name: app.log
+
 server:
     error:
         whitelabel:
