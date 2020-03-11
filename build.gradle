@@ -36,6 +36,12 @@ repositories {
 configurations {
     implementation.exclude module: 'spring-boot-starter-jetty'
     implementation.exclude module: 'spring-boot-starter-netty'
+    implementation.exclude group: 'jakarta.xml.bind'
+    implementation.exclude group: 'org.xmlunit'
+    implementation.exclude group: 'org.skyscreamer'
+    implementation.exclude module: 'log4j-api'
+    implementation.exclude module: 'jackson-dataformat-smile'
+    implementation.exclude module: 'jackson-dataformat-cbor'
     // ES transport client stuff
     implementation.exclude module: 'transport'
     implementation.exclude module: 'transport-netty4-client'
