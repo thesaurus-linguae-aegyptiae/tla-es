@@ -69,7 +69,15 @@ public class ModelTest {
 
     @Test
     void btsAnnotatedEntitiesShouldAlwaysReturnEclass() throws Exception {
-        
+        assertAll("returned eclass values should be as defined",
+            () -> assertEquals("BTSLemmaEntry", (new LemmaEntity()).getEclass(), "lemma eclass should be `BTSLemmaEntry`"),
+            () -> assertEquals("BTSThsEntry", (new ThsEntryEntity()).getEclass(), "ths term eclass should be `BTSThsEntry`"),
+            () -> assertEquals(
+                "tla.backend.es.model.OccurrenceEntity",
+                (new OccurrenceEntity()).getEclass(),
+                "class name should be returned instead of eclass for occurrence"
+            )
+        );
     }
 
     @Test
