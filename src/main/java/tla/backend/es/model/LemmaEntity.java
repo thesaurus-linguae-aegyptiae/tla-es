@@ -15,7 +15,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+
 import tla.domain.model.Passport;
+import tla.domain.model.meta.BTSeClass;
 
 @Data
 @SuperBuilder

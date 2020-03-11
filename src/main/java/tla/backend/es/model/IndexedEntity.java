@@ -16,6 +16,8 @@ import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 
+import tla.domain.model.meta.BTSeClass;
+
 @Data
 @Slf4j
 @SuperBuilder
