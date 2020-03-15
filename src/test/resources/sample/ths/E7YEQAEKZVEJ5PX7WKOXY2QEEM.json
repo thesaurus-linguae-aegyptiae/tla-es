@@ -1,0 +1,139 @@
+{
+    "id": "E7YEQAEKZVEJ5PX7WKOXY2QEEM",
+    "eclass": "BTSThsEntry",
+    "type": "date",
+    "revisionState": "published",
+    "name": "21. Dynastie",
+    "editors": {
+        "author": "Alt\u00e4gyptisches W\u00f6rterbuch",
+        "updated": "2019-12-19",
+        "type": "user",
+        "contributors": [
+            "L. Popko"
+        ]
+    },
+    "relations": {
+        "contains": [
+            {
+                "eclass": "BTSThsEntry",
+                "id": "677YHBKQIRHB3HVZG45V2N6DU4",
+                "name": "Siamun Netjerycheperre-Setepenamun",
+                "type": "date"
+            },
+            {
+                "eclass": "BTSThsEntry",
+                "id": "BBZR65BX2JHZJHOPWOGMFFE42A",
+                "name": "Smendes Hedjcheperre",
+                "type": "date"
+            },
+            {
+                "eclass": "BTSThsEntry",
+                "id": "G2XFFZLE4ZHDNMISPFYCHJJB4M",
+                "name": "Psusennes I. Aacheperre-Setepenamun",
+                "type": "date"
+            },
+            {
+                "eclass": "BTSThsEntry",
+                "id": "NOTZ5UOGYZD2VBH6D6JXBOW6LI",
+                "name": "Psusennes II. Titcheperure",
+                "type": "date"
+            },
+            {
+                "eclass": "BTSThsEntry",
+                "id": "O5QKFTC7YBCKNDSQJOKBWT63BY",
+                "name": "Amenemope Usermaatre-Setepenamun",
+                "type": "date"
+            },
+            {
+                "eclass": "BTSThsEntry",
+                "id": "SBF7EA7BN5FOVO6JXZQHUWGYTQ",
+                "name": "Amenemnesu Neferkare-Heqawaset",
+                "type": "date"
+            },
+            {
+                "eclass": "BTSThsEntry",
+                "id": "XVUCQSGCYBHKFNXJYMSKRL4R2M",
+                "name": "Osochor Aacheperre-Setepenre",
+                "type": "date"
+            }
+        ],
+        "partOf": [
+            {
+                "eclass": "BTSThsEntry",
+                "id": "JS32JKX2CNG25GZ3B6MGYMDU4I",
+                "name": "Dritte Zwischenzeit",
+                "type": "date"
+            }
+        ]
+    },
+    "externalReferences": {
+        "aaew": [
+            {
+                "id": "9/110"
+            }
+        ],
+        "thot": [
+            {
+                "id": "thot-404"
+            }
+        ]
+    },
+    "passport": {
+        "synonyms": [
+            {
+                "synonym_group": [
+                    {
+                        "synonym": [
+                            "21st Dynasty"
+                        ],
+                        "language": [
+                            "en"
+                        ]
+                    },
+                    {
+                        "synonym": [
+                            "21e dynastie"
+                        ],
+                        "language": [
+                            "fr"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thesaurus": [
+            {
+                "main_group": [
+                    {
+                        "termsort": [
+                            "21. dyn."
+                        ],
+                        "old_id": [
+                            "110"
+                        ],
+                        "old_thesaurus_number": [
+                            "9"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thesaurus_date": [
+            {
+                "main_group": [
+                    {
+                        "reference": [
+                            "Hornung, E./Krauss, R./Warburton, D. A. (Hgg.), Ancient Egyptian Chronology (HdO I.83), Leiden/Boston 2006, 493"
+                        ],
+                        "beginning": [
+                            "-1076"
+                        ],
+                        "end": [
+                            "-944"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

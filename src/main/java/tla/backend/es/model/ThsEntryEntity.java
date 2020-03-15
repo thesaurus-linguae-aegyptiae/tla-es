@@ -1,5 +1,8 @@
 package tla.backend.es.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -24,6 +27,11 @@ import tla.domain.model.meta.BTSeClass;
 @Document(indexName = "ths", type = "ths")
 public class ThsEntryEntity extends TLAEntity {
 
+    private static final List<String> timespanPropertyPaths = List.of(
+        "thesaurus_date.main_group.beginning",
+        "thesaurus_date.main_group.end"
+    );
+
     @Field(type = FieldType.Keyword)
     @JsonAlias({"sortkey", "sort_key", "sort_string", "sortString"})
     private String sortKey;
@@ -31,4 +39,22 @@ public class ThsEntryEntity extends TLAEntity {
     @Field(type = FieldType.Object)
     private Passport passport;
 
+    /**
+     * Returns the timespan represented by a thesaurus entry.
+     */
+    public List<Integer> extractTimespan() {
+        List<Integer> years = new ArrayList<>();
+        timespanPropertyPaths.stream().forEach(
+            path -> {
+                this.getPassport().extractProperty(path).stream().forEach(
+                    node -> {
+                        if (node.get() instanceof String) {
+                            years.add(Integer.valueOf((String) node.get()));
+                        }
+                    }
+                );
+            }
+        );
+        return years;
+    }
 }

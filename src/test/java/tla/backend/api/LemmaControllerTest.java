@@ -15,6 +15,7 @@ import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.Translations;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.es.model.EditorInfo;
+import tla.backend.service.LemmaService;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,6 +33,14 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
 
     @Autowired
     private EntityMapper mapper;
+
+    @Autowired
+    private LemmaService service;
+
+    @Test
+    void serviceInjected() {
+        assertNotNull(service);
+    }
 
     @Test
     void nonNullFieldValidation() {
