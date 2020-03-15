@@ -9,11 +9,13 @@ import org.springframework.data.elasticsearch.core.EntityMapper;
 import tla.backend.App;
 import tla.backend.Util;
 import tla.domain.dto.LemmaDto;
+import tla.domain.model.ObjectReference;
 import tla.domain.model.Passport;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 @SpringBootTest(classes = {App.class})
 public class ModelTest {
@@ -26,8 +28,8 @@ public class ModelTest {
 
     @Test
     void entitySuperClass_equality() throws Exception {
-        IndexedEntity lemma = LemmaEntity.builder().id("ID").eclass("").build();
-        IndexedEntity term = ThsEntryEntity.builder().id("ID").eclass("").build();
+        IndexedEntity lemma = LemmaEntity.builder().id("ID").build();
+        IndexedEntity term = ThsEntryEntity.builder().id("ID").build();
         assertAll("entities of different subclass with same ID should not be equal",
             () -> assertTrue(!lemma.equals(term), "lemma 'ID' should not equal ths term 'ID'")
         );
@@ -47,11 +49,22 @@ public class ModelTest {
         );
     }
 
+    public static ThsEntryEntity baseThsEntry() {
+        return ThsEntryEntity.builder()
+            .id("1")
+            .name("wadi")
+            .type("findSpot")
+            .relation("contains", Arrays.asList(
+                ObjectReference.builder().id("2").name("region1").type("findSpot").build(),
+                ObjectReference.builder().id("3").name("region2").type("findSpot").build()
+            ))
+            .build();
+    }
+
     @Test
     void thesaurusEntriesEqual() throws Exception {
         ThsEntryEntity t_built = ThsEntryEntity.builder()
             .id("1")
-            .eclass("BTSThsEntry")
             .sortKey("1")
             .editors(EditorInfo.builder().author("author").updated(Util.date("2015-12-31")).build())
             .build();
@@ -70,6 +83,7 @@ public class ModelTest {
     @Test
     void btsAnnotatedEntitiesShouldAlwaysReturnEclass() throws Exception {
         assertAll("returned eclass values should be as defined",
+            () -> assertEquals("BTSText", (new TextEntity()).getEclass(), "text entity eclass should be `BTSText"),
             () -> assertEquals("BTSLemmaEntry", (new LemmaEntity()).getEclass(), "lemma eclass should be `BTSLemmaEntry`"),
             () -> assertEquals("BTSThsEntry", (new ThsEntryEntity()).getEclass(), "ths term eclass should be `BTSThsEntry`"),
             () -> assertEquals(
@@ -81,10 +95,17 @@ public class ModelTest {
     }
 
     @Test
+    void nonNullFieldValidation() {
+        assertThrows(NullPointerException.class,
+            () -> {LemmaEntity.builder().build();},
+            "building lemma with null-ID should throw exception"
+        );
+    }
+
+    @Test
     void lemmaEntriesEqual() throws Exception {
         LemmaEntity l_built = LemmaEntity.builder()
             .id("1")
-            .eclass("BTSLemmaEntry")
             .passport(new Passport())
             .build();
         LemmaEntity l_read = mapper.mapToObject(
@@ -103,22 +124,54 @@ public class ModelTest {
 
     }
 
+    public static LemmaEntity baseLemma() {
+        return LemmaEntity.builder()
+        .id("Id")
+        .name("nfr")
+        .type("subst")
+        .revisionState("published")
+        .sortKey("Id")
+        .translations(Translations.builder().de("übersetzung").build())
+        .build();
+    }
+
     @Test
     void lemmaModelMapping() {
-        LemmaEntity l = LemmaEntity.builder()
-            .id("Id")
-            .eclass("BTSLemmaEntry")
-            .name("nfr")
-            .type("subst")
-            .revisionState("published")
-            .sortKey("Id")
-            .translations(Translations.builder().de("übersetzung").build())
-            .build();
+        LemmaEntity l = baseLemma();
         LemmaDto d = modelMapper.map(l, LemmaDto.class);
         assertAll("lemma entity should be mapped to DTO correctly",
             () -> assertEquals(l.getRevisionState(), d.getReviewState(), "review status should be present"),
             () -> assertEquals(l.getSortKey(), d.getSortKey(), "sort key should be copied"),
             () -> assertTrue(!d.getTranslations().isEmpty(), "translations should not be empty")
+        );
+    }
+
+    public static TextEntity baseText() {
+        return TextEntity.builder()
+        .id("2")
+        .corpus("corpus")
+        .paths(
+            List.of(
+                List.of(
+                    ObjectReference.builder().id("1").eclass("BTSTCObject").type("o").name("n").build()
+                )
+            )
+        ).name("nn")
+        .type("t")
+        .build();
+    }
+
+    @Test
+    void textEquality() throws Exception {
+        TextEntity t1 = baseText();
+        TextEntity t2 = mapper.mapToObject(
+            "{\"id\":\"2\",\"name\":\"nn\",\"corpus\":\"corpus\",\"type\":\"t\",\"paths\":[[{\"id\":\"1\",\"eclass\":\"BTSTCObject\",\"type\":\"o\",\"name\":\"n\"}]]}",
+            TextEntity.class
+        );
+        assertAll("test text instances for equality",
+            () -> assertEquals(t1, t2, "deserialized instance should be the same as builder built"),
+            () -> assertEquals(t1.toString(), t2.toString(), "tostring repr should be the same"),
+            () -> assertEquals(t1.hashCode(), t2.hashCode(), "hashcodes should be the same")
         );
     }
 

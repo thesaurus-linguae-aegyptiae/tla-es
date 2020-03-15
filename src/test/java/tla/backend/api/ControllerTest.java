@@ -1,5 +1,14 @@
 package tla.backend.api;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,35 +20,28 @@ import org.springframework.data.elasticsearch.core.EntityMapper;
 
 import tla.backend.AbstractMockMvcTest;
 import tla.backend.Util;
+import tla.backend.es.model.EditorInfo;
 import tla.backend.es.model.LemmaEntity;
+import tla.backend.es.model.ModelTest;
 import tla.backend.es.model.Translations;
 import tla.backend.es.repo.LemmaRepo;
-import tla.backend.es.model.EditorInfo;
+import tla.backend.es.repo.TextRepo;
+import tla.backend.es.repo.ThesaurusRepo;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-public class LemmaControllerTest extends AbstractMockMvcTest {
+public class ControllerTest extends AbstractMockMvcTest {
 
     @MockBean
-    private LemmaRepo repo;
+    private LemmaRepo lemmaRepo;
+
+    @MockBean
+    private ThesaurusRepo thsRepo;
+
+    @MockBean
+    private TextRepo textRepo;
 
     @Autowired
     private EntityMapper mapper;
-
-    @Test
-    void nonNullFieldValidation() {
-        assertThrows(NullPointerException.class,
-            () -> {LemmaEntity.builder().build();},
-            "building lemma with null-ID should throw exception"
-        );
-    }
 
     @Test
     void mapLemma() throws Exception {
@@ -52,7 +54,6 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
     void mapLemmaEquals() throws Exception {
         LemmaEntity l1 = LemmaEntity.builder()
             .id("1")
-            .eclass("BTSLemmaEntry")
             .editors(EditorInfo.builder().author("author").updated(Util.date("1854-10-31")).build())
             .translations(Translations.builder().de("übersetzung").build())
             .build();
@@ -67,18 +68,16 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
 
     @Test
     void postLemma() throws Exception {
-        when(repo.save(any()))
+        when(lemmaRepo.save(any()))
             .thenReturn(
                 LemmaEntity.builder()
                     .id("1")
-                    .eclass("BTSLemmaEntry")
                     .sortKey("A")
                     .build()
                 );
-        LemmaEntity l = repo.save(
+        LemmaEntity l = lemmaRepo.save(
             LemmaEntity.builder()
                 .id("2")
-                .eclass("BTSLemmaEntry")
                 .build()
             );
         assertEquals("1", l.getId(), "whatever is being saved by mock up repo, it should always return a lemma with ID '1'");
@@ -107,12 +106,11 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
 
     @Test
     void getExistingLemma() throws Exception {
-        when(repo.findById(anyString()))
+        when(lemmaRepo.findById(anyString()))
             .thenReturn(
                 Optional.of(
                     LemmaEntity.builder()
                         .id("ID")
-                        .eclass("BTSLemmaEntry")
                         .editors(
                             EditorInfo.builder()
                                 .author("author")
@@ -135,6 +133,37 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
             .andExpect(jsonPath("$.sortKey").value("1"))
             .andExpect(jsonPath("$.translations.de[0]").value("deutsch"))
             .andExpect(jsonPath("$.translations.en[0]").value("english"));
+    }
+
+    @Test
+    void thsGETRequestSingleEntry() throws Exception {
+        when(thsRepo.findById(anyString()))
+            .thenReturn(
+                Optional.of(ModelTest.baseThsEntry())
+            );
+        mockMvc.perform(
+            get("/ths/get/xxx")
+                .contentType("application/json")
+        )
+            .andExpect(
+                status().isOk()
+            )
+            .andExpect(jsonPath("$.relations.contains[0].id").value("2"))
+            .andExpect(jsonPath("$.relations.contains[1].id").value("3"));
+    }
+
+    @Test
+    void textControllerGET() throws Exception {
+        when(textRepo.findById(anyString()))
+            .thenReturn(
+                Optional.of(ModelTest.baseText())
+            );
+        mockMvc.perform(
+            get("/text/get/xxx")
+                .contentType("application/json")
+        ).andExpect(
+            status().isOk()
+        ).andExpect(jsonPath("$.paths[0][0].id").value("1"));
     }
 
 }
