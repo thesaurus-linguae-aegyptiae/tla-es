@@ -42,7 +42,7 @@ public class ModelConfig {
      * returns the ES index name specified for an entity class via the <code>indexName</code>
      * attribute of the {@link Document} annotation.
      */
-    public static String getIndexName(Class<? extends IndexedEntity> clazz) {
+    public static String getIndexName(Class<? extends Indexable> clazz) {
         for (Annotation annotation : clazz.getAnnotations()) {
             if (annotation instanceof Document) {
                 return ((Document) annotation).indexName();

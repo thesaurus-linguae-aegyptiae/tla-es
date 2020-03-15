@@ -6,14 +6,13 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.ToString;
@@ -21,17 +20,21 @@ import lombok.experimental.SuperBuilder;
 import tla.domain.model.ExternalReference;
 import tla.domain.model.ObjectReference;
 
+import tla.domain.model.meta.AbstractBTSBaseClass;
+
+
 @Data
 @SuperBuilder
 @AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class TLAEntity extends IndexedEntity {
+public abstract class TLAEntity extends AbstractBTSBaseClass implements Indexable {
 
+    @Id
     @NonNull
-    @Getter(value = AccessLevel.NONE)
-    private String eclass;
+    @Field(type = FieldType.Keyword)
+    private String id;
 
     @Field(type = FieldType.Keyword)
     private String type;
@@ -57,7 +60,6 @@ public abstract class TLAEntity extends IndexedEntity {
     private Map<String, List<ExternalReference>> externalReferences;
 
     public TLAEntity() {
-        this.eclass = this.getEclass();
         this.relations = Collections.emptyMap();
         this.externalReferences = Collections.emptyMap();
     }

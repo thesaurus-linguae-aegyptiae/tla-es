@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 
 import lombok.extern.slf4j.Slf4j;
-import tla.backend.es.model.IndexedEntity;
+import tla.backend.es.model.Indexable;
 import tla.backend.es.model.ModelConfig;
 
 @Slf4j
@@ -20,7 +20,7 @@ public abstract class QueryService {
     private ElasticsearchRestTemplate restTemplate;
 
     public SearchResponse query(
-        Class<? extends IndexedEntity> entityClass,
+        Class<? extends Indexable> entityClass,
         QueryBuilder queryBuilder,
         AggregationBuilder aggsBuilder
     ) {

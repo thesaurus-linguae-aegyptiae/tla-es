@@ -2,6 +2,7 @@ package tla.backend.es.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -9,17 +10,21 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Document(indexName = "occurrence", type = "occurrence")
-public class OccurrenceEntity extends IndexedEntity {
+public class OccurrenceEntity implements Indexable {
+
+    @Id
+    @NonNull
+    @Field(type = FieldType.Keyword)
+    private String id;
 
     @Field(type = FieldType.Object)
     private Flexion flexion;
@@ -36,22 +41,32 @@ public class OccurrenceEntity extends IndexedEntity {
     @Field(type = FieldType.Object)
     private Translations translations;
 
+
     @Data
+    @Builder
     public static class Flexion {
+
         private String glossing;
+        private String verbal;
+
         @Field(type = FieldType.Keyword)
         private Integer numeric;
-        private String verbal;
     }
 
+
     @Data
+    @Builder
     public static class Lemmatization {
+
+        private Integer pos;
+
         @Field(type = FieldType.Keyword)
         private String id;
-        private String pos;
     }
 
+
     @Data
+    @Builder
     public static class OccurrenceLocation {
 
         private String line;
