@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.OccurrenceEntity;
+import tla.backend.es.model.TLAEntity;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.service.LemmaService;
 import tla.domain.dto.LemmaDto;
@@ -55,6 +56,21 @@ public class LemmaController {
             repo.count(),
             HttpStatus.OK
         );
+    }
+
+    /**
+     * TODO this is just for debugging temporarily
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/find/{id}")
+    public ResponseEntity<LemmaEntity> findLemmaById(@PathVariable String id) throws Exception {
+        TLAEntity result = queryService.retrieveSingleBTSDoc("BTSLemmaEntry", id);
+        if (result instanceof LemmaEntity) {
+            return new ResponseEntity<LemmaEntity>(
+                (LemmaEntity) result,
+                HttpStatus.OK
+            );
+        }
+        throw new ObjectNotFoundException();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/get/{id}")
