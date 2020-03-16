@@ -17,7 +17,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import tla.domain.dto.LemmaDto;
-import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.BTSeClass;
 
 @Slf4j
@@ -26,7 +25,7 @@ public class ModelConfig {
 
     /**
      * Container for configurations that can be attributed to an eClass specified
-     * via {@link BTSeClass} annotation on top of an {@link AbstractBTSBaseClass} instance:
+     * via {@link BTSeClass} annotation on top of an {@link TLAEntity} instance:
      *
      * <ul>
      * <li>The ES index into which model class instances get saved</li>
@@ -37,7 +36,7 @@ public class ModelConfig {
     @Builder
     protected static class BTSeClassConfig {
         private String index;
-        private Class<? extends AbstractBTSBaseClass> modelClass;
+        private Class<? extends TLAEntity> modelClass;
     }
 
     public static SimpleDateFormat DATE_FORMAT;
@@ -47,7 +46,7 @@ public class ModelConfig {
     }
 
     @Getter
-    private static List<Class<? extends AbstractBTSBaseClass>> modelClasses = new LinkedList<>();
+    private static List<Class<? extends TLAEntity>> modelClasses = new LinkedList<>();
 
     @Getter
     private static Map<String, BTSeClassConfig> modelClassConfigs;
@@ -95,7 +94,7 @@ public class ModelConfig {
      * @return map with the extracted eclass as its only key,
      *         or <code>null</code> if any config value could not be extracted
      */
-    private static Map<String, BTSeClassConfig> mapModelClassConfigToEclass(Class<? extends AbstractBTSBaseClass> clazz) {
+    private static Map<String, BTSeClassConfig> mapModelClassConfigToEclass(Class<? extends TLAEntity> clazz) {
         String eclass = null;
         String index = null;
         for (Annotation annotation : clazz.getAnnotations()) {
@@ -141,7 +140,7 @@ public class ModelConfig {
      * TODO what does this enable?
      */
     public static Map<String, BTSeClassConfig> registerModelClass(
-        Class<? extends AbstractBTSBaseClass> modelClass
+        Class<? extends TLAEntity> modelClass
     ) throws Exception {
         Map<String, BTSeClassConfig> conf = mapModelClassConfigToEclass(modelClass);
         if (conf != null) {
@@ -164,7 +163,7 @@ public class ModelConfig {
      * Clear eclass/model class configuration registry and load configurations for
      * classes passed.
      */
-    public static void setModelClasses(List<Class<? extends AbstractBTSBaseClass>> classes) {
+    public static void setModelClasses(List<Class<? extends TLAEntity>> classes) {
         if (modelClassConfigs != null) {
             modelClassConfigs.clear();
             log.info(
@@ -188,7 +187,7 @@ public class ModelConfig {
     /**
      * Look up the model class registered for a given eclass.
      */
-    public static Class<? extends AbstractBTSBaseClass> getModelClass(String eclass) {
+    public static Class<? extends TLAEntity> getModelClass(String eclass) {
         return modelClassConfigs.get(eclass).getModelClass();
     }
 

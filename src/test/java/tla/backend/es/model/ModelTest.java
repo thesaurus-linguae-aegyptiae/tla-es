@@ -15,7 +15,6 @@ import tla.backend.App;
 import tla.backend.Util;
 import tla.domain.dto.LemmaDto;
 import tla.domain.model.Passport;
-import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.BTSeClass;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,7 +32,7 @@ public class ModelTest {
 
     @Test
     void modelConfigInitialized() {
-        List<Class<? extends AbstractBTSBaseClass>> modelClasses = ModelConfig.getModelClasses();
+        List<Class<? extends TLAEntity>> modelClasses = ModelConfig.getModelClasses();
         assertAll("make sure model config class has been initialized",
             () -> assertTrue(ModelConfig.isInitialized(), "flag should be set"),
             () -> assertNotNull(modelClasses, "model class list should not be null"),
@@ -57,7 +56,7 @@ public class ModelTest {
     private static class CorrectlyAnnotatedDummyModelClass extends TLAEntity {}
 
     @Document(indexName = "made_up_index_name")
-    private static class IncorrectlyAnnotatedDummyModelClass extends AbstractBTSBaseClass {}
+    private static class IncorrectlyAnnotatedDummyModelClass extends TLAEntity {}
 
     @Test
     void registerModelClass() throws Exception {
