@@ -47,7 +47,7 @@ public class OccurrenceController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/lemma/{id}")
     public ResponseEntity<Map<String, Long>> lemmaOccurrences(@PathVariable String id) {
-        SearchQuery query = new NativeSearchQueryBuilder().withQuery(matchQuery("lemma.id", id)).build();
+        SearchQuery query = new NativeSearchQueryBuilder().withQuery(termQuery("lemma.id", id)).build();
         long occurrenceCount = restTemplate.count(query, OccurrenceEntity.class);
         return new ResponseEntity<Map<String, Long>>(Map.of(id, occurrenceCount), HttpStatus.OK);
     }
