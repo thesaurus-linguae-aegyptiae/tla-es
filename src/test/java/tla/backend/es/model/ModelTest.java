@@ -1,15 +1,22 @@
 package tla.backend.es.model;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.core.EntityMapper;
 
 import tla.backend.App;
 import tla.backend.Util;
 import tla.domain.dto.LemmaDto;
 import tla.domain.model.Passport;
+import tla.domain.model.meta.AbstractBTSBaseClass;
+import tla.domain.model.meta.BTSeClass;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,6 +30,76 @@ public class ModelTest {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Test
+    void modelConfigInitialized() {
+        List<Class<? extends AbstractBTSBaseClass>> modelClasses = ModelConfig.getModelClasses();
+        assertAll("make sure model config class has been initialized",
+            () -> assertTrue(ModelConfig.isInitialized(), "flag should be set"),
+            () -> assertNotNull(modelClasses, "model class list should not be null"),
+            () -> assertNotNull(ModelConfig.getModelClassConfigs(), "model configurations registry expected"),
+            () -> assertEquals(
+                modelClasses.size(),
+                ModelConfig.getModelClassConfigs().size(),
+                String.format(
+                    "number of model class configurations registered should be the same as model classes known to ModelConfig (%s)",
+                    String.join(
+                        ", ",
+                        modelClasses.stream().map(Class::getName).collect(Collectors.toList())
+                    )
+                )
+            )
+        );
+    }
+
+    @BTSeClass("BTSMadeUpModel")
+    @Document(indexName = "made_up_index_name")
+    private static class CorrectlyAnnotatedDummyModelClass extends TLAEntity {}
+
+    @Document(indexName = "made_up_index_name")
+    private static class IncorrectlyAnnotatedDummyModelClass extends AbstractBTSBaseClass {}
+
+    @Test
+    void registerModelClass() throws Exception {
+        int numberOfRegisteredModels = ModelConfig.getModelClasses().size();
+        int numberOfRegisteredModelConfigs = ModelConfig.getModelClassConfigs().size();
+        try {
+            Map<String, ModelConfig.BTSeClassConfig> conf = ModelConfig.registerModelClass(
+                CorrectlyAnnotatedDummyModelClass.class
+            );
+            assertAll("model class config should be extracted and registered",
+                () -> assertNotNull(conf, "configuration expected"),
+                () -> assertTrue(conf.containsKey("BTSMadeUpModel"), "expect eclass"),
+                () -> assertEquals("made_up_index_name", conf.get("BTSMadeUpModel").getIndex(), "expect index name"),
+                () -> assertEquals(CorrectlyAnnotatedDummyModelClass.class, conf.get("BTSMadeUpModel").getModelClass(), "expect class"),
+                () -> assertEquals(numberOfRegisteredModels + 1, ModelConfig.getModelClasses().size(), "expect one more known model class"),
+                () -> assertEquals(numberOfRegisteredModelConfigs + 1, ModelConfig.getModelClassConfigs().size(), "expect one more registered config"),
+                () -> assertEquals(conf.get("BTSMadeUpModel").getIndex(), ModelConfig.getIndexName(CorrectlyAnnotatedDummyModelClass.class)),
+                () -> assertEquals(CorrectlyAnnotatedDummyModelClass.class, ModelConfig.getModelClass("BTSMadeUpModel"))
+            );
+        } catch (Exception e) {
+            //log.warn("model class registration failed for {}", CorrectlyAnnotatedDummyModelClass.class.getName());
+            throw e;
+        }
+    }
+
+    @Test
+    void registerInvalidModelClass() {
+        assertThrows(
+            Exception.class,
+            () -> ModelConfig.registerModelClass(
+                IncorrectlyAnnotatedDummyModelClass.class
+            )
+        );
+    }
+
+    @Test
+    void lookupModelClassForUnknownEclass() {
+        assertThrows(
+            NullPointerException.class,
+            () -> ModelConfig.getModelClass("nonexistentEclass")
+        );
+    }
 
     @Test
     void entitySuperClass_equality() throws Exception {

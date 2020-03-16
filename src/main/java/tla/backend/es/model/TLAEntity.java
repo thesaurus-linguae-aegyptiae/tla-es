@@ -22,7 +22,9 @@ import tla.domain.model.ObjectReference;
 
 import tla.domain.model.meta.AbstractBTSBaseClass;
 
-
+/**
+ * TLA model base class for BTS document types.
+ */
 @Data
 @SuperBuilder
 @AllArgsConstructor
