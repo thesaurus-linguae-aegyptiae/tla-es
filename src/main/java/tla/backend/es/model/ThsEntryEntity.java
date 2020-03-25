@@ -1,6 +1,7 @@
 package tla.backend.es.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import tla.domain.model.Passport;
+import tla.domain.model.extern.AttestedTimespan;
 import tla.domain.model.meta.BTSeClass;
 
 @Data
@@ -55,6 +57,16 @@ public class ThsEntryEntity extends TLAEntity {
                 );
             }
         );
+        Collections.sort(years);
         return years;
+    }
+
+    public AttestedTimespan.Period toAttestedPeriod() {
+        List<Integer> years = this.extractTimespan();
+        return AttestedTimespan.Period.builder()
+            .begin(years.get(0))
+            .end(years.get(1))
+            .ths(this.toObjectReference())
+            .build();
     }
 }

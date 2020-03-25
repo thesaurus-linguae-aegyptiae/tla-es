@@ -62,4 +62,16 @@ public abstract class TLAEntity extends IndexedEntity {
         this.externalReferences = Collections.emptyMap();
     }
 
+    /**
+     * Creates an objectreference object identifying this instance.
+     */
+    public ObjectReference toObjectReference() {
+        return ObjectReference.builder()
+            .id(this.getId())
+            .eclass(this.getEclass())
+            .type(this.getType())
+            .name(this.getName())
+            .build();
+    }
+
 }
