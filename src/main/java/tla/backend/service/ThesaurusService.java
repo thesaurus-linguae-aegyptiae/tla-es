@@ -13,7 +13,7 @@ import tla.domain.model.ObjectReference;
 import tla.domain.model.Passport;
 
 @Service
-public class ThesaurusService {
+public class ThesaurusService extends QueryService<ThsEntryEntity> {
 
     @Autowired
     private ThesaurusRepo thsRepo;
@@ -22,8 +22,9 @@ public class ThesaurusService {
     /**
      * Retrieves single thesaurus entry from index. Returns null if there is none with the specified ID.
      */
-    public ThsEntryEntity get(String termId) {
-        Optional<ThsEntryEntity> res = thsRepo.findById(termId);
+    @Override
+    public ThsEntryEntity retrieve(String id) {
+        Optional<ThsEntryEntity> res = thsRepo.findById(id);
         if (res.isPresent()) {
             return res.get();
         } else {
@@ -45,7 +46,7 @@ public class ThesaurusService {
             node -> {
                 if (node.get() instanceof ObjectReference) {
                     terms.add(
-                        this.get(
+                        this.retrieve(
                             ((ObjectReference) node.get()).getId()
                         )
                     );
@@ -54,7 +55,5 @@ public class ThesaurusService {
         );
         return terms;
     }
-
-
 
 }

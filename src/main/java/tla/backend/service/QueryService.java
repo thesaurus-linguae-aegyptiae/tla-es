@@ -14,7 +14,7 @@ import tla.backend.es.model.IndexedEntity;
 import tla.backend.es.model.ModelConfig;
 
 @Slf4j
-public abstract class QueryService {
+public abstract class QueryService<T extends IndexedEntity> {
 
     @Autowired
     private ElasticsearchRestTemplate restTemplate;
@@ -52,5 +52,11 @@ public abstract class QueryService {
         }
         return response;
     }
+
+
+    /**
+     * look up single entity
+     */
+    public abstract T retrieve(String id);
 
 }
