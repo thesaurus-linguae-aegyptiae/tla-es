@@ -57,9 +57,10 @@ dependencies {
 
     implementation 'org.springframework.data:spring-data-elasticsearch:3.2.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-web:2.3.0.M1'
+    implementation 'org.slf4j:slf4j-simple:2.0.0-alpha1'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.2.4.RELEASE'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
 }
 
 application {
