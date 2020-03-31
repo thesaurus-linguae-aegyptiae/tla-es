@@ -5,7 +5,7 @@ plugins {
     id 'application'
     id 'maven-publish'
     id 'co.uzzu.dotenv.gradle' version '1.0.2'
-    id 'org.springframework.boot' version '2.2.5.RELEASE'
+    id 'org.springframework.boot' version '2.2.6.RELEASE'
     id 'com.github.ben-manes.versions' version '0.28.0'
     id 'com.github.dawnwords.jacoco.badge' version '0.2.0'
 }
@@ -53,7 +53,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
     implementation 'com.github.jkatzwinkel:tla-common:master-SNAPSHOT'
-    implementation 'org.modelmapper:modelmapper:2.3.6'
+    implementation 'org.modelmapper:modelmapper:2.3.7'
 
     implementation 'org.springframework.data:spring-data-elasticsearch:3.2.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-web:2.3.0.M1'
