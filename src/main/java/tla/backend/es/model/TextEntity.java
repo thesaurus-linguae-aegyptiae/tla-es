@@ -6,23 +6,26 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import tla.domain.dto.TextDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.Passport;
 import tla.domain.model.meta.BTSeClass;
+import tla.domain.model.meta.TLADTO;
 
 /**
  * Text and Subtext model
  */
-@Data
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
 @BTSeClass("BTSText")
+@TLADTO(TextDto.class)
 @EqualsAndHashCode(callSuper = true)
 @Document(indexName = "text", type = "text")
 public class TextEntity extends TLAEntity {

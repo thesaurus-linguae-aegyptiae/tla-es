@@ -15,16 +15,18 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
+import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.Passport;
 import tla.domain.model.extern.AttestedTimespan;
 import tla.domain.model.meta.BTSeClass;
+import tla.domain.model.meta.TLADTO;
 
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @BTSeClass("BTSThsEntry")
+@TLADTO(ThsEntryDto.class)
 @EqualsAndHashCode(callSuper = true)
 @Document(indexName = "ths", type = "ths")
 public class ThsEntryEntity extends TLAEntity {

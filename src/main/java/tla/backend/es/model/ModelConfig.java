@@ -16,8 +16,10 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.model.meta.BTSeClass;
+import tla.domain.model.meta.TLADTO;
 
 @Slf4j
 @Configuration
@@ -45,6 +47,8 @@ public class ModelConfig {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
+    private static ModelMapper modelMapper;
+
     @Getter
     private static List<Class<? extends TLAEntity>> modelClasses = new LinkedList<>();
 
@@ -58,12 +62,13 @@ public class ModelConfig {
                 ThsEntryEntity.class
             )
         );
+        initModelMapper();
     }
 
     /**
      * Extract eclass configurations from all registered model classes.
      */
-    private static void init() {
+    private static void initModelConfig() {
         modelClassConfigs = new HashMap<>();
         modelClasses.forEach(
             clazz -> {
@@ -132,6 +137,19 @@ public class ModelConfig {
     }
 
     /**
+     * extract <code>eclass</code> from {@link BTSeClass} annotation of given model class
+     */
+    public static String getEclass(Class<? extends TLAEntity> modelClass) {
+        for (Annotation annotation : modelClass.getAnnotations()) {
+            if (annotation instanceof BTSeClass) {
+                return ((BTSeClass) annotation).value();
+            }
+        }
+        log.warn("class {} seems to have no BTSeClass annotation!", modelClass.getName());
+        return null;
+    }
+
+    /**
      * Register a model class annotated with {@link BTSeClass} and <code>@Document(index="...")</code>
      * and the corresponding configuration extracted from these annotations.
      *
@@ -177,7 +195,7 @@ public class ModelConfig {
         }
         modelClasses.clear();
         modelClasses.addAll(classes);
-        init();
+        initModelConfig();
         log.info(
             "configured eclass class registry updated: {}",
             String.join(", ", modelClassConfigs.keySet())
@@ -195,12 +213,20 @@ public class ModelConfig {
      * Tells whether the {@link ModelConfig} class has been instantiated (presumably by spring DI).
      */
     public static boolean isInitialized() {
-        return getModelClassConfigs() != null;
+        return getModelClassConfigs() != null && modelMapper != null;
     }
 
     @Bean
     public ModelMapper modelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
+        if (modelMapper == null) {
+            initModelMapper();
+        }
+        return modelMapper;
+    }
+
+    private static ModelMapper initModelMapper() {
+        log.debug("initializing model mapper");
+        modelMapper = new ModelMapper();
         modelMapper.createTypeMap(LemmaEntity.class, LemmaDto.class)
             .addMappings(
                 mapper -> mapper.using(new Translations.ToMapConverter()).map(
@@ -212,7 +238,6 @@ public class ModelConfig {
                     LemmaEntity::getRevisionState, LemmaDto::setReviewState
                 )
             );
-
         return modelMapper;
     }
 
@@ -232,6 +257,31 @@ public class ModelConfig {
                 clazz.getName()
             )
         );
+    }
+
+    /**
+     * converts a model class instance to its corresponding DTO representation
+     * specified via its {@link TLADTO} annotation.
+     */
+    public static DocumentDto toDTO(TLAEntity entity) {
+        return modelMapper.map(
+            entity,
+            getModelClassDTO(entity.getClass())
+        );
+    }
+
+    /**
+     * extracts the corresponding DTO type of a model class from its {@link TLADTO} annotation.
+     * Returns null and fails silently if no annotation is set.
+     */
+    public static Class<? extends DocumentDto> getModelClassDTO(Class<? extends TLAEntity> modelClass) {
+        for (Annotation annotation : modelClass.getAnnotations()) {
+            if (annotation instanceof TLADTO) {
+                return ((TLADTO) annotation).value();
+            }
+        }
+        log.warn("class {} has not @TLADTO annotation", modelClass.getName());
+        return null;
     }
 
 }

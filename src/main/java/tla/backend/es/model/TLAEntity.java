@@ -10,13 +10,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import tla.domain.dto.DocumentDto;
 import tla.domain.model.ExternalReference;
 import tla.domain.model.ObjectReference;
 
@@ -25,9 +26,9 @@ import tla.domain.model.meta.AbstractBTSBaseClass;
 /**
  * TLA model base class for BTS document types.
  */
-@Data
+@Getter
+@Setter
 @SuperBuilder
-@AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -76,6 +77,13 @@ public abstract class TLAEntity extends AbstractBTSBaseClass implements Indexabl
             .type(this.getType())
             .name(this.getName())
             .build();
+    }
+
+    /**
+     * Converts an instance to a DTO of the type specified via {@link TLADTO} annotation
+     */
+    public DocumentDto toDTO() {
+        return ModelConfig.toDTO(this);
     }
 
 }
