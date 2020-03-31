@@ -10,11 +10,14 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -58,7 +61,7 @@ public class OccurrenceEntity implements Indexable {
     @Builder
     public static class Lemmatization {
 
-        private Integer pos;
+        private String pos;
 
         @Field(type = FieldType.Keyword)
         private String id;
