@@ -3,7 +3,6 @@ package tla.backend.api;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -25,6 +24,7 @@ import tla.backend.es.model.TLAEntity;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.service.LemmaService;
 import tla.domain.dto.LemmaDto;
+import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.backend.error.ObjectNotFoundException;
 
 import org.elasticsearch.action.search.SearchResponse;
@@ -74,15 +74,12 @@ public class LemmaController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/get/{id}")
-    public ResponseEntity<LemmaDto> getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
+    public ResponseEntity<SingleDocumentWrapper<LemmaDto>> getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
         // https://stackoverflow.com/a/35402975/1933494
-        Optional<LemmaEntity> result = repo.findById(id);
-        if (!result.isEmpty()) {
-            return new ResponseEntity<LemmaDto>(
-                modelMapper.map(
-                    result.get(),
-                    LemmaDto.class
-                ),
+        SingleDocumentWrapper<LemmaDto> wrappedResult = queryService.getLemmaDetails(id);
+        if (wrappedResult != null) {
+            return new ResponseEntity<SingleDocumentWrapper<LemmaDto>>(
+                wrappedResult,
                 HttpStatus.OK
             );
         }

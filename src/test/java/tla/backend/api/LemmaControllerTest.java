@@ -139,11 +139,11 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
             .andExpect(
                 status().isOk()
             )
-            .andExpect(jsonPath("$.id").value("ID"))
-            .andExpect(jsonPath("$.editors.author").value("author"))
-            .andExpect(jsonPath("$.sortKey").value("1"))
-            .andExpect(jsonPath("$.translations.de[0]").value("deutsch"))
-            .andExpect(jsonPath("$.translations.en[0]").value("english"));
+            .andExpect(jsonPath("$.doc.id").value("ID"))
+            .andExpect(jsonPath("$.doc.editors.author").value("author"))
+            .andExpect(jsonPath("$.doc.sortKey").value("1"))
+            .andExpect(jsonPath("$.doc.translations.de[0]").value("deutsch"))
+            .andExpect(jsonPath("$.doc.translations.en[0]").value("english"));
     }
 
 }

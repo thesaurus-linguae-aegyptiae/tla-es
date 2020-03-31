@@ -68,7 +68,7 @@ public abstract class QueryService<T extends Indexable> {
     }
 
     /**
-     * look up single entity
+     * look up single entity. should return null if it could not be found
      */
     public abstract T retrieve(String id);
 
