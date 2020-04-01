@@ -2,10 +2,7 @@ package tla.backend.api;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.ModelConfig;
 import tla.backend.es.model.OccurrenceEntity;
-import tla.backend.es.model.TextEntity;
-import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.repo.OccurrenceRepo;
-import tla.backend.service.TextService;
-import tla.backend.service.ThesaurusService;
-import tla.domain.model.Passport;
+import tla.backend.service.LemmaService;
 import tla.domain.model.extern.AttestedTimespan;
 
 import org.elasticsearch.action.search.SearchRequest;
@@ -56,10 +49,8 @@ public class OccurrenceController {
     private ElasticsearchRestTemplate restTemplate;
 
     @Autowired
-    private TextService textService;
+    private LemmaService lemmaService;
 
-    @Autowired
-    private ThesaurusService thsService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/lemma/{id}")
     public ResponseEntity<Map<String, Long>> lemmaOccurrences(@PathVariable String id) {
@@ -70,50 +61,9 @@ public class OccurrenceController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/texts/lemma/{id}")
     public ResponseEntity<Collection<AttestedTimespan>> texts(@PathVariable(name = "id") String lemmaId) {
-        Map<String, Long> freqPerText = textService.countOccurrencesPerText(lemmaId);
-        Map<String, AttestedTimespan> periodCounts = new HashMap<>();
-        for (Entry<String, Long> e : freqPerText.entrySet()) {
-            TextEntity t = textService.retrieve(e.getKey());
-            Passport p = t.getPassport();
-            List<ThsEntryEntity> dateTerms = thsService.extractThsEntriesFromPassport(
-                p,
-                "date.date.date"
-            );
-            if (dateTerms.size() > 0) {
-                if (dateTerms.size() != 1) {
-                    log.error("text {} has not exactly 1 date term assigned to it", e.getKey());
-                } else {
-                    ThsEntryEntity term = dateTerms.get(0);
-                    if (periodCounts.containsKey(term.getId())) {
-                        AttestedTimespan timespan = periodCounts.get(term.getId());
-                        timespan.getAttestations().add(
-                            AttestedTimespan.AttestationStats.builder()
-                                .count(e.getValue())
-                                .texts(1)
-                                .build()
-                        );
-                    } else {
-                        AttestedTimespan timespan = AttestedTimespan.builder()
-                            .attestations(
-                                AttestedTimespan.AttestationStats.builder()
-                                    .count(e.getValue())
-                                    .texts(1)
-                                    .build()
-                            )
-                            .period(
-                                term.toAttestedPeriod()
-                            )
-                            .build();
-                        periodCounts.put(
-                            term.getId(),
-                            timespan
-                        );
-                    }
-                }
-            }
-        }
+        Collection<AttestedTimespan> periodCounts = lemmaService.computeAttestedTimespans(lemmaId);
         return new ResponseEntity<Collection<AttestedTimespan>>(
-            periodCounts.values(),
+            periodCounts,
             HttpStatus.OK
         );
     }
