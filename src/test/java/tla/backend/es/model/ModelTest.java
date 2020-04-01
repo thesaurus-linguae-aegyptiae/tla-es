@@ -1,15 +1,21 @@
 package tla.backend.es.model;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.core.EntityMapper;
 
 import tla.backend.App;
 import tla.backend.Util;
 import tla.domain.dto.LemmaDto;
 import tla.domain.model.Passport;
+import tla.domain.model.meta.BTSeClass;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,9 +31,79 @@ public class ModelTest {
     private ModelMapper modelMapper;
 
     @Test
+    void modelConfigInitialized() {
+        List<Class<? extends TLAEntity>> modelClasses = ModelConfig.getModelClasses();
+        assertAll("make sure model config class has been initialized",
+            () -> assertTrue(ModelConfig.isInitialized(), "flag should be set"),
+            () -> assertNotNull(modelClasses, "model class list should not be null"),
+            () -> assertNotNull(ModelConfig.getModelClassConfigs(), "model configurations registry expected"),
+            () -> assertEquals(
+                modelClasses.size(),
+                ModelConfig.getModelClassConfigs().size(),
+                String.format(
+                    "number of model class configurations registered should be the same as model classes known to ModelConfig (%s)",
+                    String.join(
+                        ", ",
+                        modelClasses.stream().map(Class::getName).collect(Collectors.toList())
+                    )
+                )
+            )
+        );
+    }
+
+    @BTSeClass("BTSMadeUpModel")
+    @Document(indexName = "made_up_index_name")
+    private static class CorrectlyAnnotatedDummyModelClass extends TLAEntity {}
+
+    @Document(indexName = "made_up_index_name")
+    private static class IncorrectlyAnnotatedDummyModelClass extends TLAEntity {}
+
+    @Test
+    void registerModelClass() throws Exception {
+        int numberOfRegisteredModels = ModelConfig.getModelClasses().size();
+        int numberOfRegisteredModelConfigs = ModelConfig.getModelClassConfigs().size();
+        try {
+            Map<String, ModelConfig.BTSeClassConfig> conf = ModelConfig.registerModelClass(
+                CorrectlyAnnotatedDummyModelClass.class
+            );
+            assertAll("model class config should be extracted and registered",
+                () -> assertNotNull(conf, "configuration expected"),
+                () -> assertTrue(conf.containsKey("BTSMadeUpModel"), "expect eclass"),
+                () -> assertEquals("made_up_index_name", conf.get("BTSMadeUpModel").getIndex(), "expect index name"),
+                () -> assertEquals(CorrectlyAnnotatedDummyModelClass.class, conf.get("BTSMadeUpModel").getModelClass(), "expect class"),
+                () -> assertEquals(numberOfRegisteredModels + 1, ModelConfig.getModelClasses().size(), "expect one more known model class"),
+                () -> assertEquals(numberOfRegisteredModelConfigs + 1, ModelConfig.getModelClassConfigs().size(), "expect one more registered config"),
+                () -> assertEquals(conf.get("BTSMadeUpModel").getIndex(), ModelConfig.getIndexName(CorrectlyAnnotatedDummyModelClass.class)),
+                () -> assertEquals(CorrectlyAnnotatedDummyModelClass.class, ModelConfig.getModelClass("BTSMadeUpModel"))
+            );
+        } catch (Exception e) {
+            //log.warn("model class registration failed for {}", CorrectlyAnnotatedDummyModelClass.class.getName());
+            throw e;
+        }
+    }
+
+    @Test
+    void registerInvalidModelClass() {
+        assertThrows(
+            Exception.class,
+            () -> ModelConfig.registerModelClass(
+                IncorrectlyAnnotatedDummyModelClass.class
+            )
+        );
+    }
+
+    @Test
+    void lookupModelClassForUnknownEclass() {
+        assertThrows(
+            NullPointerException.class,
+            () -> ModelConfig.getModelClass("nonexistentEclass")
+        );
+    }
+
+    @Test
     void entitySuperClass_equality() throws Exception {
-        TLAEntity lemma = LemmaEntity.builder().id("ID").build();
-        TLAEntity term = ThsEntryEntity.builder().id("ID").build();
+        Indexable lemma = LemmaEntity.builder().id("ID").build();
+        Indexable term = ThsEntryEntity.builder().id("ID").build();
         assertAll("entities of different subclass with same ID should not be equal",
             () -> assertNotEquals(lemma, term, "lemma 'ID' should not equal ths term 'ID'")
         );
@@ -51,11 +127,12 @@ public class ModelTest {
     void thesaurusEntriesEqual() throws Exception {
         ThsEntryEntity t_built = ThsEntryEntity.builder()
             .id("1")
+            .eclass("BTSThsEntry")
             .sortKey("1")
             .editors(EditorInfo.builder().author("author").updated(Util.date("2015-12-31")).build())
             .build();
         ThsEntryEntity t_read = mapper.mapToObject(
-            "{\"id\":\"ID\",\"sort_string\":\"1\",\"editors\":{\"author\":\"author\",\"updated\":\"2015-12-31\"}}",
+            "{\"id\":\"ID\",\"eclass\":\"BTSThsEntry\",\"sort_string\":\"1\",\"editors\":{\"author\":\"author\",\"updated\":\"2015-12-31\"}}",
             ThsEntryEntity.class
         );
         ThsEntryEntity t_round = mapper.mapToObject(mapper.mapToString(t_built), ThsEntryEntity.class);
@@ -81,6 +158,7 @@ public class ModelTest {
             LemmaEntity.class
         );
         assertAll("lemma entry instances should be equal regardless of creation method",
+            () -> assertEquals("BTSLemmaEntry", l_built.getEclass(), "superclass getEclass() method should return registered eClass value"),
             () -> assertEquals(l_built, l_read, "deserialized lemma instance should be equal to built instance with the same properties"),
             () -> assertEquals(l_built, l_round, "lemma instance serialized and then deserialized should equal itself")
         );

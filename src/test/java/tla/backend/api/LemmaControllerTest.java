@@ -15,6 +15,7 @@ import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.Translations;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.es.model.EditorInfo;
+import tla.backend.service.LemmaService;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,6 +33,14 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
 
     @Autowired
     private EntityMapper mapper;
+
+    @Autowired
+    private LemmaService service;
+
+    @Test
+    void serviceInjected() {
+        assertNotNull(service);
+    }
 
     @Test
     void nonNullFieldValidation() {
@@ -68,8 +77,19 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
     @Test
     void postLemma() throws Exception {
         when(repo.save(any()))
-            .thenReturn(LemmaEntity.builder().id("1").sortKey("A").build());
-        LemmaEntity l = repo.save(LemmaEntity.builder().id("2").build());
+            .thenReturn(
+                LemmaEntity.builder()
+                    .id("1")
+                    .eclass("BTSLemmaEntry")
+                    .sortKey("A")
+                    .build()
+                );
+        LemmaEntity l = repo.save(
+            LemmaEntity.builder()
+                .id("2")
+                .eclass("BTSLemmaEntry")
+                .build()
+            );
         assertEquals("1", l.getId(), "whatever is being saved by mock up repo, it should always return a lemma with ID '1'");
         mockMvc.perform(
             post("/lemma/post")
@@ -119,11 +139,11 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
             .andExpect(
                 status().isOk()
             )
-            .andExpect(jsonPath("$.id").value("ID"))
-            .andExpect(jsonPath("$.editors.author").value("author"))
-            .andExpect(jsonPath("$.sortKey").value("1"))
-            .andExpect(jsonPath("$.translations.de[0]").value("deutsch"))
-            .andExpect(jsonPath("$.translations.en[0]").value("english"));
+            .andExpect(jsonPath("$.doc.id").value("ID"))
+            .andExpect(jsonPath("$.doc.editors.author").value("author"))
+            .andExpect(jsonPath("$.doc.sortKey").value("1"))
+            .andExpect(jsonPath("$.doc.translations.de[0]").value("deutsch"))
+            .andExpect(jsonPath("$.doc.translations.en[0]").value("english"));
     }
 
 }

@@ -5,7 +5,7 @@ plugins {
     id 'application'
     id 'maven-publish'
     id 'co.uzzu.dotenv.gradle' version '1.0.2'
-    id 'org.springframework.boot' version '2.2.5.RELEASE'
+    id 'org.springframework.boot' version '2.2.6.RELEASE'
     id 'com.github.ben-manes.versions' version '0.28.0'
     id 'com.github.dawnwords.jacoco.badge' version '0.2.0'
 }
@@ -36,6 +36,11 @@ repositories {
 configurations {
     implementation.exclude module: 'spring-boot-starter-jetty'
     implementation.exclude module: 'spring-boot-starter-netty'
+    implementation.exclude group: 'jakarta.xml.bind'
+    implementation.exclude group: 'org.xmlunit'
+    implementation.exclude group: 'org.skyscreamer'
+    implementation.exclude module: 'jackson-dataformat-smile'
+    implementation.exclude module: 'jackson-dataformat-cbor'
     // ES transport client stuff
     implementation.exclude module: 'transport'
     implementation.exclude module: 'transport-netty4-client'
@@ -48,13 +53,14 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
     implementation 'com.github.jkatzwinkel:tla-common:master-SNAPSHOT'
-    implementation 'org.modelmapper:modelmapper:2.3.6'
+    implementation 'org.modelmapper:modelmapper:2.3.7'
 
     implementation 'org.springframework.data:spring-data-elasticsearch:3.2.4.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-web:2.3.0.M1'
+    implementation 'org.slf4j:slf4j-simple:2.0.0-alpha1'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.2.4.RELEASE'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
 }
 
 application {

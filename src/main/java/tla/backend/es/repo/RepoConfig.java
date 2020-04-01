@@ -6,6 +6,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.RestClients;
@@ -24,6 +25,7 @@ public class RepoConfig extends AbstractElasticsearchConfiguration {
     private Environment env;
 
     @Bean
+    @Primary
     public ElasticsearchRestTemplate elasticsearchRestTemplate() {
         return new ElasticsearchRestTemplate(
             elasticsearchClient()
@@ -32,11 +34,20 @@ public class RepoConfig extends AbstractElasticsearchConfiguration {
 
     @Override
     public RestHighLevelClient elasticsearchClient() {
-        log.info("create elasticsearch client for local instance at port " + env.getProperty("tla.es.port"));
+        log.info
+            ("create elasticsearch client for local instance at port {}",
+            env.getProperty("tla.es.port")
+        );
         return RestClients.create(
             ClientConfiguration.create(
                 InetSocketAddress.createUnresolved(
-                    "localhost", Integer.parseInt(env.getProperty("tla.es.port", "9200"))
+                    "localhost",
+                    Integer.parseInt(
+                        env.getProperty(
+                            "tla.es.port",
+                            "9200"
+                        )
+                    )
                 )
             )
         ).rest();

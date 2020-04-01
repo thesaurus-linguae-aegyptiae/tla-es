@@ -15,14 +15,19 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import tla.domain.dto.LemmaDto;
 import tla.domain.model.Passport;
+import tla.domain.model.meta.BTSeClass;
+import tla.domain.model.meta.TLADTO;
 
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@TLADTO(LemmaDto.class)
+@BTSeClass("BTSLemmaEntry")
 @ToString(callSuper = true)
-@JsonInclude(Include.NON_NULL)
+@JsonInclude(Include.NON_EMPTY)
 @EqualsAndHashCode(callSuper = true)
 @Document(indexName = "lemma", type = "lemma")
 @Setting(settingPath = "/elasticsearch/settings/indices/lemma.json")

@@ -11,16 +11,21 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import tla.backend.AbstractMockMvcTest;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.repo.ThesaurusRepo;
+import tla.backend.service.ThesaurusService;
 import tla.domain.model.ObjectReference;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 public class ThsControllerTest extends AbstractMockMvcTest {
+
+    @Autowired
+    private ThesaurusService service;
 
     @MockBean
     private ThesaurusRepo repo;
@@ -31,6 +36,7 @@ public class ThsControllerTest extends AbstractMockMvcTest {
     void init() {
         this.thsEntry = ThsEntryEntity.builder()
         .id("1")
+        .eclass("BTSThsEntry")
         .name("wadi")
         .type("findSpot")
         .relation("partOf", Arrays.asList(
@@ -38,6 +44,11 @@ public class ThsControllerTest extends AbstractMockMvcTest {
             ObjectReference.builder().id("3").name("region2").type("findSpot").build()
         ))
         .build();
+    }
+
+    @Test
+    void serviceInjected() {
+        assertNotNull(service);
     }
 
     @Test

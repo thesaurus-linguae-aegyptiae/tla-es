@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.modelmapper.AbstractConverter;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -62,15 +63,21 @@ public class Translations {
 	 * Converts an instance to a Map with preserved key order.
 	 */
 	public SortedMap<Language, List<String>> toMap() {
-		return new TreeMap<Language, List<String>>(
+		SortedMap<Language, List<String>> converted = new TreeMap<Language, List<String>>();
+		for (Entry<Language, List<String>> e : 
 			Map.of(
 				Language.DE, this.getDe(),
 				Language.EN, this.getEn(),
 				Language.FR, this.getFr(),
 				Language.AR, this.getAr(),
 				Language.IT, this.getIt()
-			)
-		);
+			).entrySet()
+		) {
+			if (!e.getValue().isEmpty()) {
+				converted.put(e.getKey(), e.getValue());
+			}
+		}
+		return converted;
 	}
 
 	/**
