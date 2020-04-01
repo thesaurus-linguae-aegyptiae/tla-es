@@ -105,7 +105,7 @@ public class ModelTest {
         Indexable lemma = LemmaEntity.builder().id("ID").build();
         Indexable term = ThsEntryEntity.builder().id("ID").build();
         assertAll("entities of different subclass with same ID should not be equal",
-            () -> assertTrue(!lemma.equals(term), "lemma 'ID' should not equal ths term 'ID'")
+            () -> assertNotEquals(lemma, term, "lemma 'ID' should not equal ths term 'ID'")
         );
     }
 

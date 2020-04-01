@@ -15,6 +15,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
 import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.Passport;
 import tla.domain.model.extern.AttestedTimespan;
@@ -63,6 +64,9 @@ public class ThsEntryEntity extends TLAEntity {
         return years;
     }
 
+    /**
+    * creates a DTO object representing the timespan covered by a thesaurus term.
+    */
     public AttestedTimespan.Period toAttestedPeriod() {
         List<Integer> years = this.extractTimespan();
         return AttestedTimespan.Period.builder()
