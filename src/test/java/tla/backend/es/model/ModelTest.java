@@ -144,22 +144,13 @@ public class ModelTest {
     }
 
     @Test
-    void btsAnnotatedEntitiesShouldAlwaysReturnEclass() throws Exception {
-        assertAll("returned eclass values should be as defined",
-            () -> assertEquals("BTSLemmaEntry", (new LemmaEntity()).getEclass(), "lemma eclass should be `BTSLemmaEntry`"),
-            () -> assertEquals("BTSThsEntry", (new ThsEntryEntity()).getEclass(), "ths term eclass should be `BTSThsEntry`")
-        );
-    }
-
-    @Test
     void lemmaEntriesEqual() throws Exception {
         LemmaEntity l_built = LemmaEntity.builder()
             .id("1")
-            .eclass("BTSLemmaEntry")
             .passport(new Passport())
             .build();
         LemmaEntity l_read = mapper.mapToObject(
-            "{\"id\":\"1\",\"eclass\":\"BTSLemmaEntry\",\"passport\":{}}",
+            "{\"id\":\"1\",\"passport\":{}}",
             LemmaEntity.class
         );
         LemmaEntity l_round = mapper.mapToObject(
