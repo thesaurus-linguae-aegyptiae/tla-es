@@ -1,5 +1,8 @@
 package tla.backend.es.model;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -13,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import tla.domain.dto.LemmaDto;
@@ -22,7 +26,6 @@ import tla.domain.model.meta.TLADTO;
 
 @Data
 @SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
 @TLADTO(LemmaDto.class)
 @BTSeClass("BTSLemmaEntry")
@@ -46,6 +49,14 @@ public class LemmaEntity extends TLAEntity {
     @Field(type = FieldType.Object)
     @JsonAlias({"time_span"})
     private AttestedTimeSpan timeSpan;
+
+    @Singular
+    @Field(type = FieldType.Object)
+    private List<LemmaWord> words;
+
+    public LemmaEntity() {
+        this.words = Collections.emptyList();
+    }
 
     @Data
     @NoArgsConstructor

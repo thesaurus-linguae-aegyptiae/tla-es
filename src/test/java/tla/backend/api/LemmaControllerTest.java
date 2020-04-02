@@ -12,6 +12,8 @@ import org.springframework.data.elasticsearch.core.EntityMapper;
 import tla.backend.AbstractMockMvcTest;
 import tla.backend.Util;
 import tla.backend.es.model.LemmaEntity;
+import tla.backend.es.model.LemmaWord;
+import tla.backend.es.model.Transcription;
 import tla.backend.es.model.Translations;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.es.model.EditorInfo;
@@ -64,13 +66,15 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
             .eclass("BTSLemmaEntry")
             .editors(EditorInfo.builder().author("author").updated(Util.date("1854-10-31")).build())
             .translations(Translations.builder().de("übersetzung").build())
+            .word(new LemmaWord("N35:G47", new Transcription("nfr", "nfr")))
             .build();
         String ser = new ObjectMapper().writeValueAsString(l1);
         LemmaEntity l2 = mapper.mapToObject(ser, LemmaEntity.class);
         assertAll("lemma instance created via lombok builder should be the same after being serialized by object mapper and deserialized by ES entity mapper",
             () -> assertEquals(l1, l2, "equals should return true"),
             () -> assertEquals(mapper.mapToString(l1), mapper.mapToString(l2), "ES entity mapper serializations should be equal"),
-            () -> assertEquals(l1.hashCode(), l2.hashCode(), "hashCode should return equals")
+            () -> assertEquals(l1.hashCode(), l2.hashCode(), "hashCode should return equals"),
+            () -> assertNotNull(l2.getWords().get(0).getTranscription(), "expect word transcription")
         );
     }
 

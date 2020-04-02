@@ -175,12 +175,20 @@ public class ModelTest {
             .revisionState("published")
             .sortKey("Id")
             .translations(Translations.builder().de("übersetzung").build())
+            .word(
+                new LemmaWord(
+                    "N35:G47",
+                    new Transcription("nfr", "nfr")
+                )
+            )
             .build();
         LemmaDto d = modelMapper.map(l, LemmaDto.class);
         assertAll("lemma entity should be mapped to DTO correctly",
             () -> assertEquals(l.getRevisionState(), d.getReviewState(), "review status should be present"),
             () -> assertEquals(l.getSortKey(), d.getSortKey(), "sort key should be copied"),
-            () -> assertTrue(!d.getTranslations().isEmpty(), "translations should not be empty")
+            () -> assertTrue(!d.getTranslations().isEmpty(), "translations should not be empty"),
+            () -> assertEquals(1, l.getWords().size(), "expect 1 word"),
+            () -> assertNotNull(d.getWords().get(0).getTranscription(), "word should have transcription")
         );
     }
 
