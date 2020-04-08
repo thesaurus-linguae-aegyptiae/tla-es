@@ -22,10 +22,17 @@ Both the Docker Compose configuration and the `bootRun` and `test` gradle tasks 
 it from the local `.env` file.
 
 When running the application using the  `bootRun` task, comma-separated arguments can be passed via
-`args` property like this:
+`args` property in the following ways:
 
-    ./gradlew bootRun -Pargs=--data-file=sample.tar.gz,--foo=bar
+    ./gradlew bootRun --Pargs=--data-file=sample.tar.gz,--foo=bar
+    ./gradlew bootRun --args="--data-file=sample.tar.gz --foo=bar"
+
 
 Populate database with a corpus dump and shut down after:
 
-    ./gradlew bootRun -Pargs=--date-file=sample.tar.gz,--shutdown
+    ./gradlew bootRun --args="--date-file=sample.tar.gz --shutdown"
+
+There is a gradle task for populating the backend app's elasticsearch indices with corpus data obtained
+from a URL specified via the `SAMPLE_URL` environment variable:
+
+    ./gradlew populate
