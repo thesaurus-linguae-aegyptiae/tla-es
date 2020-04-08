@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,9 @@ public class App implements ApplicationRunner {
 
     @Autowired
     private RepoPopulator repoPopulator;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public static void main(String[] args) {
         log.info("startup TLA backend app");
@@ -43,5 +47,17 @@ public class App implements ApplicationRunner {
                 args.getOptionValues("data-file")
             );
         }
+        if (args.containsOption("shutdown")) {
+            shutdown();
+        }
+    }
+
+    public void shutdown() {
+        System.exit(
+            SpringApplication.exit(
+                applicationContext,
+                () -> 0
+            )
+        );
     }
 }

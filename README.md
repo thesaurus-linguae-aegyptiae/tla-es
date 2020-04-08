@@ -26,6 +26,6 @@ When running the application using the  `bootRun` task, comma-separated argument
 
     ./gradlew bootRun -Pargs=--data-file=sample.tar.gz,--foo=bar
 
-Populate database with a corpus dump:
+Populate database with a corpus dump and shut down after:
 
-    ./gradlew bootRun -Pargs=--date-file=sample.tar.gz
+    ./gradlew bootRun -Pargs=--date-file=sample.tar.gz,--shutdown
