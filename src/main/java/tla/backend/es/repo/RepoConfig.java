@@ -57,4 +57,9 @@ public class RepoConfig extends AbstractElasticsearchConfiguration {
         ).rest();
     }
 
+    @Bean
+    public RepoPopulator repoPopulator() {
+        return new RepoPopulator();
+    }
+
 }

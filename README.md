@@ -20,3 +20,12 @@ In order to only use the Elasticsearch container and run the application via gra
 *Note:* You can configure the Elasticsearch HTTP port to which the application will try to connect.
 Both the Docker Compose configuration and the `bootRun` and `test` gradle tasks are going to read
 it from the local `.env` file.
+
+When running the application using the  `bootRun` task, comma-separated arguments can be passed via
+`args` property like this:
+
+    ./gradlew bootRun -Pargs=--data-file=sample.tar.gz,--foo=bar
+
+Populate database with a corpus dump:
+
+    ./gradlew bootRun -Pargs=--date-file=sample.tar.gz
