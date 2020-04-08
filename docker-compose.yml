@@ -13,15 +13,28 @@ services:
         stdin_open: true
         tty: true
 
-    app:
+    backend:
         depends_on:
             - elasticsearch
         build:
             context: .
             args:
                 - es_port=${ES_PORT}
+                - es_host=localhost
         ports:
             - 8090:8090
+        tty: true
+        network_mode: host
+
+    tla-populate:
+        depends_on:
+            - backend
+        build:
+            context: https://github.com/jkatzwinkel/tla-populate.git
+            args:
+                - SAMPLE_URL=${SAMPLE_URL}
+                - BACKEND_URL=http://backend:8090
+        command: http://localhost:8090
         tty: true
         network_mode: host
 
