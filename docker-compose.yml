@@ -25,15 +25,8 @@ services:
             - 8090:8090
         tty: true
         network_mode: host
+        volumes:
+            - ${PWD}/sample.tar.gz:/app/sample.tar.gz
+        command: "--data-file=sample.tar.gz"
 
-    tla-populate:
-        depends_on:
-            - backend
-        build:
-            context: https://github.com/jkatzwinkel/tla-populate.git
-            args:
-                - SAMPLE_URL=${SAMPLE_URL}
-        command: http://localhost:8090
-        tty: true
-        network_mode: host
 
