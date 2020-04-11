@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,19 +33,4 @@ public class ThesaurusController {
         throw new ObjectNotFoundException();
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/post")
-    public ResponseEntity<ThsEntryEntity> postEntry(@RequestBody ThsEntryEntity entry) {
-        return new ResponseEntity<ThsEntryEntity>(
-            repo.save(entry),
-            HttpStatus.CREATED
-        );
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/batch")
-    public ResponseEntity<Iterable<ThsEntryEntity>> postEntries(@RequestBody Iterable<ThsEntryEntity> entries) {
-        return new ResponseEntity<Iterable<ThsEntryEntity>>(
-            repo.saveAll(entries),
-            HttpStatus.CREATED
-        );
-    }
 }

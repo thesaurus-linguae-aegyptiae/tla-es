@@ -20,10 +20,8 @@ import tla.backend.es.model.EditorInfo;
 import tla.backend.service.LemmaService;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -76,35 +74,6 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
             () -> assertEquals(l1.hashCode(), l2.hashCode(), "hashCode should return equals"),
             () -> assertNotNull(l2.getWords().get(0).getTranscription(), "expect word transcription")
         );
-    }
-
-    @Test
-    void postLemma() throws Exception {
-        when(repo.save(any()))
-            .thenReturn(
-                LemmaEntity.builder()
-                    .id("1")
-                    .eclass("BTSLemmaEntry")
-                    .sortKey("A")
-                    .build()
-                );
-        LemmaEntity l = repo.save(
-            LemmaEntity.builder()
-                .id("2")
-                .eclass("BTSLemmaEntry")
-                .build()
-            );
-        assertEquals("1", l.getId(), "whatever is being saved by mock up repo, it should always return a lemma with ID '1'");
-        mockMvc.perform(
-            post("/lemma/post")
-                .contentType("application/json")
-                .content("{\"id\":\"1\",\"sort_string\":\"A\"}")
-        )
-            .andExpect(
-                status().isCreated()
-            )
-            .andExpect(jsonPath("$.id").value("1"))
-            .andExpect(jsonPath("$.sortKey").value("A"));
     }
 
     @Test

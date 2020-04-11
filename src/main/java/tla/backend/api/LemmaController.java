@@ -11,7 +11,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.OccurrenceEntity;
-import tla.backend.es.model.TLAEntity;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.service.LemmaService;
 import tla.domain.dto.LemmaDto;
@@ -56,21 +54,6 @@ public class LemmaController {
             repo.count(),
             HttpStatus.OK
         );
-    }
-
-    /**
-     * TODO this is just for debugging temporarily
-     */
-    @RequestMapping(method = RequestMethod.GET, value = "/find/{id}")
-    public ResponseEntity<LemmaEntity> findLemmaById(@PathVariable String id) throws Exception {
-        TLAEntity result = queryService.retrieveSingleBTSDoc("BTSLemmaEntry", id);
-        if (result instanceof LemmaEntity) {
-            return new ResponseEntity<LemmaEntity>(
-                (LemmaEntity) result,
-                HttpStatus.OK
-            );
-        }
-        throw new ObjectNotFoundException();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/get/{id}")
@@ -138,23 +121,6 @@ public class LemmaController {
         return new ResponseEntity<List<String>>(
             result,
             HttpStatus.OK
-        );
-
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/post")
-    public ResponseEntity<LemmaEntity> postLemma(@RequestBody LemmaEntity lemma) {
-        return new ResponseEntity<LemmaEntity>(
-            repo.save(lemma),
-            HttpStatus.CREATED
-        );
-    }
-
-    @RequestMapping(method = RequestMethod.POST, value = "/batch")
-    public ResponseEntity<Iterable<LemmaEntity>> postLemma(@RequestBody Iterable<LemmaEntity> lemmata) {
-        return new ResponseEntity<Iterable<LemmaEntity>>(
-            repo.saveAll(lemmata),
-            HttpStatus.CREATED
         );
     }
 
