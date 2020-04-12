@@ -3,6 +3,7 @@ package tla.backend.es.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
@@ -13,10 +14,11 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 
 import tla.domain.dto.ThsEntryDto;
+import tla.domain.model.ExternalReference;
 import tla.domain.model.Passport;
 import tla.domain.model.extern.AttestedTimespan;
 import tla.domain.model.meta.BTSeClass;
@@ -24,7 +26,6 @@ import tla.domain.model.meta.TLADTO;
 
 @Data
 @SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
 @BTSeClass("BTSThsEntry")
 @TLADTO(ThsEntryDto.class)
@@ -43,6 +44,14 @@ public class ThsEntryEntity extends TLAEntity {
 
     @Field(type = FieldType.Object)
     private Passport passport;
+
+    @Singular
+    @Field(type = FieldType.Object)
+    private Map<String, List<ExternalReference>> externalReferences;
+
+    public ThsEntryEntity() {
+        this.externalReferences = Collections.emptyMap();
+    }
 
     /**
      * Returns the timespan represented by a thesaurus entry.

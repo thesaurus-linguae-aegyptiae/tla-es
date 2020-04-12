@@ -4,35 +4,35 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.Singular;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-
-import tla.domain.dto.DocumentDto;
+import tla.domain.dto.AnnotationDto;
 import tla.domain.model.ObjectReference;
-
 import tla.domain.model.meta.AbstractBTSBaseClass;
+import tla.domain.model.meta.BTSeClass;
+import tla.domain.model.meta.TLADTO;
 
-/**
- * TLA model base class for BTS document types.
- */
-@Getter
-@Setter
+@Data
 @SuperBuilder
-@ToString(callSuper = true)
+@AllArgsConstructor
+@BTSeClass("BTSAnnotation")
+@TLADTO(AnnotationDto.class)
 @EqualsAndHashCode(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class TLAEntity extends AbstractBTSBaseClass implements Indexable {
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Document(indexName = "annotation", type = "annotation")
+public class AnnotationEntity extends AbstractBTSBaseClass implements Indexable {
 
     @Id
     @NonNull
@@ -49,7 +49,8 @@ public abstract class TLAEntity extends AbstractBTSBaseClass implements Indexabl
     private String revisionState;
 
     @Field(type = FieldType.Text)
-    private String name;
+    @JsonAlias({"name"})
+    private String title;
 
     @Field(type = FieldType.Object)
     private EditorInfo editors;
@@ -58,27 +59,7 @@ public abstract class TLAEntity extends AbstractBTSBaseClass implements Indexabl
     @Field(type = FieldType.Object)
     private Map<String, List<ObjectReference>> relations;
 
-    public TLAEntity() {
+    public AnnotationEntity() {
         this.relations = Collections.emptyMap();
     }
-
-    /**
-     * Creates an objectreference object identifying this instance.
-     */
-    public ObjectReference toObjectReference() {
-        return ObjectReference.builder()
-            .id(this.getId())
-            .eclass(this.getEclass())
-            .type(this.getType())
-            .name(this.getName())
-            .build();
-    }
-
-    /**
-     * Converts an instance to a DTO of the type specified via {@link TLADTO} annotation
-     */
-    public DocumentDto toDTO() {
-        return ModelConfig.toDTO(this);
-    }
-
 }
