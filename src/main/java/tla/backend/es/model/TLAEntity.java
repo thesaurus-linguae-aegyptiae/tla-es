@@ -6,22 +6,16 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-
-import tla.domain.dto.DocumentDto;
-import tla.domain.model.ObjectReference;
-
-import tla.domain.model.meta.AbstractBTSBaseClass;
+import tla.domain.model.ExternalReference;
 
 /**
  * TLA model base class for BTS document types.
@@ -32,53 +26,14 @@ import tla.domain.model.meta.AbstractBTSBaseClass;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class TLAEntity extends AbstractBTSBaseClass implements Indexable {
-
-    @Id
-    @NonNull
-    @Field(type = FieldType.Keyword)
-    private String id;
-
-    @Field(type = FieldType.Keyword)
-    private String type;
-
-    @Field(type = FieldType.Keyword)
-    private String subtype;
-
-    @Field(type = FieldType.Keyword)
-    private String revisionState;
-
-    @Field(type = FieldType.Text)
-    private String name;
-
-    @Field(type = FieldType.Object)
-    private EditorInfo editors;
+public abstract class TLAEntity extends BaseEntity {
 
     @Singular
     @Field(type = FieldType.Object)
-    private Map<String, List<ObjectReference>> relations;
+    private Map<String, List<ExternalReference>> externalReferences;
 
     public TLAEntity() {
-        this.relations = Collections.emptyMap();
-    }
-
-    /**
-     * Creates an objectreference object identifying this instance.
-     */
-    public ObjectReference toObjectReference() {
-        return ObjectReference.builder()
-            .id(this.getId())
-            .eclass(this.getEclass())
-            .type(this.getType())
-            .name(this.getName())
-            .build();
-    }
-
-    /**
-     * Converts an instance to a DTO of the type specified via {@link TLADTO} annotation
-     */
-    public DocumentDto toDTO() {
-        return ModelConfig.toDTO(this);
+        this.externalReferences = Collections.emptyMap();
     }
 
 }

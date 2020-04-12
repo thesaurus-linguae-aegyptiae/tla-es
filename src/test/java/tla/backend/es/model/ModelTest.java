@@ -13,6 +13,7 @@ import org.springframework.data.elasticsearch.core.EntityMapper;
 
 import tla.backend.App;
 import tla.backend.Util;
+import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.model.Passport;
 import tla.domain.model.meta.BTSeClass;
@@ -20,6 +21,7 @@ import tla.domain.model.meta.BTSeClass;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @SpringBootTest(classes = {App.class})
 public class ModelTest {
@@ -32,7 +34,7 @@ public class ModelTest {
 
     @Test
     void modelConfigInitialized() {
-        List<Class<? extends TLAEntity>> modelClasses = ModelConfig.getModelClasses();
+        List<Class<? extends BaseEntity>> modelClasses = ModelConfig.getModelClasses();
         assertAll("make sure model config class has been initialized",
             () -> assertTrue(ModelConfig.isInitialized(), "flag should be set"),
             () -> assertNotNull(modelClasses, "model class list should not be null"),
@@ -144,6 +146,15 @@ public class ModelTest {
     }
 
     @Test
+    void lemmaRegistered() throws Exception {
+        assertAll("has lemma model class registered with modelconfig?",
+            () -> assertEquals(LemmaEntity.class, ModelConfig.getModelClass("BTSLemmaEntry"), "check registered model class"),
+            () -> assertEquals("BTSLemmaEntry", ModelConfig.getEclass(LemmaEntity.class), "check registered eclass"),
+            () -> assertEquals("lemma", ModelConfig.getIndexName(LemmaEntity.class), "cehck lemma index name")
+        );
+    }
+
+    @Test
     void lemmaEntriesEqual() throws Exception {
         LemmaEntity l_built = LemmaEntity.builder()
             .id("1")
@@ -189,6 +200,32 @@ public class ModelTest {
             () -> assertTrue(!d.getTranslations().isEmpty(), "translations should not be empty"),
             () -> assertEquals(1, l.getWords().size(), "expect 1 word"),
             () -> assertNotNull(d.getWords().get(0).getTranscription(), "word should have transcription")
+        );
+    }
+
+    @Test
+    void annotationClassRegistered() {
+        assertAll("annotation model class registered?",
+            () -> assertEquals("BTSAnnotation", ModelConfig.getEclass(AnnotationEntity.class)),
+            () -> assertEquals(AnnotationEntity.class, ModelConfig.getModelClass("BTSAnnotation")),
+            () -> assertEquals("annotation", ModelConfig.getIndexName(AnnotationEntity.class))
+        );
+    }
+
+    @Test
+    void annotationModelMapping() {
+        AnnotationEntity a = AnnotationEntity.builder()
+            .id("ID")
+            .eclass("BTSAnnotation")
+            .name("nfr")
+            .revisionState("published")
+            .passport(Passport.of(Map.of("lemma", Collections.emptyMap())))
+            .build();
+        AnnotationDto d = modelMapper.map(a, AnnotationDto.class);
+        assertAll("test annotation entity to DTO conversion",
+            () -> assertEquals(d.getEclass(), a.getEclass()),
+            () -> assertEquals(d.getName(), a.getName()),
+            () -> assertEquals(d.getPassport(), a.getPassport())
         );
     }
 

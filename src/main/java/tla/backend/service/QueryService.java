@@ -16,9 +16,9 @@ import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.EntityMapper;
 
 import lombok.extern.slf4j.Slf4j;
+import tla.backend.es.model.BaseEntity;
 import tla.backend.es.model.Indexable;
 import tla.backend.es.model.ModelConfig;
-import tla.backend.es.model.TLAEntity;
 
 @Slf4j
 public abstract class QueryService<T extends Indexable> {
@@ -75,8 +75,8 @@ public abstract class QueryService<T extends Indexable> {
     /**
      * Tries to find the ES document identified by eclass and ID.
      */
-    public TLAEntity retrieveSingleBTSDoc(String eclass, String id) {
-        Class<? extends TLAEntity> modelClass = ModelConfig.getModelClass(eclass);
+    public BaseEntity retrieveSingleBTSDoc(String eclass, String id) {
+        Class<? extends BaseEntity> modelClass = ModelConfig.getModelClass(eclass);
         QueryBuilder qb = idsQuery().addIds(id);
         SearchResponse res = query(modelClass, qb, null);
         try {
