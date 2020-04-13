@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -14,6 +13,7 @@ import org.springframework.data.elasticsearch.core.EntityMapper;
 import tla.backend.App;
 import tla.backend.Util;
 import tla.domain.dto.AnnotationDto;
+import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.model.Passport;
 import tla.domain.model.meta.BTSeClass;
@@ -28,9 +28,6 @@ public class ModelTest {
 
     @Autowired
     private EntityMapper mapper;
-
-    @Autowired
-    private ModelMapper modelMapper;
 
     @Test
     void modelConfigInitialized() {
@@ -204,7 +201,9 @@ public class ModelTest {
                 )
             )
             .build();
-        LemmaDto d = modelMapper.map(l, LemmaDto.class);
+        DocumentDto dto = l.toDTO();
+        assertTrue(dto instanceof LemmaDto);
+        LemmaDto d = (LemmaDto) dto;
         assertAll("lemma entity should be mapped to DTO correctly",
             () -> assertEquals(l.getRevisionState(), d.getReviewState(), "review status should be present"),
             () -> assertEquals(l.getSortKey(), d.getSortKey(), "sort key should be copied"),
@@ -232,11 +231,12 @@ public class ModelTest {
             .revisionState("published")
             .passport(Passport.of(Map.of("lemma", Collections.emptyMap())))
             .build();
-        AnnotationDto d = modelMapper.map(a, AnnotationDto.class);
+        DocumentDto d = a.toDTO();
         assertAll("test annotation entity to DTO conversion",
             () -> assertEquals(d.getEclass(), a.getEclass()),
             () -> assertEquals(d.getName(), a.getName()),
-            () -> assertEquals(d.getPassport(), a.getPassport())
+            () -> assertEquals(d.getPassport(), a.getPassport()),
+            () -> assertTrue(d instanceof AnnotationDto)
         );
     }
 

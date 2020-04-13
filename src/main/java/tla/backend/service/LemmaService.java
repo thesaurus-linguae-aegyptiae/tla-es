@@ -9,11 +9,11 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.Map.Entry;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
+import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.ModelConfig;
 import tla.backend.es.model.TextEntity;
@@ -33,13 +33,13 @@ public class LemmaService extends QueryService<LemmaEntity> {
     private LemmaRepo repo;
 
     @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
     private TextService textService;
 
     @Autowired
     private ThesaurusService thsService;
+
+    @Autowired
+    private AnnotationService annotationService;
 
 
     public SortedMap<String, Long> countOccurrencesPerText(String lemmaId) {
@@ -54,16 +54,6 @@ public class LemmaService extends QueryService<LemmaEntity> {
         } else {
             return null;
         }
-    }
-
-    /**
-     * TODO make this generic for all entity types either in queryservice or tlaentity
-     */
-    private LemmaDto toDTO(LemmaEntity lemma) {
-        return modelMapper.map(
-            lemma,
-            LemmaDto.class
-        );
     }
 
     /**
@@ -89,7 +79,12 @@ public class LemmaService extends QueryService<LemmaEntity> {
                     LemmaEntity relatedLemma = retrieve(
                         ref.getId()
                     );
-                    wrapper.addRelated(toDTO(relatedLemma));
+                    wrapper.addRelated(relatedLemma.toDTO());
+                } else if (ref.getEclass().equals(ModelConfig.getEclass(AnnotationEntity.class))) {
+                    AnnotationEntity annotation = annotationService.retrieve(
+                        ref.getId()
+                    );
+                    wrapper.addRelated(annotation.toDTO());
                 }
             }
         }

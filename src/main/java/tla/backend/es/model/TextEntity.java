@@ -8,6 +8,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import tla.domain.dto.TextDto;
@@ -22,6 +23,7 @@ import tla.domain.model.meta.TLADTO;
 @Getter
 @Setter
 @SuperBuilder
+@NoArgsConstructor
 @BTSeClass("BTSText")
 @TLADTO(TextDto.class)
 @EqualsAndHashCode(callSuper = true)
