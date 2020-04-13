@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.repo.AnnotationRepo;
+import tla.domain.dto.AnnotationDto;
+import tla.domain.dto.extern.SingleDocumentWrapper;
 
 @Service
 public class AnnotationService extends QueryService<AnnotationEntity> {
@@ -19,6 +21,18 @@ public class AnnotationService extends QueryService<AnnotationEntity> {
         Optional<AnnotationEntity> result = repo.findById(id);
         if (result.isPresent()) {
             return result.get();
+        } else {
+            return null;
+        }
+    }
+
+    public SingleDocumentWrapper<AnnotationDto> getDetails(String id) {
+        AnnotationEntity annotation = this.retrieve(id);
+        if (annotation != null) {
+            SingleDocumentWrapper<AnnotationDto> wrapper = new SingleDocumentWrapper<>(
+                (AnnotationDto) annotation.toDTO()
+            );
+            return wrapper;
         } else {
             return null;
         }
