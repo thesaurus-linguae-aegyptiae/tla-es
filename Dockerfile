@@ -13,6 +13,8 @@ WORKDIR /app/
 COPY --from=build /home/gradle/tla/build/libs/*.jar /app/tla-web-backend.jar
 
 ARG es_port
+ARG es_host
 ENV ES_PORT ${es_port}
+ENV ES_HOST ${es_host}
 EXPOSE 8090
 ENTRYPOINT ["java", "-jar", "/app/tla-web-backend.jar"]

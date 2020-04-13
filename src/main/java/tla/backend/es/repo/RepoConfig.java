@@ -35,13 +35,17 @@ public class RepoConfig extends AbstractElasticsearchConfiguration {
     @Override
     public RestHighLevelClient elasticsearchClient() {
         log.info
-            ("create elasticsearch client for local instance at port {}",
+            ("create elasticsearch client for local instance at {}:{}",
+            env.getProperty("tla.es.host"),
             env.getProperty("tla.es.port")
         );
         return RestClients.create(
             ClientConfiguration.create(
                 InetSocketAddress.createUnresolved(
-                    "localhost",
+                    env.getProperty(
+                        "tla.es.host",
+                        "localhost"
+                    ),
                     Integer.parseInt(
                         env.getProperty(
                             "tla.es.port",
@@ -51,6 +55,11 @@ public class RepoConfig extends AbstractElasticsearchConfiguration {
                 )
             )
         ).rest();
+    }
+
+    @Bean
+    public RepoPopulator repoPopulator() {
+        return new RepoPopulator();
     }
 
 }

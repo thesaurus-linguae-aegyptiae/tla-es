@@ -47,6 +47,8 @@ public class OccurrenceEntity implements Indexable {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Flexion {
 
         private String glossing;
@@ -59,6 +61,8 @@ public class OccurrenceEntity implements Indexable {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Lemmatization {
 
         private String pos;
@@ -70,6 +74,8 @@ public class OccurrenceEntity implements Indexable {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class OccurrenceLocation {
 
         private String line;
