@@ -10,7 +10,6 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -25,7 +24,6 @@ import tla.domain.model.meta.TLADTO;
 @Data
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
 @BTSeClass("BTSThsEntry")
 @TLADTO(ThsEntryDto.class)
 @EqualsAndHashCode(callSuper = true)

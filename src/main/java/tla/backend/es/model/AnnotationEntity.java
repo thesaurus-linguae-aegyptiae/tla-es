@@ -11,7 +11,6 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Singular;
@@ -24,7 +23,6 @@ import tla.domain.model.meta.TLADTO;
 
 @Data
 @SuperBuilder
-@AllArgsConstructor
 @BTSeClass("BTSAnnotation")
 @TLADTO(AnnotationDto.class)
 @EqualsAndHashCode(callSuper = true)
@@ -33,7 +31,7 @@ import tla.domain.model.meta.TLADTO;
 public class AnnotationEntity extends BaseEntity {
 
     @Field(type = FieldType.Text)
-    @JsonAlias({"title"})
+    @JsonAlias("title")
     private String name;
 
     @Field(type = FieldType.Object)
@@ -45,6 +43,9 @@ public class AnnotationEntity extends BaseEntity {
 
     @Field(type = FieldType.Object)
     private Passport passport;
+
+    @Field(type = FieldType.Keyword)
+    private String corpus;
 
     public AnnotationEntity() {
         this.relations = Collections.emptyMap();

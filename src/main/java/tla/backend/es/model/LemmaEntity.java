@@ -26,7 +26,6 @@ import tla.domain.model.meta.TLADTO;
 
 @Data
 @SuperBuilder
-@AllArgsConstructor
 @TLADTO(LemmaDto.class)
 @BTSeClass("BTSLemmaEntry")
 @ToString(callSuper = true)

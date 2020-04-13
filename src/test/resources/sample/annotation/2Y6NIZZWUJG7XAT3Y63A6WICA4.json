@@ -1,0 +1,34 @@
+{
+  "corpus": "leipzig_wlist",
+  "eclass": "BTSAnnotation",
+  "editors": {
+    "author": "Strukturen und Transformationen des Wortschatzes der ägyptischen Sprache",
+    "contributors": null,
+    "type": "user",
+    "updated": "2020-02-25 12:51:30"
+  },
+  "id": "2Y6NIZZWUJG7XAT3Y63A6WICA4",
+  "passport": {
+    "annotation": [
+      {
+        "lemma": [
+          "$jzr$: Die Identifizierung mit der Tamariske ist bereits früh erfolgt und weitgehend akzeptiert. Brugsch, Wb I, 125 vergleicht das Wort mit hebräisch אֵשֶׁל, arabisch اثل und koptisch ⲟⲥⲓ, ⲟⲥⲉ, das seinerseits über die koptisch-lateinisch-arabischen Scalae mit lateinisch Tamariscus und arabisch اثل identifiziert wurde (vgl. Crum, CD, 257 mit Verweis auf Kircher, Lingua aegyptiaca restituta, 175), und gibt als Bedeutung „Tamarix orientalis“ an. Die von Brugsch angebrachte Bezeichnung „Tamarix orientalis“ stammt aus Peter Forsskåls Flora Aegyptiaco-Arabica und ist heute nicht eindeutig angenommen oder abgelehnt (vgl. http://www.theplantlist.org/tpl/record/kew-2520138 und http://www.ipni.org/ipni/idPlantNameSearch.do?id=828183-1, letzter Zugriff 03.06.2019). Loret, Flore, 79, Nr. 132 weist allerdings darauf hin, dass das koptische ⲟⲥⲓ zwar tatsächlich über die Scalae als Tamariske identifiziert sei, dass aber das Kompositum ϣⲉⲛⲟⲥⲓ, also „ⲟⲥⲓ-Baum/-Holz“, mit dem arabischen ﻄﺮفا gleichgesetzt werde, wohingegen das arabische اثل mit dem koptischen ⲡⲓ-ⲛⲁⲙ: „Armor similis tamarisco“ (vgl. zu beidem Kircher, ebd.) gleichgesetzt würde. Da nun ägyptisch $jzr$ und arabisch اثل dasselbe Wort seien, es im Vorkoptischen aber keinen Baum namens $nm$ gäbe, auf den das koptische ⲡⲓ-ⲛⲁⲙ zurückgehen könnte, müsse man annehmen, dass $jzr$ der Oberbegriff für alle Tamarisken sei. Ähnlich allgemein bleiben, ebenfalls unter Berufung auf das Koptische, Stern, in: Ebers, Papyros Ebers, Bd. 2, 6b: „tamariscus, arbor hortensis“ und Wb 1, 130.1-5: „Tamariske“. Keimer, Gartenpflanzen, Bd. 1, 55-57 nennt für Ägypten zwei Tamariskenarten, Tamarix articulata Vahl. und Tamarix nilotica Ehrbg., die sich deutlich voneinander unterscheiden würden. Aus diesem Grund zweifelt er ebd. und 155-156 Lorets Ansicht an, die Ägypter hätten beide Arten mit demselben Namen benannt. Explizit Stellung, welche der beiden Arten $jzr$ sei, nimmt er nicht. Wenn er aber die im Papyrus Ebers (konkret Rezept Eb 96, der von ihm ebenfalls genannte pHearst ist zu streichen) genannten $pr.t jzr$: „Früchte vom $jzr$-Baum“ mit den auf der Tamarix nilotica entstehenden Galläpfeln gleichsetzt statt mit den eigentlichen Tamariskensamen, tendiert er jedenfalls zu einer Identifizierung von $jzr$ mit der Tamarix nilotica. Für dieselbe Gleichsetzung von $jzr$ mit Tamarix nilotica spricht sich Germer, Arzneimittelpflanzen, 54 aus, wenn auch mit einem anderen Argument, nämlich dass Blätter der Tamarix articulata sehr unscheinbar seien und daher die einmal als Droge verwendeten $ḏrḏ$-Blätter eben dafür sprächen, dass $jzr$ die andere Tamariskenart bezeichnet habe. Baum, Arbres et arbustes, 202 hält gegen Keimer die äußerlichen Unterschiede beider Tamariskenarten für im Grunde vernachlässigbar und spricht sich wieder dafür aus, dass $jzr$ eine generelle Bezeichnung für alle Tamariskenarten sei. Dem schließen sich Germer, Handbuch, 35 und Pommerening, in: Deicher/Maroko, Die Liste, 136, Anm. 37 an.\r\nTamariskenholz besitzt nach ägyptischen Vorstellungen eine gewisse apotropäische Funktion, v.a. im Zusammenhang mit Horus in Falken- und anderen Gestalten: In Edfu soll nach dem Ritual zum „Schutz des Hauses“ das Schlafgemach des heiligen Falken von Tamariskenzweigen umgeben werden (Jankuhn, Schutz des Hauses, 23-24, Ritner, Mechanics, 59-60); im pSalt 825, x+11, 3-4 (alt: VI, 3-4) erscheint ein „Stab des Sees“ aus Tamariskenholz, der als „Horus, der seine Feinde niederwirft“ bezeichnet wird (s. Derchain, pSalt 825, 139 und Feder im TLA); und im Buch vom Fayum gibt es eine Darstellung der Göttin Neith mit einem „Bogen aus Tamariskenholz“ in der Hand und mit dem Götterkind Horus (in Gestalt des krokodilköpfigen Sobek) neben sich; dieser Darstellung ist ferner beigeschrieben, dass die Tamariske der Schutz des Sobek und der Neith sei (Beinlich, Mythos in seiner Landschaft, Bd. 1, 111-113 und Beinlich, Mythos in seiner Landschaft, Bd. 2, 380, Zeile BF 1136). Für die vorliegende Stelle mag ferner interessant sein, dass Tb 101 nach pKairo CG 51189 (Totenbuch des Juja) laut seiner Nachschrift über einem Leinenamulett gesprochen werden soll, das mit Tusche aus Tamariskenruß und Myrrhe beschrieben und dem Verstorbenen um den Hals gelegt werden soll.\r\n\r\nL. Popko, 25.02.2020"
+        ]
+      }
+    ]
+  },
+  "relations": {
+    "partOf": [
+      {
+        "eclass": "BTSLemmaEntry",
+        "id": "31610",
+        "name": "jzr",
+        "type": "substantive"
+      }
+    ]
+  },
+  "revisionState": "published",
+  "subtype": null,
+  "title": "Annotation zu $jzr$",
+  "type": null
+}

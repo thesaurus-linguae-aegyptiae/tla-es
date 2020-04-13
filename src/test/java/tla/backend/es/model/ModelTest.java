@@ -173,7 +173,18 @@ public class ModelTest {
             () -> assertEquals(l_built, l_read, "deserialized lemma instance should be equal to built instance with the same properties"),
             () -> assertEquals(l_built, l_round, "lemma instance serialized and then deserialized should equal itself")
         );
+    }
 
+    @Test
+    void deserializeLemma() throws Exception {
+        LemmaEntity l = tla.domain.util.IO.loadFromFile(
+            "src/test/resources/sample/lemma/31610.json",
+            LemmaEntity.class
+        );
+        assertAll("deserialize lemma entity from JSON file",
+            () -> assertNotNull(l),
+            () -> assertNotNull(l.getPassport())
+        );
     }
 
     @Test
@@ -226,6 +237,29 @@ public class ModelTest {
             () -> assertEquals(d.getEclass(), a.getEclass()),
             () -> assertEquals(d.getName(), a.getName()),
             () -> assertEquals(d.getPassport(), a.getPassport())
+        );
+    }
+
+    @Test
+    void annotationDeserializeFromFile() throws Exception {
+        AnnotationEntity a = tla.domain.util.IO.loadFromFile(
+            "src/test/resources/sample/annotation/2Y6NIZZWUJG7XAT3Y63A6WICA4.json",
+            AnnotationEntity.class
+        );
+        assertAll("test annotation deserialization from JSON file",
+            () -> assertNotNull(a),
+            () -> assertEquals("Annotation zu $jzr$", a.getName()),
+            () -> assertEquals(1, a.getPassport().extractProperty("annotation.lemma").size()),
+            () -> assertTrue(a.getPassport().extractProperty("annotation.lemma").get(0).getLeafNodeValue().length() > 100)
+        );
+        AnnotationEntity b = mapper.mapToObject(
+            mapper.mapToString(a),
+            AnnotationEntity.class
+        );
+        assertAll("after serialization and deserialization, annotation object should be still the same",
+            () -> assertEquals(a, b),
+            () -> assertEquals(a.hashCode(), b.hashCode()),
+            () -> assertEquals(a.toString(), b.toString())
         );
     }
 
