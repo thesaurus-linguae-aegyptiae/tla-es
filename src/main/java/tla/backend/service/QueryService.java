@@ -30,6 +30,10 @@ import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.BTSeClass;
 
+/**
+ * Implementing subclasses must be annotated with {@link BTSeClass} and be instantiated
+ * using the no-args default constructor.
+ */
 @Slf4j
 public abstract class QueryService<T extends Indexable> {
 

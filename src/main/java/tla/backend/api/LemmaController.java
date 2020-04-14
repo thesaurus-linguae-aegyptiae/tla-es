@@ -21,10 +21,8 @@ import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.OccurrenceEntity;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.service.LemmaService;
-import tla.domain.dto.DocumentDto;
+import tla.backend.service.QueryService;
 import tla.domain.dto.LemmaDto;
-import tla.domain.dto.extern.SingleDocumentWrapper;
-import tla.backend.error.ObjectNotFoundException;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -37,7 +35,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilde
 @Slf4j
 @RestController
 @RequestMapping("/lemma")
-public class LemmaController {
+public class LemmaController extends EntityController<LemmaEntity> {
 
     @Autowired
     private LemmaRepo repo;
@@ -48,6 +46,11 @@ public class LemmaController {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Override
+    public QueryService<LemmaEntity> getService() {
+        return queryService;
+    }
+
     @RequestMapping(method = RequestMethod.GET, value = "/count")
     public ResponseEntity<Long> countLemmata() {
         log.debug("counting lemmata: {}", repo.count());
@@ -55,20 +58,6 @@ public class LemmaController {
             repo.count(),
             HttpStatus.OK
         );
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/get/{id}")
-    public ResponseEntity<SingleDocumentWrapper<DocumentDto>> getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
-        // https://stackoverflow.com/a/35402975/1933494
-        SingleDocumentWrapper<DocumentDto> wrappedResult = queryService.getDetails(id);
-        if (wrappedResult != null) {
-            return new ResponseEntity<SingleDocumentWrapper<DocumentDto>>(
-                wrappedResult,
-                HttpStatus.OK
-            );
-        }
-        log.warn("could not find lemma with ID {}!", id);
-        throw new ObjectNotFoundException();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/get")
