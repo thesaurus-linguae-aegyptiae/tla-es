@@ -1,16 +1,15 @@
 package tla.backend.service;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
-
-import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -19,7 +18,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.EntityMapper;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +28,7 @@ import tla.backend.es.model.TLAEntity;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.model.ObjectReference;
+import tla.domain.model.meta.BTSeClass;
 
 @Slf4j
 public abstract class QueryService<T extends Indexable> {
@@ -37,8 +36,22 @@ public abstract class QueryService<T extends Indexable> {
     @Autowired
     private ElasticsearchRestTemplate restTemplate;
 
-    @Autowired
-    private EntityMapper mapper;
+    protected static Map<String, QueryService<? extends Indexable>> eclassServices = new HashMap<>();
+
+    /**
+     * Default constructor registering services under the eclass specified via a {@link BTSeClass}
+     * annotation.
+     */
+    protected QueryService() {
+        for (Annotation a : this.getClass().getAnnotations()) {
+            if (a instanceof BTSeClass) {
+                eclassServices.put(
+                    ((BTSeClass) a).value(),
+                    this
+                );
+            }
+        }
+    }
 
     /**
      * Subclasses must implement this method and return their respective entity repository
@@ -161,7 +174,9 @@ public abstract class QueryService<T extends Indexable> {
         if (document instanceof TLAEntity) {
             Set<ObjectReference> previews = new HashSet<>();
             TLAEntity entity = (TLAEntity) document;
-            previews.addAll(entity.getPassport().extractObjectReferences());
+            if (entity.getPassport() != null) {
+                previews.addAll(entity.getPassport().extractObjectReferences());
+            }
             return retrieveReferencedObjects(previews);
         }
         return Collections.emptyList();
@@ -211,27 +226,21 @@ public abstract class QueryService<T extends Indexable> {
      * Tries to find the ES document identified by eclass and ID.
      */
     public BaseEntity retrieveSingleBTSDoc(String eclass, String id) {
-        Class<? extends BaseEntity> modelClass = ModelConfig.getModelClass(eclass);
-        QueryBuilder qb = idsQuery().addIds(id);
-        SearchResponse res = query(modelClass, qb, null);
-        try {
-            if (res.getHits().totalHits == 1) {
-                SearchHit hit = res.getHits().getAt(0);
-                return mapper.mapToObject(
-                    hit.getSourceAsString(),
-                    modelClass
-                );
+        QueryService<? extends Indexable> service = eclassServices.get(eclass);
+        ElasticsearchRepository<? extends Indexable, String> repo = service.getRepo();
+        Optional<? extends Indexable> result = repo.findById(id);
+        if (result.isPresent()) {
+            if (result.get() instanceof BaseEntity) {
+                return (BaseEntity) result.get();
             }
-        } catch (IOException e) {
-            log.error(
-                String.format(
-                    "Could not retrieve %s document with ID %s",
-                    modelClass.getName(),
-                    id
-                ),
-                e
-            );
         }
+        log.error(
+            String.format(
+                "Could not retrieve %s document with ID %s",
+                eclass,
+                id
+            )
+        );
         return null;
     }
 

@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.repo.AnnotationRepo;
+import tla.domain.model.meta.BTSeClass;
 
 @Service
+@BTSeClass("BTSAnnotation")
 public class AnnotationService extends QueryService<AnnotationEntity> {
 
     @Autowired

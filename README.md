@@ -1,6 +1,6 @@
 ![Java CI](https://github.com/JKatzwinkel/tla-es/workflows/Java%20CI/badge.svg)
-![LINE](https://img.shields.io/badge/line--coverage-51%25-orange.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-47%25-orange.svg)
+![LINE](https://img.shields.io/badge/line--coverage-53%25-orange.svg)
+![METHOD](https://img.shields.io/badge/method--coverage-54%25-orange.svg)
 
 Initialize the project by creating a `.env` file with at least the corpus data source specified:
 

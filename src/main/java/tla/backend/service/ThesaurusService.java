@@ -11,8 +11,10 @@ import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.repo.ThesaurusRepo;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.Passport;
+import tla.domain.model.meta.BTSeClass;
 
 @Service
+@BTSeClass("BTSThsEntry")
 public class ThesaurusService extends QueryService<ThsEntryEntity> {
 
     @Autowired
