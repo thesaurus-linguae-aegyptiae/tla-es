@@ -1,8 +1,7 @@
 package tla.backend.service;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.AnnotationEntity;
@@ -17,13 +16,8 @@ public class AnnotationService extends QueryService<AnnotationEntity> {
     private AnnotationRepo repo;
 
     @Override
-    public AnnotationEntity retrieve(String id) {
-        Optional<AnnotationEntity> result = repo.findById(id);
-        if (result.isPresent()) {
-            return result.get();
-        } else {
-            return null;
-        }
+    public ElasticsearchRepository<AnnotationEntity, String> getRepo() {
+        return repo;
     }
 
     public SingleDocumentWrapper<AnnotationDto> getDetails(String id) {

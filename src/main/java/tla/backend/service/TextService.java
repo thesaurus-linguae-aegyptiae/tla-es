@@ -11,6 +11,7 @@ import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.OccurrenceEntity;
@@ -29,8 +30,8 @@ public class TextService extends QueryService<TextEntity> {
     private ThesaurusService thsService;
 
     @Override
-    public TextEntity retrieve(String id) {
-        return textRepo.findById(id).get();
+    public ElasticsearchRepository<TextEntity, String> getRepo() {
+        return textRepo;
     }
 
     public Map<String, Long> countOccurrencesPerText(String lemmaId) {

@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.SortedMap;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -47,13 +47,8 @@ public class LemmaService extends QueryService<LemmaEntity> {
     }
 
     @Override
-    public LemmaEntity retrieve(String id) {
-        Optional<LemmaEntity> result = repo.findById(id);
-        if (result.isPresent()) {
-            return result.get();
-        } else {
-            return null;
-        }
+    public ElasticsearchRepository<LemmaEntity, String> getRepo() {
+        return repo;
     }
 
     /**

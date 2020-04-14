@@ -3,6 +3,7 @@ package tla.backend.service;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -14,6 +15,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.EntityMapper;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.BaseEntity;
@@ -29,7 +31,23 @@ public abstract class QueryService<T extends Indexable> {
     @Autowired
     private EntityMapper mapper;
 
+    /**
+     * Subclasses must implement this method and return their respective entity repository
+     * (which they presumably got autowired directly into them via spring dependency injection).
+     */
+    public abstract ElasticsearchRepository<T, String> getRepo();
 
+        /**
+     * look up single entity. should return null if it could not be found
+     */
+    public T retrieve(String id) {
+        Optional<T> result = getRepo().findById(id);
+        return result.isPresent() ? result.get() : null;
+    }
+
+    /**
+     * Execute an Elasticsearch query against the index defined for <code>entityClass</code>.
+     */
     public SearchResponse query(
         Class<? extends Indexable> entityClass,
         QueryBuilder queryBuilder,
@@ -66,11 +84,6 @@ public abstract class QueryService<T extends Indexable> {
         }
         return response;
     }
-
-    /**
-     * look up single entity. should return null if it could not be found
-     */
-    public abstract T retrieve(String id);
 
     /**
      * Tries to find the ES document identified by eclass and ID.
