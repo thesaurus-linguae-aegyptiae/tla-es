@@ -5,35 +5,32 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.SortedMap;
 import java.util.Map.Entry;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.LemmaEntity;
-import tla.backend.es.model.ModelConfig;
 import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.repo.LemmaRepo;
+import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
-import tla.domain.model.ObjectReference;
 import tla.domain.model.Passport;
 import tla.domain.model.extern.AttestedTimespan;
+import tla.domain.model.meta.BTSeClass;
 
 @Slf4j
 @Service
+@BTSeClass("BTSLemmaEntry")
 public class LemmaService extends QueryService<LemmaEntity> {
 
     @Autowired
     private LemmaRepo repo;
-
-    @Autowired
-    private ModelMapper modelMapper;
 
     @Autowired
     private TextService textService;
@@ -41,58 +38,34 @@ public class LemmaService extends QueryService<LemmaEntity> {
     @Autowired
     private ThesaurusService thsService;
 
-
     public SortedMap<String, Long> countOccurrencesPerText(String lemmaId) {
         return null;
     }
 
     @Override
-    public LemmaEntity retrieve(String id) {
-        Optional<LemmaEntity> result = repo.findById(id);
-        if (result.isPresent()) {
-            return result.get();
-        } else {
-            return null;
-        }
+    public ElasticsearchRepository<LemmaEntity, String> getRepo() {
+        return repo;
     }
 
     /**
-     * TODO make this generic for all entity types either in queryservice or tlaentity
+     * Extends superclass implementation {@link QueryService#getDetails(String)}
+     * in that lemma attestations are computed from occurrences and put into the
+     * wrapped lemma DTO.
+     *
+     * @see {@link #computeAttestedTimespans(String)}
      */
-    private LemmaDto toDTO(LemmaEntity lemma) {
-        return modelMapper.map(
-            lemma,
-            LemmaDto.class
-        );
-    }
-
-    /**
-     * returns null if lookup fails
-     */
-    public SingleDocumentWrapper<LemmaDto> getLemmaDetails(String id) {
+    @Override
+    public SingleDocumentWrapper<DocumentDto> getDetails(String id) {
         LemmaEntity lemma = retrieve(id);
         if (lemma == null) {
             return null;
         }
-        SingleDocumentWrapper<LemmaDto> wrapper = new SingleDocumentWrapper<>(
-                (LemmaDto) lemma.toDTO()
-        );
-        wrapper.getDoc().setAttestations(
+        SingleDocumentWrapper<DocumentDto> wrapper = super.getDetails(id);
+        ((LemmaDto) wrapper.getDoc()).setAttestations(
             new LinkedList<>(
                 this.computeAttestedTimespans(id)
             )
         );
-        for (Entry<String, List<ObjectReference>> e : lemma.getRelations().entrySet()) {
-            List<ObjectReference> objectReferences = e.getValue();
-            for (ObjectReference ref : objectReferences) {
-                if (ref.getEclass().equals(ModelConfig.getEclass(LemmaEntity.class))) {
-                    LemmaEntity relatedLemma = retrieve(
-                        ref.getId()
-                    );
-                    wrapper.addRelated(toDTO(relatedLemma));
-                }
-            }
-        }
         return wrapper;
     }
 

@@ -20,13 +20,11 @@ import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import tla.domain.dto.LemmaDto;
-import tla.domain.model.Passport;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
 
 @Data
 @SuperBuilder
-@AllArgsConstructor
 @TLADTO(LemmaDto.class)
 @BTSeClass("BTSLemmaEntry")
 @ToString(callSuper = true)
@@ -39,9 +37,6 @@ public class LemmaEntity extends TLAEntity {
     @Field(type = FieldType.Keyword)
     @JsonAlias({"sortString", "sort_string", "sort_key"})
     private String sortKey;
-
-    @Field(type = FieldType.Object)
-    private Passport passport;
 
     @Field(type = FieldType.Object)
     private Translations translations;

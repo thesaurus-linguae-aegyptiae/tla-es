@@ -15,6 +15,7 @@ import org.springframework.data.elasticsearch.core.EntityMapper;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import lombok.extern.slf4j.Slf4j;
+import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.model.Indexable;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.OccurrenceEntity;
@@ -99,6 +100,9 @@ public class RepoPopulator {
     @Autowired
     private OccurrenceRepo occurrenceRepo;
 
+    @Autowired
+    private AnnotationRepo annotationRepo;
+
     private static Map<String, RepoBatchIngestor<?,?>> INGESTORS;
 
     public void ingestTarFile(List<String> filenames) throws IOException {
@@ -106,7 +110,8 @@ public class RepoPopulator {
             "text", new RepoBatchIngestor<ElasticsearchRepository<TextEntity,String>,TextEntity>(textRepo, TextEntity.class),
             "lemma", new RepoBatchIngestor<ElasticsearchRepository<LemmaEntity,String>,LemmaEntity>(lemmaRepo, LemmaEntity.class),
             "ths", new RepoBatchIngestor<ElasticsearchRepository<ThsEntryEntity,String>,ThsEntryEntity>(thesaurusRepo, ThsEntryEntity.class),
-            "occurrence", new RepoBatchIngestor<ElasticsearchRepository<OccurrenceEntity,String>,OccurrenceEntity>(occurrenceRepo, OccurrenceEntity.class)
+            "occurrence", new RepoBatchIngestor<ElasticsearchRepository<OccurrenceEntity,String>,OccurrenceEntity>(occurrenceRepo, OccurrenceEntity.class),
+            "annotation", new RepoBatchIngestor<ElasticsearchRepository<AnnotationEntity,String>,AnnotationEntity>(annotationRepo, AnnotationEntity.class)
         );
         log.info("process tar file {}", String.join(", ", filenames));
         if (filenames.size() == 1) {

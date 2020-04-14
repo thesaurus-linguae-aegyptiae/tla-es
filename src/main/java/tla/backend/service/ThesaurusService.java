@@ -2,34 +2,27 @@ package tla.backend.service;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.repo.ThesaurusRepo;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.Passport;
+import tla.domain.model.meta.BTSeClass;
 
 @Service
+@BTSeClass("BTSThsEntry")
 public class ThesaurusService extends QueryService<ThsEntryEntity> {
 
     @Autowired
     private ThesaurusRepo thsRepo;
 
-
-    /**
-     * Retrieves single thesaurus entry from index. Returns null if there is none with the specified ID.
-     */
     @Override
-    public ThsEntryEntity retrieve(String id) {
-        Optional<ThsEntryEntity> res = thsRepo.findById(id);
-        if (res.isPresent()) {
-            return res.get();
-        } else {
-            return null;
-        }
+    public ElasticsearchRepository<ThsEntryEntity, String> getRepo() {
+        return thsRepo;
     }
 
     /**

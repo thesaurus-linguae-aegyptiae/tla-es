@@ -101,7 +101,9 @@ task downloadSample(type: Download) {
 task populate {
     group = 'Init'
     description = 'Download corpus sample and ingest into database backend'
-    bootRun.args = ['--data-file=sample.tar.gz', '--shutdown']
+    doLast {
+        bootRun.args = ['--data-file=sample.tar.gz', '--shutdown']
+    }
     dependsOn 'downloadSample'
     finalizedBy 'bootRun'
 }

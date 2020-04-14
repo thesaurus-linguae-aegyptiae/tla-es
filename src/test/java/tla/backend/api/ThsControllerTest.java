@@ -40,8 +40,8 @@ public class ThsControllerTest extends AbstractMockMvcTest {
         .name("wadi")
         .type("findSpot")
         .relation("partOf", Arrays.asList(
-            ObjectReference.builder().id("2").name("region1").type("findSpot").build(),
-            ObjectReference.builder().id("3").name("region2").type("findSpot").build()
+            ObjectReference.builder().id("2").name("region1").type("findSpot").eclass("BTSThsEntry").build(),
+            ObjectReference.builder().id("3").name("region2").type("findSpot").eclass("BTSThsEntry").build()
         ))
         .build();
     }
@@ -69,7 +69,7 @@ public class ThsControllerTest extends AbstractMockMvcTest {
             .andExpect(
                 status().isOk()
             )
-            .andExpect(jsonPath("$.relations.partOf[0].id").value("2"));
+            .andExpect(jsonPath("$.doc.relations.partOf[0].id").value("2"));
     }
 
 }

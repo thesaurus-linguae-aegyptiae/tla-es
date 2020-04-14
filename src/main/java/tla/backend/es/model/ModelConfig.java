@@ -18,9 +18,14 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
+import tla.domain.dto.TextDto;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
 
+/**
+ * If a model class is to be aded, it has to be annotated with {@link @BTSeClass} and {@link TLADTO}
+ * and registered in here.
+ */
 @Slf4j
 @Configuration
 public class ModelConfig {
@@ -38,7 +43,7 @@ public class ModelConfig {
     @Builder
     protected static class BTSeClassConfig {
         private String index;
-        private Class<? extends TLAEntity> modelClass;
+        private Class<? extends BaseEntity> modelClass;
     }
 
     public static SimpleDateFormat DATE_FORMAT;
@@ -50,7 +55,7 @@ public class ModelConfig {
     private static ModelMapper modelMapper;
 
     @Getter
-    private static List<Class<? extends TLAEntity>> modelClasses = new LinkedList<>();
+    private static List<Class<? extends BaseEntity>> modelClasses = new LinkedList<>();
 
     @Getter
     private static Map<String, BTSeClassConfig> modelClassConfigs;
@@ -59,7 +64,9 @@ public class ModelConfig {
         setModelClasses(
             List.of(
                 LemmaEntity.class,
-                ThsEntryEntity.class
+                ThsEntryEntity.class,
+                TextEntity.class,
+                AnnotationEntity.class
             )
         );
         initModelMapper();
@@ -99,7 +106,7 @@ public class ModelConfig {
      * @return map with the extracted eclass as its only key,
      *         or <code>null</code> if any config value could not be extracted
      */
-    private static Map<String, BTSeClassConfig> mapModelClassConfigToEclass(Class<? extends TLAEntity> clazz) {
+    private static Map<String, BTSeClassConfig> mapModelClassConfigToEclass(Class<? extends BaseEntity> clazz) {
         String eclass = null;
         String index = null;
         for (Annotation annotation : clazz.getAnnotations()) {
@@ -139,7 +146,7 @@ public class ModelConfig {
     /**
      * extract <code>eclass</code> from {@link BTSeClass} annotation of given model class
      */
-    public static String getEclass(Class<? extends TLAEntity> modelClass) {
+    public static String getEclass(Class<? extends BaseEntity> modelClass) {
         for (Annotation annotation : modelClass.getAnnotations()) {
             if (annotation instanceof BTSeClass) {
                 return ((BTSeClass) annotation).value();
@@ -158,7 +165,7 @@ public class ModelConfig {
      * TODO what does this enable?
      */
     public static Map<String, BTSeClassConfig> registerModelClass(
-        Class<? extends TLAEntity> modelClass
+        Class<? extends BaseEntity> modelClass
     ) throws Exception {
         Map<String, BTSeClassConfig> conf = mapModelClassConfigToEclass(modelClass);
         if (conf != null) {
@@ -181,7 +188,7 @@ public class ModelConfig {
      * Clear eclass/model class configuration registry and load configurations for
      * classes passed.
      */
-    public static void setModelClasses(List<Class<? extends TLAEntity>> classes) {
+    public static void setModelClasses(List<Class<? extends BaseEntity>> classes) {
         if (modelClassConfigs != null) {
             modelClassConfigs.clear();
             log.info(
@@ -205,7 +212,7 @@ public class ModelConfig {
     /**
      * Look up the model class registered for a given eclass.
      */
-    public static Class<? extends TLAEntity> getModelClass(String eclass) {
+    public static Class<? extends BaseEntity> getModelClass(String eclass) {
         return modelClassConfigs.get(eclass).getModelClass();
     }
 
@@ -238,6 +245,12 @@ public class ModelConfig {
                     LemmaEntity::getRevisionState, LemmaDto::setReviewState
                 )
             );
+        modelMapper.createTypeMap(TextEntity.class, TextDto.class)
+            .addMappings(
+                m -> m.using(new TextEntity.ListToPathsConverter()).map(
+                    TextEntity::getPaths, TextDto::setPaths
+                )
+            );
         return modelMapper;
     }
 
@@ -260,21 +273,33 @@ public class ModelConfig {
     }
 
     /**
-     * converts a model class instance to its corresponding DTO representation
-     * specified via its {@link TLADTO} annotation.
+     * Uses the modelmapper bean configured in {@link #modelMapper()} to convert a model class
+     * instance to its corresponding DTO representation, which is specified via a {@link TLADTO}
+     * annotation on top of that model class.
+     *
+     * @param entity An instance of an {@link Indexable} which has a {@link TLADTO} annotation.
+     * @return An instance of the DTO class corresponding to the passed entity's class,
+     * created using the application context's model mapper instance.
      */
-    public static DocumentDto toDTO(TLAEntity entity) {
-        return modelMapper.map(
-            entity,
-            getModelClassDTO(entity.getClass())
-        );
+    public static DocumentDto toDTO(Indexable entity) throws NullPointerException {
+        if (entity != null) {
+            return modelMapper.map(
+                entity,
+                getModelClassDTO(entity.getClass())
+            );
+        }
+        throw new NullPointerException();
     }
 
     /**
-     * extracts the corresponding DTO type of a model class from its {@link TLADTO} annotation.
+     * Extracts the corresponding DTO type of a model class from its {@link TLADTO} annotation.
      * Returns null and fails silently if no annotation is set.
+     *
+     * @param modelClass Any {@link Indexable} class which defines its respective DTO class with
+     * a {@link TLADO} annotation.
+     * @return A {@link DocumentDto} subclass.
      */
-    public static Class<? extends DocumentDto> getModelClassDTO(Class<? extends TLAEntity> modelClass) {
+    public static Class<? extends DocumentDto> getModelClassDTO(Class<? extends Indexable> modelClass) {
         for (Annotation annotation : modelClass.getAnnotations()) {
             if (annotation instanceof TLADTO) {
                 return ((TLADTO) annotation).value();

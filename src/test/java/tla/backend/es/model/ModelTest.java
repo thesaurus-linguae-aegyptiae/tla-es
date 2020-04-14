@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -13,13 +12,17 @@ import org.springframework.data.elasticsearch.core.EntityMapper;
 
 import tla.backend.App;
 import tla.backend.Util;
+import tla.domain.dto.AnnotationDto;
+import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
+import tla.domain.dto.TextDto;
 import tla.domain.model.Passport;
 import tla.domain.model.meta.BTSeClass;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @SpringBootTest(classes = {App.class})
 public class ModelTest {
@@ -27,12 +30,9 @@ public class ModelTest {
     @Autowired
     private EntityMapper mapper;
 
-    @Autowired
-    private ModelMapper modelMapper;
-
     @Test
     void modelConfigInitialized() {
-        List<Class<? extends TLAEntity>> modelClasses = ModelConfig.getModelClasses();
+        List<Class<? extends BaseEntity>> modelClasses = ModelConfig.getModelClasses();
         assertAll("make sure model config class has been initialized",
             () -> assertTrue(ModelConfig.isInitialized(), "flag should be set"),
             () -> assertNotNull(modelClasses, "model class list should not be null"),
@@ -144,6 +144,15 @@ public class ModelTest {
     }
 
     @Test
+    void lemmaRegistered() throws Exception {
+        assertAll("has lemma model class registered with modelconfig?",
+            () -> assertEquals(LemmaEntity.class, ModelConfig.getModelClass("BTSLemmaEntry"), "check registered model class"),
+            () -> assertEquals("BTSLemmaEntry", ModelConfig.getEclass(LemmaEntity.class), "check registered eclass"),
+            () -> assertEquals("lemma", ModelConfig.getIndexName(LemmaEntity.class), "cehck lemma index name")
+        );
+    }
+
+    @Test
     void lemmaEntriesEqual() throws Exception {
         LemmaEntity l_built = LemmaEntity.builder()
             .id("1")
@@ -162,7 +171,18 @@ public class ModelTest {
             () -> assertEquals(l_built, l_read, "deserialized lemma instance should be equal to built instance with the same properties"),
             () -> assertEquals(l_built, l_round, "lemma instance serialized and then deserialized should equal itself")
         );
+    }
 
+    @Test
+    void deserializeLemma() throws Exception {
+        LemmaEntity l = tla.domain.util.IO.loadFromFile(
+            "src/test/resources/sample/lemma/31610.json",
+            LemmaEntity.class
+        );
+        assertAll("deserialize lemma entity from JSON file",
+            () -> assertNotNull(l),
+            () -> assertNotNull(l.getPassport())
+        );
     }
 
     @Test
@@ -182,13 +202,95 @@ public class ModelTest {
                 )
             )
             .build();
-        LemmaDto d = modelMapper.map(l, LemmaDto.class);
+        DocumentDto dto = l.toDTO();
+        assertTrue(dto instanceof LemmaDto);
+        LemmaDto d = (LemmaDto) dto;
         assertAll("lemma entity should be mapped to DTO correctly",
             () -> assertEquals(l.getRevisionState(), d.getReviewState(), "review status should be present"),
             () -> assertEquals(l.getSortKey(), d.getSortKey(), "sort key should be copied"),
             () -> assertTrue(!d.getTranslations().isEmpty(), "translations should not be empty"),
             () -> assertEquals(1, l.getWords().size(), "expect 1 word"),
             () -> assertNotNull(d.getWords().get(0).getTranscription(), "word should have transcription")
+        );
+    }
+
+    @Test
+    void annotationClassRegistered() {
+        assertAll("annotation model class registered?",
+            () -> assertEquals("BTSAnnotation", ModelConfig.getEclass(AnnotationEntity.class)),
+            () -> assertEquals(AnnotationEntity.class, ModelConfig.getModelClass("BTSAnnotation")),
+            () -> assertEquals("annotation", ModelConfig.getIndexName(AnnotationEntity.class))
+        );
+    }
+
+    @Test
+    void annotationModelMapping() {
+        AnnotationEntity a = AnnotationEntity.builder()
+            .id("ID")
+            .eclass("BTSAnnotation")
+            .name("nfr")
+            .revisionState("published")
+            .passport(Passport.of(Map.of("lemma", Collections.emptyMap())))
+            .build();
+        DocumentDto d = a.toDTO();
+        assertAll("test annotation entity to DTO conversion",
+            () -> assertEquals(d.getEclass(), a.getEclass()),
+            () -> assertEquals(d.getName(), a.getName()),
+            () -> assertEquals(d.getPassport(), a.getPassport()),
+            () -> assertTrue(d instanceof AnnotationDto)
+        );
+    }
+
+    @Test
+    void annotationDeserializeFromFile() throws Exception {
+        AnnotationEntity a = tla.domain.util.IO.loadFromFile(
+            "src/test/resources/sample/annotation/2Y6NIZZWUJG7XAT3Y63A6WICA4.json",
+            AnnotationEntity.class
+        );
+        assertAll("test annotation deserialization from JSON file",
+            () -> assertNotNull(a),
+            () -> assertEquals("Annotation zu $jzr$", a.getName()),
+            () -> assertEquals(1, a.getPassport().extractProperty("annotation.lemma").size()),
+            () -> assertTrue(a.getPassport().extractProperty("annotation.lemma").get(0).getLeafNodeValue().length() > 100)
+        );
+        AnnotationEntity b = mapper.mapToObject(
+            mapper.mapToString(a),
+            AnnotationEntity.class
+        );
+        assertAll("after serialization and deserialization, annotation object should be still the same",
+            () -> assertEquals(a, b),
+            () -> assertEquals(a.hashCode(), b.hashCode()),
+            () -> assertEquals(a.toString(), b.toString())
+        );
+    }
+
+    @Test
+    void textDeserializeFromFile() throws Exception {
+        TextEntity t = tla.domain.util.IO.loadFromFile(
+            "src/test/resources/sample/text/2A5EGGJVHVFVVL42QSWVLJORYE.json",
+            TextEntity.class
+        );
+        assertAll("test text deserialization from JSON file",
+            () -> assertNotNull(t),
+            () -> assertNotNull(t.getPaths()),
+            () -> assertEquals("bbawarchive", t.getCorpus())
+        );
+    }
+
+    @Test
+    void textMapping() throws Exception {
+        TextEntity t = tla.domain.util.IO.loadFromFile(
+            "src/test/resources/sample/text/2A5EGGJVHVFVVL42QSWVLJORYE.json",
+            TextEntity.class
+        );
+        DocumentDto d = t.toDTO();
+        assertAll("test text to DTO mapping",
+            () -> assertNotNull(d),
+            () -> assertTrue(d instanceof TextDto)
+        );
+        TextDto dto = (TextDto) d;
+        assertAll("test mapped text DTO properties",
+            () -> assertNotNull(dto.getPaths())
         );
     }
 
