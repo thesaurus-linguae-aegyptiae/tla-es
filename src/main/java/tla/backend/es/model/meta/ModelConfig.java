@@ -1,4 +1,4 @@
-package tla.backend.es.model;
+package tla.backend.es.model.meta;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +16,12 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import tla.backend.es.model.AnnotationEntity;
+import tla.backend.es.model.CorpusObjectEntity;
+import tla.backend.es.model.LemmaEntity;
+import tla.backend.es.model.TextEntity;
+import tla.backend.es.model.ThsEntryEntity;
+import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
@@ -42,7 +48,7 @@ public class ModelConfig {
      */
     @Getter
     @Builder
-    protected static class BTSeClassConfig {
+    public static class BTSeClassConfig {
         private String index;
         private Class<? extends BaseEntity> modelClass;
     }

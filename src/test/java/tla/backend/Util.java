@@ -2,7 +2,7 @@ package tla.backend;
 
 import java.util.Date;
 
-import tla.backend.es.model.ModelConfig;
+import tla.backend.es.model.meta.ModelConfig;
 
 public class Util {
 

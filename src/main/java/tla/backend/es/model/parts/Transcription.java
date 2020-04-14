@@ -1,4 +1,4 @@
-package tla.backend.es.model;
+package tla.backend.es.model.parts;
 
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;

@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import tla.backend.es.model.meta.TLAEntity;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.BTSeClass;

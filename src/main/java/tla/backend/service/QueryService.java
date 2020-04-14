@@ -22,10 +22,10 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import tla.backend.es.model.BaseEntity;
-import tla.backend.es.model.Indexable;
-import tla.backend.es.model.ModelConfig;
-import tla.backend.es.model.TLAEntity;
+import tla.backend.es.model.meta.BaseEntity;
+import tla.backend.es.model.meta.Indexable;
+import tla.backend.es.model.meta.ModelConfig;
+import tla.backend.es.model.meta.TLAEntity;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.model.ObjectReference;

@@ -1,4 +1,4 @@
-package tla.backend.es.model;
+package tla.backend.es.model.parts;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

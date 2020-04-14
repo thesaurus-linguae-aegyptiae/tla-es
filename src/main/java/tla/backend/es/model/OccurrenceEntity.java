@@ -14,6 +14,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import tla.backend.es.model.meta.Indexable;
+import tla.backend.es.model.parts.Transcription;
+import tla.backend.es.model.parts.Translations;
 
 
 @Getter

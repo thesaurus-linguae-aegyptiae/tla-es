@@ -17,7 +17,7 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.model.CorpusObjectEntity;
-import tla.backend.es.model.Indexable;
+import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.OccurrenceEntity;
 import tla.backend.es.model.TextEntity;

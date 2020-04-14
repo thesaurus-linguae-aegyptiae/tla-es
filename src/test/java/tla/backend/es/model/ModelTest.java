@@ -12,6 +12,14 @@ import org.springframework.data.elasticsearch.core.EntityMapper;
 
 import tla.backend.App;
 import tla.backend.Util;
+import tla.backend.es.model.meta.BaseEntity;
+import tla.backend.es.model.meta.Indexable;
+import tla.backend.es.model.meta.ModelConfig;
+import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.model.parts.EditorInfo;
+import tla.backend.es.model.parts.LemmaWord;
+import tla.backend.es.model.parts.Transcription;
+import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.DocumentDto;

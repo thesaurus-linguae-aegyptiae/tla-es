@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import tla.backend.es.model.meta.TLAEntity;
 import tla.domain.dto.TextDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.Paths;
