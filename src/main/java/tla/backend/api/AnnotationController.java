@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.error.ObjectNotFoundException;
 import tla.backend.service.AnnotationService;
-import tla.domain.dto.AnnotationDto;
+import tla.domain.dto.DocumentDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 
 @Slf4j
@@ -23,10 +23,10 @@ public class AnnotationController {
     private AnnotationService queryService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/get/{id}")
-    public ResponseEntity<SingleDocumentWrapper<AnnotationDto>> get(@PathVariable String id) throws ObjectNotFoundException {
-        SingleDocumentWrapper<AnnotationDto> container = queryService.getDetails(id);
+    public ResponseEntity<SingleDocumentWrapper<DocumentDto>> get(@PathVariable String id) throws ObjectNotFoundException {
+        SingleDocumentWrapper<DocumentDto> container = queryService.getDetails(id);
         if (container != null) {
-            return new ResponseEntity<SingleDocumentWrapper<AnnotationDto>>(
+            return new ResponseEntity<SingleDocumentWrapper<DocumentDto>>(
                 container,
                 HttpStatus.OK
             );

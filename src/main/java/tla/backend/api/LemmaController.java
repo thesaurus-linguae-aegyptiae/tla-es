@@ -21,6 +21,7 @@ import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.OccurrenceEntity;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.service.LemmaService;
+import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.backend.error.ObjectNotFoundException;
@@ -57,11 +58,11 @@ public class LemmaController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/get/{id}")
-    public ResponseEntity<SingleDocumentWrapper<LemmaDto>> getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
+    public ResponseEntity<SingleDocumentWrapper<DocumentDto>> getLemmaById(@PathVariable String id) throws ObjectNotFoundException {
         // https://stackoverflow.com/a/35402975/1933494
-        SingleDocumentWrapper<LemmaDto> wrappedResult = queryService.getLemmaDetails(id);
+        SingleDocumentWrapper<DocumentDto> wrappedResult = queryService.getDetails(id);
         if (wrappedResult != null) {
-            return new ResponseEntity<SingleDocumentWrapper<LemmaDto>>(
+            return new ResponseEntity<SingleDocumentWrapper<DocumentDto>>(
                 wrappedResult,
                 HttpStatus.OK
             );

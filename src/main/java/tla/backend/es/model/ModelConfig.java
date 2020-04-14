@@ -281,11 +281,14 @@ public class ModelConfig {
      * @return An instance of the DTO class corresponding to the passed entity's class,
      * created using the application context's model mapper instance.
      */
-    public static DocumentDto toDTO(Indexable entity) {
-        return modelMapper.map(
-            entity,
-            getModelClassDTO(entity.getClass())
-        );
+    public static DocumentDto toDTO(Indexable entity) throws NullPointerException {
+        if (entity != null) {
+            return modelMapper.map(
+                entity,
+                getModelClassDTO(entity.getClass())
+            );
+        }
+        throw new NullPointerException();
     }
 
     /**
