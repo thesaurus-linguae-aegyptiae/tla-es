@@ -1,0 +1,184 @@
+{
+  "corpus": "bbawarchive",
+  "eclass": "BTSTCObject",
+  "editors": {
+    "author": "S. Seidlmayer",
+    "contributors": [
+      "Altägyptisches Wörterbuch"
+    ],
+    "type": "user",
+    "updated": "2019-11-14 22:10:09"
+  },
+  "externalReferences": null,
+  "id": "2ABHCXHF5BCG3PDW7VSPA77K7U",
+  "name": "Gefäß Jéquier, Pyramide d'Oudjebten, 19, Fig. 20",
+  "passport": {
+    "bibliography": [
+      {
+        "bibliographical_text_field": [
+          "E. Edel, Die Felsengräber der Qubbet el-Hawa bei Assuan, II. Abteilung, Die althieratischen Topfaufschriften, 1. Band, Die Topfaufschriften aus den Grabungsjahren 1960, 1961, 1962, 1963 und 1965, 2. Teil, Text, Wiesbaden 1970, 125, 134-135 [F, T, U, K]\nJéquier, Pyramide d'Oudjebten, 19 Abb. 20"
+        ]
+      }
+    ],
+    "date": [
+      {
+        "date": [
+          {
+            "date": [
+              {
+                "eclass": "BTSThsEntry",
+                "id": "GH2RXLTQ2BCEHPQ6R2SPBER7OM",
+                "name": "6. Dynastie",
+                "type": "date"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "definition": [
+      {
+        "main_group": [
+          {
+            "protocol": [
+              "Erfassung Seidlmayer 2002"
+            ]
+          }
+        ]
+      }
+    ],
+    "find_spot": [
+      {
+        "find_spot": [
+          {
+            "place": [
+              {
+                "place": [
+                  {
+                    "eclass": "BTSThsEntry",
+                    "id": "YE5ZC7D6LZDTZN2IQKMCRQHW44",
+                    "name": "Saqqara",
+                    "type": "findSpot"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "object": [
+      {
+        "description_of_object": [
+          {
+            "type": [
+              {
+                "eclass": "BTSThsEntry",
+                "id": "BZQQMFDB4VBZJH3R66Y3XK64XI",
+                "name": "Gefäß",
+                "type": "objecttype"
+              }
+            ],
+            "undefined": [
+              {
+                "eclass": "BTSThsEntry",
+                "id": "UOGHTTMOBFAL3JU5ZH62ICOCMA",
+                "name": "Keramik",
+                "type": "material"
+              }
+            ]
+          }
+        ],
+        "technical_details": [
+          {
+            "material": [
+              {
+                "eclass": "BTSThsEntry",
+                "id": "UOGHTTMOBFAL3JU5ZH62ICOCMA",
+                "name": "Keramik",
+                "type": "material"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "text": [
+      {
+        "textual_metadata": [
+          {
+            "script": [
+              {
+                "eclass": "BTSThsEntry",
+                "id": "SRFM7BGQJBFRJL5GJ2P7WGZWBA",
+                "name": "Althieratisch",
+                "type": "script"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "paths": [
+    [
+      {
+        "eclass": "BTSTCObject",
+        "id": "4IR3BDQT5JFI7GBJTORLC37YMU",
+        "name": "Archive, Urkunden, Vermerke (Altes Reich)",
+        "type": "Caption"
+      },
+      {
+        "eclass": "BTSTCObject",
+        "id": "MSWCIXBOXVBDDGHPEHCSXKMPBM",
+        "name": "〈Votivvermerke〉",
+        "type": "Caption"
+      },
+      {
+        "eclass": "BTSTCObject",
+        "id": "YQFK2QGLFJGQTFGKUGJ5J5HG5I",
+        "name": "〈andere Plätze〉",
+        "type": "Caption"
+      },
+      {
+        "eclass": "BTSTCObject",
+        "id": "6BFTGMCCVFDQ7PJQ2PBT2JLZGY",
+        "name": "Saqqara",
+        "type": "Caption"
+      },
+      {
+        "eclass": "BTSTCObject",
+        "id": "YLIAMMCYKVCQRLE2A3QJJTSTIY",
+        "name": "Pyramide der Udjebten",
+        "type": "Caption"
+      },
+      {
+        "eclass": "BTSTCObject",
+        "id": "2ABHCXHF5BCG3PDW7VSPA77K7U",
+        "name": "Gefäß Jéquier, Pyramide d'Oudjebten, 19, Fig. 20",
+        "type": "TCObject"
+      }
+    ]
+  ],
+  "relations": {
+    "contains": [
+      {
+        "eclass": "BTSText",
+        "id": "MQFALVBRNVFUNP35ZBJBBD6M4A",
+        "name": "〈TEXT〉",
+        "type": "Text"
+      }
+    ],
+    "partOf": [
+      {
+        "eclass": "BTSTCObject",
+        "id": "YLIAMMCYKVCQRLE2A3QJJTSTIY",
+        "name": "Pyramide der Udjebten",
+        "type": "Caption"
+      }
+    ]
+  },
+  "revisionState": "published",
+  "subtype": null,
+  "type": "TCObject"
+}

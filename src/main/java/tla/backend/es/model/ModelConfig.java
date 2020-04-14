@@ -16,6 +16,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.TextDto;
@@ -66,7 +67,8 @@ public class ModelConfig {
                 LemmaEntity.class,
                 ThsEntryEntity.class,
                 TextEntity.class,
-                AnnotationEntity.class
+                AnnotationEntity.class,
+                CorpusObjectEntity.class
             )
         );
         initModelMapper();
@@ -236,19 +238,26 @@ public class ModelConfig {
         modelMapper = new ModelMapper();
         modelMapper.createTypeMap(LemmaEntity.class, LemmaDto.class)
             .addMappings(
-                mapper -> mapper.using(new Translations.ToMapConverter()).map(
+                m -> m.using(new Translations.ToMapConverter()).map(
                     LemmaEntity::getTranslations, LemmaDto::setTranslations
                 )
             )
             .addMappings(
-                mapper -> mapper.map(
+                m -> m.map(
                     LemmaEntity::getRevisionState, LemmaDto::setReviewState
                 )
             );
+        TextEntity.ListToPathsConverter listToPathsConverter = new TextEntity.ListToPathsConverter();
         modelMapper.createTypeMap(TextEntity.class, TextDto.class)
             .addMappings(
-                m -> m.using(new TextEntity.ListToPathsConverter()).map(
+                m -> m.using(listToPathsConverter).map(
                     TextEntity::getPaths, TextDto::setPaths
+                )
+            );
+        modelMapper.createTypeMap(CorpusObjectEntity.class, CorpusObjectDto.class)
+            .addMappings(
+                m -> m.using(listToPathsConverter).map(
+                    CorpusObjectEntity::getPaths, CorpusObjectDto::setPaths
                 )
             );
         return modelMapper;

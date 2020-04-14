@@ -19,6 +19,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.BaseEntity;
@@ -33,6 +34,7 @@ import tla.domain.model.meta.BTSeClass;
 /**
  * Implementing subclasses must be annotated with {@link BTSeClass} and be instantiated
  * using the no-args default constructor.
+ * They should also be annotated with {@link Service} for component scanning / dependency injection.
  */
 @Slf4j
 public abstract class QueryService<T extends Indexable> {
