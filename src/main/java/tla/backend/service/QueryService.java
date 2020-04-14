@@ -233,6 +233,10 @@ public abstract class QueryService<T extends Indexable> {
      */
     public BaseEntity retrieveSingleBTSDoc(String eclass, String id) {
         QueryService<? extends Indexable> service = eclassServices.get(eclass);
+        if (service == null) {
+            log.error("Could not find entity service for eclass {}!", eclass);
+            return null;
+        }
         ElasticsearchRepository<? extends Indexable, String> repo = service.getRepo();
         Optional<? extends Indexable> result = repo.findById(id);
         if (result.isPresent()) {
