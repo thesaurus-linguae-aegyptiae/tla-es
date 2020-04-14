@@ -266,10 +266,15 @@ public class ModelConfig {
     }
 
     /**
-     * converts a model class instance to its corresponding DTO representation
-     * specified via its {@link TLADTO} annotation.
+     * Uses the modelmapper bean configured in {@link #modelMapper()} to convert a model class
+     * instance to its corresponding DTO representation, which is specified via a {@link TLADTO}
+     * annotation on top of that model class.
+     *
+     * @param entity An instance of an {@link Indexable} which has a {@link TLADTO} annotation.
+     * @return An instance of the DTO class corresponding to the passed entity's class,
+     * created using the application context's model mapper instance.
      */
-    public static DocumentDto toDTO(BaseEntity entity) {
+    public static DocumentDto toDTO(Indexable entity) {
         return modelMapper.map(
             entity,
             getModelClassDTO(entity.getClass())
@@ -277,10 +282,14 @@ public class ModelConfig {
     }
 
     /**
-     * extracts the corresponding DTO type of a model class from its {@link TLADTO} annotation.
+     * Extracts the corresponding DTO type of a model class from its {@link TLADTO} annotation.
      * Returns null and fails silently if no annotation is set.
+     *
+     * @param modelClass Any {@link Indexable} class which defines its respective DTO class with
+     * a {@link TLADO} annotation.
+     * @return A {@link DocumentDto} subclass.
      */
-    public static Class<? extends DocumentDto> getModelClassDTO(Class<? extends BaseEntity> modelClass) {
+    public static Class<? extends DocumentDto> getModelClassDTO(Class<? extends Indexable> modelClass) {
         for (Annotation annotation : modelClass.getAnnotations()) {
             if (annotation instanceof TLADTO) {
                 return ((TLADTO) annotation).value();

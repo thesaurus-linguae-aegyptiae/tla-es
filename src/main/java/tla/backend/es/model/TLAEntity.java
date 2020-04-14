@@ -16,6 +16,7 @@ import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import tla.domain.model.ExternalReference;
+import tla.domain.model.Passport;
 
 /**
  * TLA model base class for BTS document types.
@@ -32,6 +33,12 @@ public abstract class TLAEntity extends BaseEntity {
     @Field(type = FieldType.Object)
     private Map<String, List<ExternalReference>> externalReferences;
 
+    @Field(type = FieldType.Object)
+    private Passport passport;
+
+    /**
+     * Default constructor initializing the externalReferences map as an empty object.
+     */
     public TLAEntity() {
         this.externalReferences = Collections.emptyMap();
     }

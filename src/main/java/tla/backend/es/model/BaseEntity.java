@@ -19,6 +19,20 @@ import tla.domain.dto.DocumentDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.AbstractBTSBaseClass;
 
+/**
+ * Entity model base class. Represents an identifiable stand-alone BTS/TLA document with
+ * a name, a type and subtype, editing information, and references to related documents.
+ *
+ * <blockquote>Document types which have a <code>passport</code> metadata tree, and which are supposed
+ * to be identifiable as external resources (e.g. in the online database published by a dfferent
+ * research project) can extend the specialized abstract subclass {@link TLAEntity}.</blockquote>
+ *
+ * <p>Because this class implements {@link Indexable}, subclasses are expected
+ * to declare an Elasticsearch index they are to be stored in, and because all subclasses are
+ * {@link AbstractBTSBaseClass} instances, they must specify the <code>eClass</code> of the
+ * original Berlin Text System (BTS) model class they correspond with.
+ * Both properties are being registered in {@link ModelConfig}.</p>
+ */
 @Data
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
@@ -42,13 +56,24 @@ public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexab
     @Field(type = FieldType.Text)
     private String name;
 
+    /**
+     * Information about what researcher authored this document, who contributed to it,
+     * and the date of the latest change.
+     */
     @Field(type = FieldType.Object)
     private EditorInfo editors;
 
+    /**
+     * References to related objects grouped by relationship name (<code>partOf</code>,
+     * <code>predecessor</code>, ...).
+     */
     @Singular
     @Field(type = FieldType.Object)
     private Map<String, List<ObjectReference>> relations;
 
+    /**
+     * Default constructor initializing the relations map as an empty object.
+     */
     public BaseEntity() {
         this.relations = Collections.emptyMap();
     }

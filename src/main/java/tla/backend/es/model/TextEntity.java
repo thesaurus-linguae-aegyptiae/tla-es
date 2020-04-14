@@ -13,7 +13,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import tla.domain.dto.TextDto;
 import tla.domain.model.ObjectReference;
-import tla.domain.model.Passport;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
 
@@ -32,9 +31,6 @@ public class TextEntity extends TLAEntity {
 
     @Field(type = FieldType.Keyword)
     String corpus;
-
-    @Field(type = FieldType.Object)
-    private Passport passport;
 
     @Field(type = FieldType.Object)
     List<List<ObjectReference>> paths;
