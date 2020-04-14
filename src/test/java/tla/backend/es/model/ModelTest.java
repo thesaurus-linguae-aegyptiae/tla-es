@@ -15,6 +15,7 @@ import tla.backend.Util;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
+import tla.domain.dto.TextDto;
 import tla.domain.model.Passport;
 import tla.domain.model.meta.BTSeClass;
 
@@ -260,6 +261,36 @@ public class ModelTest {
             () -> assertEquals(a, b),
             () -> assertEquals(a.hashCode(), b.hashCode()),
             () -> assertEquals(a.toString(), b.toString())
+        );
+    }
+
+    @Test
+    void textDeserializeFromFile() throws Exception {
+        TextEntity t = tla.domain.util.IO.loadFromFile(
+            "src/test/resources/sample/text/2A5EGGJVHVFVVL42QSWVLJORYE.json",
+            TextEntity.class
+        );
+        assertAll("test text deserialization from JSON file",
+            () -> assertNotNull(t),
+            () -> assertNotNull(t.getPaths()),
+            () -> assertEquals("bbawarchive", t.getCorpus())
+        );
+    }
+
+    @Test
+    void textMapping() throws Exception {
+        TextEntity t = tla.domain.util.IO.loadFromFile(
+            "src/test/resources/sample/text/2A5EGGJVHVFVVL42QSWVLJORYE.json",
+            TextEntity.class
+        );
+        DocumentDto d = t.toDTO();
+        assertAll("test text to DTO mapping",
+            () -> assertNotNull(d),
+            () -> assertTrue(d instanceof TextDto)
+        );
+        TextDto dto = (TextDto) d;
+        assertAll("test mapped text DTO properties",
+            () -> assertNotNull(dto.getPaths())
         );
     }
 

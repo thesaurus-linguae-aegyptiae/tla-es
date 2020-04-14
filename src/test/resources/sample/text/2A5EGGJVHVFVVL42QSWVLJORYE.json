@@ -1,0 +1,208 @@
+{
+  "corpus": "bbawarchive",
+  "eclass": "BTSText",
+  "editors": {
+    "author": "S. Grunert",
+    "contributors": [
+      "Altägyptisches Wörterbuch"
+    ],
+    "type": "user",
+    "updated": "2015-06-26 17:01:54"
+  },
+  "externalReferences": null,
+  "id": "2A5EGGJVHVFVVL42QSWVLJORYE",
+  "name": "[2. Spalte]",
+  "passport": {
+    "bibliography": [
+      {
+        "bibliographical_text_field": [
+          "Posener-Kriéger, Paule: Hieratic Papyri in the British Museum. Fifth Series. The Abu Sir Papyri., London 1968, plate 39 (Fragment A)"
+        ]
+      }
+    ],
+    "date": [
+      {
+        "date": [
+          {
+            "comment": [
+              "Asosi (Djedkare I.)"
+            ],
+            "date": [
+              {
+                "eclass": "BTSThsEntry",
+                "id": "KQY2F5SJVBBN7GRO5WUXKG5M6M",
+                "name": "Asosi Djedkare",
+                "type": "date"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "definition": [
+      {
+        "main_group": [
+          {
+            "definition": [
+              "pCairo 58063 frame 10 recto (39 A)"
+            ],
+            "protocol": [
+              "erfaßt 1995; überarbeitet 12.07.2011"
+            ]
+          }
+        ]
+      }
+    ],
+    "find_spot": [
+      {
+        "find_spot": [
+          {
+            "place": [
+              {
+                "place": [
+                  {
+                    "eclass": "BTSThsEntry",
+                    "id": "O5AYJCUXENDODEGUIMCH2YWXWM",
+                    "name": "Abusir",
+                    "type": "findSpot"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "object": [
+      {
+        "description_of_object": [
+          {
+            "type": [
+              {
+                "eclass": "BTSThsEntry",
+                "id": "5QIW3ZRHQFGINHBP4GI2GI4LFA",
+                "name": "Schriftrolle",
+                "type": "objecttype"
+              }
+            ]
+          }
+        ],
+        "technical_details": [
+          {
+            "material": [
+              {
+                "eclass": "BTSThsEntry",
+                "id": "6HRN4262MRB7ZJCTZKSQ33LLE4",
+                "name": "Papyrus",
+                "type": "material"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "present_location": [
+      {
+        "location": [
+          {
+            "inventory_number": [
+              "58063 frame 10 recto"
+            ],
+            "location": [
+              {
+                "eclass": "BTSThsEntry",
+                "id": "RJR6FHP26FBPVMGXDXHLLZIG2Y",
+                "name": "Egyptian Museum",
+                "type": "location"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "text": [
+      {
+        "textual_metadata": [
+          {
+            "comment_on_texttype": [
+              "Wirtschaftstext eines Tempelarchivs"
+            ],
+            "egytextname": [
+              "Tafel 39, pCairo 58063 frame 10 recto (39 A), pCairo 58063 frame 10 recto (39 A)"
+            ],
+            "script": [
+              {
+                "eclass": "BTSThsEntry",
+                "id": "SRFM7BGQJBFRJL5GJ2P7WGZWBA",
+                "name": "Althieratisch",
+                "type": "script"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "paths": [
+    [
+      {
+        "eclass": "BTSTCObject",
+        "id": "4IR3BDQT5JFI7GBJTORLC37YMU",
+        "name": "Archive, Urkunden, Vermerke (Altes Reich)",
+        "type": "Caption"
+      },
+      {
+        "eclass": "BTSTCObject",
+        "id": "2SJSXGUZUNDRDJ5DKSDHIAMVYM",
+        "name": "Abusir〈-Archiv〉",
+        "type": "Caption"
+      },
+      {
+        "eclass": "BTSTCObject",
+        "id": "QQ4QUH43PFCTHFQB3A3LC5TR7E",
+        "name": "Tafel 39",
+        "type": "Caption"
+      },
+      {
+        "eclass": "BTSTCObject",
+        "id": "R6TRHRNLMNE5ZEZYFPR6LIPXZA",
+        "name": "pCairo 58063 frame 10 recto (39 A)",
+        "type": "TCObject"
+      },
+      {
+        "eclass": "BTSText",
+        "id": "DNASZ4SCK5DWBH67DH4IICW2RI",
+        "name": "pCairo 58063 frame 10 recto (39 A)",
+        "type": "Text"
+      },
+      {
+        "eclass": "BTSText",
+        "id": "2A5EGGJVHVFVVL42QSWVLJORYE",
+        "name": "[2. Spalte]",
+        "type": "subtext"
+      }
+    ]
+  ],
+  "relations": {
+    "partOf": [
+      {
+        "eclass": "BTSText",
+        "id": "DNASZ4SCK5DWBH67DH4IICW2RI",
+        "name": "pCairo 58063 frame 10 recto (39 A)",
+        "type": "Text"
+      }
+    ]
+  },
+  "revisionState": "published",
+  "sentences": [
+    "IBUBd1YQvGxmmkxJohmgHO2fc5I",
+    "IBUBd4xT4lNYAEssgRvX2Wty36A",
+    "IBUBd2CtQZxgz0Cpu14zUZyaZRI",
+    "IBUBd7guA0sKL0kdv8wPzVjc538",
+    "IBUBdQFNinXQ20xQrAW3uBirzg0",
+    "IBUBdWz3yQM5oEN6sfuPsHzGfts",
+    "IBUBd2dLfKRw2UDDqL2RqQWlSos"
+  ],
+  "subtype": null,
+  "type": "subtext"
+}

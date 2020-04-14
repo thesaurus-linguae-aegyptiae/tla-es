@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
+import tla.domain.dto.TextDto;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
 
@@ -242,6 +243,12 @@ public class ModelConfig {
             .addMappings(
                 mapper -> mapper.map(
                     LemmaEntity::getRevisionState, LemmaDto::setReviewState
+                )
+            );
+        modelMapper.createTypeMap(TextEntity.class, TextDto.class)
+            .addMappings(
+                m -> m.using(new TextEntity.ListToPathsConverter()).map(
+                    TextEntity::getPaths, TextDto::setPaths
                 )
             );
         return modelMapper;
