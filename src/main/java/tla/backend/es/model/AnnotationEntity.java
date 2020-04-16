@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import tla.backend.es.model.meta.BaseEntity;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.model.Passport;
 import tla.domain.model.meta.BTSeClass;

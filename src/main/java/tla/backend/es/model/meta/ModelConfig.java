@@ -1,4 +1,4 @@
-package tla.backend.es.model;
+package tla.backend.es.model.meta;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +16,13 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import tla.backend.es.model.AnnotationEntity;
+import tla.backend.es.model.CorpusObjectEntity;
+import tla.backend.es.model.LemmaEntity;
+import tla.backend.es.model.TextEntity;
+import tla.backend.es.model.ThsEntryEntity;
+import tla.backend.es.model.parts.Translations;
+import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.TextDto;
@@ -41,7 +48,7 @@ public class ModelConfig {
      */
     @Getter
     @Builder
-    protected static class BTSeClassConfig {
+    public static class BTSeClassConfig {
         private String index;
         private Class<? extends BaseEntity> modelClass;
     }
@@ -66,7 +73,8 @@ public class ModelConfig {
                 LemmaEntity.class,
                 ThsEntryEntity.class,
                 TextEntity.class,
-                AnnotationEntity.class
+                AnnotationEntity.class,
+                CorpusObjectEntity.class
             )
         );
         initModelMapper();
@@ -236,19 +244,26 @@ public class ModelConfig {
         modelMapper = new ModelMapper();
         modelMapper.createTypeMap(LemmaEntity.class, LemmaDto.class)
             .addMappings(
-                mapper -> mapper.using(new Translations.ToMapConverter()).map(
+                m -> m.using(new Translations.ToMapConverter()).map(
                     LemmaEntity::getTranslations, LemmaDto::setTranslations
                 )
             )
             .addMappings(
-                mapper -> mapper.map(
+                m -> m.map(
                     LemmaEntity::getRevisionState, LemmaDto::setReviewState
                 )
             );
+        TextEntity.ListToPathsConverter listToPathsConverter = new TextEntity.ListToPathsConverter();
         modelMapper.createTypeMap(TextEntity.class, TextDto.class)
             .addMappings(
-                m -> m.using(new TextEntity.ListToPathsConverter()).map(
+                m -> m.using(listToPathsConverter).map(
                     TextEntity::getPaths, TextDto::setPaths
+                )
+            );
+        modelMapper.createTypeMap(CorpusObjectEntity.class, CorpusObjectDto.class)
+            .addMappings(
+                m -> m.using(listToPathsConverter).map(
+                    CorpusObjectEntity::getPaths, CorpusObjectDto::setPaths
                 )
             );
         return modelMapper;

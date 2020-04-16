@@ -1,4 +1,4 @@
-package tla.backend.es.model;
+package tla.backend.es.model.parts;
 
 import java.util.Collections;
 import java.util.List;

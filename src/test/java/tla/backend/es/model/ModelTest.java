@@ -12,7 +12,16 @@ import org.springframework.data.elasticsearch.core.EntityMapper;
 
 import tla.backend.App;
 import tla.backend.Util;
+import tla.backend.es.model.meta.BaseEntity;
+import tla.backend.es.model.meta.Indexable;
+import tla.backend.es.model.meta.ModelConfig;
+import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.model.parts.EditorInfo;
+import tla.backend.es.model.parts.LemmaWord;
+import tla.backend.es.model.parts.Transcription;
+import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.AnnotationDto;
+import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.TextDto;
@@ -291,6 +300,25 @@ public class ModelTest {
         TextDto dto = (TextDto) d;
         assertAll("test mapped text DTO properties",
             () -> assertNotNull(dto.getPaths())
+        );
+    }
+
+    @Test
+    void corpusobjectFromFileMapping() throws Exception {
+        CorpusObjectEntity o = tla.domain.util.IO.loadFromFile(
+            "src/test/resources/sample/object/2ABHCXHF5BCG3PDW7VSPA77K7U.json",
+            CorpusObjectEntity.class
+        );
+        assertAll("test corpus object deserialization from JSON file",
+            () -> assertNotNull(o),
+            () -> assertNotNull(o.getPaths()),
+            () -> assertEquals("bbawarchive", o.getCorpus())
+        );
+        DocumentDto d = o.toDTO();
+        assertAll("test corpus object to DTO mapping",
+            () -> assertNotNull(d),
+            () -> assertTrue(d instanceof CorpusObjectDto),
+            () -> assertNotNull(((CorpusObjectDto) d).getPaths())
         );
     }
 

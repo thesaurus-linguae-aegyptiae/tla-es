@@ -1,4 +1,4 @@
-package tla.backend.es.model;
+package tla.backend.es.model.meta;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,6 +15,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
+import tla.backend.es.model.parts.EditorInfo;
 import tla.domain.dto.DocumentDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.AbstractBTSBaseClass;

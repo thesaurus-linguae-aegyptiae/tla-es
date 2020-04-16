@@ -19,12 +19,13 @@ import org.elasticsearch.client.RequestOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import tla.backend.es.model.BaseEntity;
-import tla.backend.es.model.Indexable;
-import tla.backend.es.model.ModelConfig;
-import tla.backend.es.model.TLAEntity;
+import tla.backend.es.model.meta.BaseEntity;
+import tla.backend.es.model.meta.Indexable;
+import tla.backend.es.model.meta.ModelConfig;
+import tla.backend.es.model.meta.TLAEntity;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.model.ObjectReference;
@@ -33,6 +34,7 @@ import tla.domain.model.meta.BTSeClass;
 /**
  * Implementing subclasses must be annotated with {@link BTSeClass} and be instantiated
  * using the no-args default constructor.
+ * They should also be annotated with {@link Service} for component scanning / dependency injection.
  */
 @Slf4j
 public abstract class QueryService<T extends Indexable> {
@@ -231,6 +233,10 @@ public abstract class QueryService<T extends Indexable> {
      */
     public BaseEntity retrieveSingleBTSDoc(String eclass, String id) {
         QueryService<? extends Indexable> service = eclassServices.get(eclass);
+        if (service == null) {
+            log.error("Could not find entity service for eclass {}!", eclass);
+            return null;
+        }
         ElasticsearchRepository<? extends Indexable, String> repo = service.getRepo();
         Optional<? extends Indexable> result = repo.findById(id);
         if (result.isPresent()) {

@@ -12,11 +12,11 @@ import org.springframework.data.elasticsearch.core.EntityMapper;
 import tla.backend.AbstractMockMvcTest;
 import tla.backend.Util;
 import tla.backend.es.model.LemmaEntity;
-import tla.backend.es.model.LemmaWord;
-import tla.backend.es.model.Transcription;
-import tla.backend.es.model.Translations;
+import tla.backend.es.model.parts.EditorInfo;
+import tla.backend.es.model.parts.LemmaWord;
+import tla.backend.es.model.parts.Transcription;
+import tla.backend.es.model.parts.Translations;
 import tla.backend.es.repo.LemmaRepo;
-import tla.backend.es.model.EditorInfo;
 import tla.backend.service.LemmaService;
 
 import static org.junit.jupiter.api.Assertions.*;

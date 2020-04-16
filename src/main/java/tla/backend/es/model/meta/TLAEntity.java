@@ -1,4 +1,4 @@
-package tla.backend.es.model;
+package tla.backend.es.model.meta;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,11 +15,16 @@ import lombok.Setter;
 import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import tla.backend.es.repo.RepoPopulator;
 import tla.domain.model.ExternalReference;
 import tla.domain.model.Passport;
+import tla.domain.model.meta.BTSeClass;
+import tla.domain.model.meta.TLADTO;
 
 /**
  * TLA model base class for BTS document types.
+ * Implementing subclasses should be annotated with {@link BTSeClass}, {@link TLADTO},
+ * and registered in both {@link ModelConfig} and {@link RepoPopulator}.
  */
 @Getter
 @Setter

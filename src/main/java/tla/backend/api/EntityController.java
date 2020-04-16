@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.error.ObjectNotFoundException;
-import tla.backend.es.model.Indexable;
+import tla.backend.es.model.meta.Indexable;
 import tla.backend.service.QueryService;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;

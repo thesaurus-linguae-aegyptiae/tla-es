@@ -14,7 +14,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
+import tla.backend.es.model.meta.TLAEntity;
 import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.extern.AttestedTimespan;
 import tla.domain.model.meta.BTSeClass;

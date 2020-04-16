@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
-import tla.backend.es.model.ModelConfig;
+import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.OccurrenceEntity;
 import tla.backend.es.repo.OccurrenceRepo;
 import tla.backend.service.LemmaService;
