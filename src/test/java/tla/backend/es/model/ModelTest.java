@@ -25,6 +25,7 @@ import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.TextDto;
+import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.Passport;
 import tla.domain.model.meta.BTSeClass;
 
@@ -153,7 +154,7 @@ public class ModelTest {
     }
 
     @Test
-    void thesrausEntryDeserializeTranslations() throws Exception {
+    void thesrausEntryDeserialize_mapping() throws Exception {
         ThsEntryEntity t = tla.domain.util.IO.loadFromFile(
             "src/test/resources/sample/ths/E7YEQAEKZVEJ5PX7WKOXY2QEEM.json",
             ThsEntryEntity.class
@@ -163,6 +164,12 @@ public class ModelTest {
             () -> assertNotNull(t.getTranslations().getFr()),
             () -> assertEquals(1, t.getTranslations().getFr().size()),
             () -> assertEquals("21e dynastie", t.getTranslations().getFr().get(0))
+        );
+        DocumentDto dto = t.toDTO();
+        assertAll("test thesaurus entity to DTO mapping",
+            () -> assertTrue(dto instanceof ThsEntryDto),
+            () -> assertNotNull(dto.getReviewState(), "review status must not be null"),
+            () -> assertNotNull(((ThsEntryDto) dto).getTranslations(), "translations must not be null")
         );
     }
 
@@ -257,9 +264,10 @@ public class ModelTest {
             .build();
         DocumentDto d = a.toDTO();
         assertAll("test annotation entity to DTO conversion",
-            () -> assertEquals(d.getEclass(), a.getEclass()),
-            () -> assertEquals(d.getName(), a.getName()),
-            () -> assertEquals(d.getPassport(), a.getPassport()),
+            () -> assertEquals(a.getEclass(), d.getEclass()),
+            () -> assertEquals(a.getName(), d.getName()),
+            () -> assertEquals(a.getPassport(), d.getPassport()),
+            () -> assertEquals(a.getRevisionState(), d.getReviewState()),
             () -> assertTrue(d instanceof AnnotationDto)
         );
     }
@@ -309,7 +317,8 @@ public class ModelTest {
         DocumentDto d = t.toDTO();
         assertAll("test text to DTO mapping",
             () -> assertNotNull(d),
-            () -> assertTrue(d instanceof TextDto)
+            () -> assertTrue(d instanceof TextDto),
+            () -> assertEquals(t.getRevisionState(), d.getReviewState())
         );
         TextDto dto = (TextDto) d;
         assertAll("test mapped text DTO properties",
@@ -332,7 +341,8 @@ public class ModelTest {
         assertAll("test corpus object to DTO mapping",
             () -> assertNotNull(d),
             () -> assertTrue(d instanceof CorpusObjectDto),
-            () -> assertNotNull(((CorpusObjectDto) d).getPaths())
+            () -> assertNotNull(((CorpusObjectDto) d).getPaths()),
+            () -> assertEquals(o.getRevisionState(), d.getReviewState())
         );
     }
 

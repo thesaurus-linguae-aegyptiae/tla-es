@@ -22,6 +22,7 @@ import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.model.parts.Translations;
+import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
@@ -250,16 +251,16 @@ public class ModelConfig {
                     LemmaEntity::getTranslations, LemmaDto::setTranslations
                 )
             )
-            .addMappings(
-                m -> m.map(
-                    LemmaEntity::getRevisionState, LemmaDto::setReviewState
-                )
+            .addMapping(
+                LemmaEntity::getRevisionState, LemmaDto::setReviewState
             );
         modelMapper.createTypeMap(ThsEntryEntity.class, ThsEntryDto.class)
             .addMappings(
                 m -> m.using(translationsToMapConverter).map(
                     ThsEntryEntity::getTranslations, ThsEntryDto::setTranslations
                 )
+            ).addMapping(
+                ThsEntryEntity::getRevisionState, ThsEntryDto::setReviewState
             );
         TextEntity.ListToPathsConverter listToPathsConverter = new TextEntity.ListToPathsConverter();
         modelMapper.createTypeMap(TextEntity.class, TextDto.class)
@@ -267,13 +268,20 @@ public class ModelConfig {
                 m -> m.using(listToPathsConverter).map(
                     TextEntity::getPaths, TextDto::setPaths
                 )
+            ).addMapping(
+                TextEntity::getRevisionState, TextDto::setReviewState
             );
         modelMapper.createTypeMap(CorpusObjectEntity.class, CorpusObjectDto.class)
             .addMappings(
                 m -> m.using(listToPathsConverter).map(
                     CorpusObjectEntity::getPaths, CorpusObjectDto::setPaths
                 )
+            ).addMapping(
+                CorpusObjectEntity::getRevisionState, CorpusObjectDto::setReviewState
             );
+        modelMapper.createTypeMap(AnnotationEntity.class, AnnotationDto.class).addMapping(
+            AnnotationEntity::getRevisionState, AnnotationDto::setReviewState
+        );
         return modelMapper;
     }
 
