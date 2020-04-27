@@ -86,7 +86,7 @@ public class Translations {
 	public static class ToMapConverter extends AbstractConverter<Translations, SortedMap<Language, List<String>>> {
 		@Override
 		protected SortedMap<Language, List<String>> convert(Translations source) {
-			return source.toMap();
+			return source != null ? source.toMap() : null;
 		}
 	}
 

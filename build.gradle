@@ -4,7 +4,7 @@ plugins {
     id 'jacoco'
     id 'application'
     id 'maven-publish'
-    id 'co.uzzu.dotenv.gradle' version '1.0.2'
+    id 'co.uzzu.dotenv.gradle' version '1.1.0'
     id 'de.undercouch.download' version '4.0.4'
     id 'org.springframework.boot' version '2.2.6.RELEASE'
     id 'com.github.ben-manes.versions' version '0.28.0'
@@ -62,7 +62,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-simple:2.0.0-alpha1'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.2.4.RELEASE'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0-M1'
 }
 
 application {
