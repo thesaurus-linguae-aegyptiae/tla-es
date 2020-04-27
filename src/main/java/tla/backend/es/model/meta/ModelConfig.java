@@ -26,6 +26,7 @@ import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.TextDto;
+import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
 
@@ -242,15 +243,22 @@ public class ModelConfig {
     private static ModelMapper initModelMapper() {
         log.debug("initializing model mapper");
         modelMapper = new ModelMapper();
+        Translations.ToMapConverter translationsToMapConverter = new Translations.ToMapConverter();
         modelMapper.createTypeMap(LemmaEntity.class, LemmaDto.class)
             .addMappings(
-                m -> m.using(new Translations.ToMapConverter()).map(
+                m -> m.using(translationsToMapConverter).map(
                     LemmaEntity::getTranslations, LemmaDto::setTranslations
                 )
             )
             .addMappings(
                 m -> m.map(
                     LemmaEntity::getRevisionState, LemmaDto::setReviewState
+                )
+            );
+        modelMapper.createTypeMap(ThsEntryEntity.class, ThsEntryDto.class)
+            .addMappings(
+                m -> m.using(translationsToMapConverter).map(
+                    ThsEntryEntity::getTranslations, ThsEntryDto::setTranslations
                 )
             );
         TextEntity.ListToPathsConverter listToPathsConverter = new TextEntity.ListToPathsConverter();

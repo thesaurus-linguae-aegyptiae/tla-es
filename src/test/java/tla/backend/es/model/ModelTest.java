@@ -153,6 +153,20 @@ public class ModelTest {
     }
 
     @Test
+    void thesrausEntryDeserializeTranslations() throws Exception {
+        ThsEntryEntity t = tla.domain.util.IO.loadFromFile(
+            "src/test/resources/sample/ths/E7YEQAEKZVEJ5PX7WKOXY2QEEM.json",
+            ThsEntryEntity.class
+        );
+        assertAll("synonyms should be extracted from passport and converted into translations",
+            () -> assertNotNull(t.getTranslations()),
+            () -> assertNotNull(t.getTranslations().getFr()),
+            () -> assertEquals(1, t.getTranslations().getFr().size()),
+            () -> assertEquals("21e dynastie", t.getTranslations().getFr().get(0))
+        );
+    }
+
+    @Test
     void lemmaRegistered() throws Exception {
         assertAll("has lemma model class registered with modelconfig?",
             () -> assertEquals(LemmaEntity.class, ModelConfig.getModelClass("BTSLemmaEntry"), "check registered model class"),
