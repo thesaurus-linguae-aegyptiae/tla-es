@@ -88,6 +88,7 @@ bootRun {
         args project.args.split(',')
     }
     environment "ES_PORT", env.ES_PORT.orElse("9200")
+    environment "ES_HOST", env.ES_HOST.orElse("localhost")
 }
 
 task downloadSample(type: Download) {

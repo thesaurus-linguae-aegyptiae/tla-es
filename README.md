@@ -2,10 +2,54 @@
 ![LINE](https://img.shields.io/badge/line--coverage-56%25-orange.svg)
 ![METHOD](https://img.shields.io/badge/method--coverage-54%25-orange.svg)
 
-Initialize the project by creating a `.env` file with at least the corpus data source specified:
+Thesaurus Linguae Aegyptiae (TLA) backend.
+
+## Installation
+
+Requirements:
+
+- Java 11
+- Docker Compose
+
+
+### 1. Install and populate search engine
+
+The TLA backend app requires Elasticsearch 6.8.4. It can be installed via Docker Compose using the
+configuration shipped with this repository:
+
+    docker-compose up -d elasticsearch
+
+Before continuing, make sure Elasticsearch is running by checking the output of `docker ps --all` or
+accessing [its REST interface](http://localhost:9200) in a browser (change `9200` in case that you
+set a different port via the `ES_PORT` environment variable).
+
+Once Elasticsearch is up and running, TLA corpus data needs to be loaded into it. In order to do so,
+you must set the `SAMPLE_URL` environment variable to a URL pointing to a tar-compressed TLA corpus data
+file. One way to do this is to create a `.env` file in the directory containing this README, and setting
+the variable `SAMPLE_URL` in there:
 
     SAMPLE_URL=http://example.org/sample.tar.gz
 
+Finally, download and store TLA corpus data from the specified source by running the `populate` gradle task:
+
+
+    gradle populate
+
+(If you are on a Windows machine, you probably need to execute the `gradlew.bat` wrapper shipped with this
+project explicitly.)
+
+
+### 2. Run the app
+
+Run the app via the `bootRun` task:
+
+    gradle bootrun
+
+(If you are on a Windows machine, you probably need to execute the `gradlew.bat` wrapper shipped with this
+project explicitly.)
+
+
+## Misc
 
 Run a dockerized setup using Docker Compose:
 
