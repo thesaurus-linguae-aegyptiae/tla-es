@@ -40,7 +40,7 @@ import tla.domain.model.meta.BTSeClass;
 public abstract class QueryService<T extends Indexable> {
 
     @Autowired
-    private ElasticsearchRestTemplate restTemplate;
+    protected ElasticsearchRestTemplate restTemplate;
 
     protected static Map<String, QueryService<? extends Indexable>> eclassServices = new HashMap<>();
 
