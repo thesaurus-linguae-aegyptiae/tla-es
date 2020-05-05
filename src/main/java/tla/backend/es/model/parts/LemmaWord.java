@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LemmaWord {
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Text, analyzer = "hieroglyph_analyzer")
     private String glyphs;
 
     @Field(type = FieldType.Object)

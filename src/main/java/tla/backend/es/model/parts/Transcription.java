@@ -14,10 +14,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Transcription {
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Text, analyzer = "lemmaname_analyzer")
     private String unicode;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Text, analyzer = "lemmaname_analyzer")
     private String mdc;
 
     //TODO hieroglyphs?
