@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.elasticsearch.core.EntityMapper;
+import org.springframework.http.MediaType;
 
 import tla.backend.AbstractMockMvcTest;
 import tla.backend.Util;
@@ -23,8 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class LemmaControllerTest extends AbstractMockMvcTest {
 
@@ -80,7 +80,7 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
     void getInexistentLemma() throws Exception {
         mockMvc.perform(
             get("/lemma/get/10070")
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
             .andExpect(
                 status().isNotFound()
@@ -107,10 +107,13 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
             );
         mockMvc.perform(
             get("/lemma/get/whatever")
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
             .andExpect(
                 status().isOk()
+            )
+            .andExpect(
+                content().contentType(MediaType.APPLICATION_JSON_VALUE)
             )
             .andExpect(jsonPath("$.doc.id").value("ID"))
             .andExpect(jsonPath("$.doc.editors.author").value("author"))

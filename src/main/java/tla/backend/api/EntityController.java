@@ -1,6 +1,7 @@
 package tla.backend.api;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +33,12 @@ public abstract class EntityController<T extends Indexable> {
     /**
      * Returns a document wrapper containing a single document and all documents it references.
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/get/{id}")
+    @RequestMapping(
+        value = "/get/{id}",
+        method = RequestMethod.GET,
+        consumes = MediaType.ALL_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<SingleDocumentWrapper<DocumentDto>> get(@PathVariable String id) throws ObjectNotFoundException {
         SingleDocumentWrapper<DocumentDto> result = getService().getDetails(id);
         if (result != null) {
