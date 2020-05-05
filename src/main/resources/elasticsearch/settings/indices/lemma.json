@@ -3,6 +3,15 @@
     "max_result_window": 100000,
     "number_of_shards": "1",
     "number_of_replicas": "0",
+    "search": {
+      "slowlog": {
+        "threshold": {
+          "query": {
+            "debug": "0s"
+          }
+        }
+      }
+    },
     "analysis": {
       "tokenizer": {
         "hieroglyph_tokenizer": {
