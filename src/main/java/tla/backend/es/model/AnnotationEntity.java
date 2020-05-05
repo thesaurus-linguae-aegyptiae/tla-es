@@ -1,6 +1,5 @@
 package tla.backend.es.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -27,14 +26,14 @@ import tla.domain.model.meta.TLADTO;
 @Document(indexName = "annotation", type = "annotation")
 public class AnnotationEntity extends BaseEntity {
 
-    @Field(type = FieldType.Text)
-    @JsonAlias("title")
-    private String name;
-
     @Field(type = FieldType.Object)
     private Passport passport;
 
     @Field(type = FieldType.Keyword)
     private String corpus;
+
+    public void setTitle(String title) {
+        this.setName(title);
+    }
 
 }
