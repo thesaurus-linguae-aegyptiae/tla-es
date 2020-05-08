@@ -137,39 +137,56 @@ public class LemmaService extends QueryService<LemmaEntity> {
         return restTemplate.queryForPage(query, LemmaEntity.class);
     }
 
+    private BoolQueryBuilder scriptFilter(LemmaSearch command) {
+        BoolQueryBuilder scriptFilter = boolQuery();
+        List<Script> scripts = Arrays.asList(command.getScript());
+        if (!scripts.contains(Script.HIERATIC)) {
+            if (scripts.contains(Script.DEMOTIC)) {
+                scriptFilter.must(prefixQuery("id", "d"));
+            }
+        } else {
+            if (!scripts.contains(Script.DEMOTIC)) {
+                scriptFilter.mustNot(prefixQuery("id", "d"));
+            }
+        }
+        return scriptFilter;
+    }
+
+    private BoolQueryBuilder translationQuery(LemmaSearch command) {
+        BoolQueryBuilder translationsQuery = boolQuery();
+        if (command.getTranslation().getLang() != null && command.getTranslation().getLang().length > 0) {
+            for (Language lang : command.getTranslation().getLang()) {
+                translationsQuery.should(
+                    matchQuery(
+                        String.format("translations.%s", lang),
+                        command.getTranslation().getText()
+                    )
+                );
+            }
+        }
+        return translationsQuery;
+    }
+
     public SearchQuery createLemmaSearchQuery(LemmaSearch command, Pageable pageable) {
         BoolQueryBuilder qb = boolQuery();
         if (command.getTranscription() != null) {
            qb.must(matchQuery("name", command.getTranscription()).operator(Operator.AND));
         }
         if (command.getTranslation() != null) {
-            if (command.getTranslation().getLang() != null && command.getTranslation().getLang().length > 0) {
-                BoolQueryBuilder translationsQuery = boolQuery();
-                for (Language lang : command.getTranslation().getLang()) {
-                    translationsQuery.should(
-                        matchQuery(
-                            String.format("translations.%s", lang),
-                            command.getTranslation().getText()
-                        )
-                    );
-                }
-                qb.must(translationsQuery);
-            }
+            qb.must(translationQuery(command));
         }
         if (command.getScript() != null && command.getScript().length > 0) {
-            BoolQueryBuilder scriptFilter = boolQuery();
-            List<Script> scripts = Arrays.asList(command.getScript());
-            if (!scripts.contains(Script.HIERATIC)) {
-                if (scripts.contains(Script.DEMOTIC)) {
-                    scriptFilter.must(prefixQuery("id", "d"));
-                    qb.filter(scriptFilter);
-                }
-            } else {
-                if (!scripts.contains(Script.DEMOTIC)) {
-                    scriptFilter.mustNot(prefixQuery("id", "d"));
-                    qb.filter(scriptFilter);
-                }
-            }
+            qb.filter(scriptFilter(command));
+        }
+        if (command.getBibliography() != null && !command.getBibliography().trim().isEmpty()) {
+            qb.must(
+                matchQuery("passport.bibliography.bibliographical_text_field", command.getBibliography()).operator(Operator.AND)
+            );
+        }
+        if (command.getRoot() != null && !command.getRoot().trim().isEmpty()) {
+            qb.must(
+                matchQuery("relations.root.name", command.getRoot())
+            );
         }
         return new NativeSearchQueryBuilder()
             .withQuery(qb)
