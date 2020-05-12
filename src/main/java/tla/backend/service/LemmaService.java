@@ -167,6 +167,23 @@ public class LemmaService extends QueryService<LemmaEntity> {
         return translationsQuery;
     }
 
+    private BoolQueryBuilder wordClassQuery(LemmaSearch command) {
+        BoolQueryBuilder query = boolQuery();
+        LemmaSearch.WordClass wordClass = command.getPos();
+        if (wordClass.getType() != null) {
+            if (wordClass.getType().equals("excl_names")) {
+                query.mustNot(termQuery("type", "entity_name"));
+            } else if (wordClass.getType().equals("any")) {
+            } else if (!wordClass.getType().trim().isEmpty()) {
+                query.must(termQuery("type", wordClass.getType()));
+            }
+        }
+        if (wordClass.getSubtype() != null && !wordClass.getSubtype().trim().isEmpty()) {
+            query.must(termQuery("subtype", wordClass.getSubtype()));
+        }
+        return query;
+    }
+
     public SearchQuery createLemmaSearchQuery(LemmaSearch command, Pageable pageable) {
         BoolQueryBuilder qb = boolQuery();
         if (command.getTranscription() != null) {
@@ -187,6 +204,9 @@ public class LemmaService extends QueryService<LemmaEntity> {
             qb.must(
                 matchQuery("relations.root.name", command.getRoot())
             );
+        }
+        if (command.getPos() != null) {
+            qb.must(wordClassQuery(command));
         }
         return new NativeSearchQueryBuilder()
             .withQuery(qb)
