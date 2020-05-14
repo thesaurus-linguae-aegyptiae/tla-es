@@ -8,6 +8,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,12 +20,12 @@ import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.parts.Transcription;
 import tla.backend.es.model.parts.Translations;
 
-
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Document(indexName = "occurrence", type = "occurrence")
 @Setting(settingPath = "/elasticsearch/settings/indices/occurrence.json")
 public class OccurrenceEntity implements Indexable {
