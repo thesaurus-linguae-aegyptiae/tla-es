@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +26,7 @@ import tla.backend.es.model.parts.Translations;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(indexName = "occurrence", type = "occurrence")
+@Setting(settingPath = "/elasticsearch/settings/indices/occurrence.json")
 public class OccurrenceEntity implements Indexable {
 
     @Id
