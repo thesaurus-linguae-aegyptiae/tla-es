@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.core.EntityMapper;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +29,14 @@ public class RepoPopulator {
 
     private class RepoBatchIngestor<T extends ElasticsearchRepository<S, String>, S extends Indexable> {
 
+        final static int MAX_BATCH_SIZE = 750;
+
         private List<S> batch;
         private T repo;
         private Class<S> modelClass;
         private int count;
+
+        private ObjectMapper jsonMapper = new ObjectMapper();
 
         public RepoBatchIngestor(T repo, Class<S> modelClass) {
             this.repo = repo;
@@ -43,14 +48,14 @@ public class RepoPopulator {
 
         public void add(S doc) {
             this.batch.add(doc);
-            if (this.batch.size() > 1000) {
+            if (this.batch.size() >= MAX_BATCH_SIZE) {
                 this.ingest();
             }
         }
 
         public void add(String json) {
             try {
-                S doc = mapper.mapToObject(
+                S doc = jsonMapper.readValue(
                     json,
                     this.modelClass
                 );
@@ -85,9 +90,6 @@ public class RepoPopulator {
             }
         }
     }
-
-    @Autowired
-    private EntityMapper mapper;
 
     @Autowired
     private LemmaRepo lemmaRepo;

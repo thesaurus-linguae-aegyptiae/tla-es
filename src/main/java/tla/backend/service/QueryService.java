@@ -16,8 +16,8 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +40,7 @@ import tla.domain.model.meta.BTSeClass;
 public abstract class QueryService<T extends Indexable> {
 
     @Autowired
-    private ElasticsearchRestTemplate restTemplate;
+    private RestHighLevelClient restClient;
 
     protected static Map<String, QueryService<? extends Indexable>> eclassServices = new HashMap<>();
 
@@ -211,7 +211,7 @@ public abstract class QueryService<T extends Indexable> {
             );
         SearchResponse response = null;
         try {
-            response = restTemplate.getClient()
+            response = restClient
                 .search(
                     request,
                     RequestOptions.DEFAULT

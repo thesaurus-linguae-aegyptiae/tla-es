@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +26,7 @@ import tla.domain.model.extern.AttestedTimespan;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.BucketOrder;
@@ -48,12 +49,15 @@ public class OccurrenceController {
     private ElasticsearchRestTemplate restTemplate;
 
     @Autowired
+    private RestHighLevelClient restClient;
+
+    @Autowired
     private LemmaService lemmaService;
 
 
     @RequestMapping(method = RequestMethod.GET, value = "/lemma/{id}")
     public ResponseEntity<Map<String, Long>> lemmaOccurrences(@PathVariable String id) {
-        SearchQuery query = new NativeSearchQueryBuilder().withQuery(termQuery("lemma.id", id)).build();
+        NativeSearchQuery query = new NativeSearchQueryBuilder().withQuery(termQuery("lemma.id", id)).build();
         long occurrenceCount = restTemplate.count(query, OccurrenceEntity.class);
         return new ResponseEntity<Map<String, Long>>(Map.of(id, occurrenceCount), HttpStatus.OK);
     }
@@ -83,7 +87,7 @@ public class OccurrenceController {
             )
             .source(searchSourceBuilder)
             .requestCache(true);
-        SearchResponse response = restTemplate.getClient().search(
+        SearchResponse response = restClient.search(
             request,
             RequestOptions.DEFAULT
         );
