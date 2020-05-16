@@ -4,3 +4,8 @@ bin
 .env
 settings.gradle
 .settings
+.gradletasknamecache
+.project
+sample.tar.gz
+app.log
+app.log.*
