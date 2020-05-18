@@ -1,6 +1,6 @@
 ![Java CI](https://github.com/JKatzwinkel/tla-es/workflows/Java%20CI/badge.svg)
-![LINE](https://img.shields.io/badge/line--coverage-55%25-orange.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-54%25-orange.svg)
+![LINE](https://img.shields.io/badge/line--coverage-57%25-orange.svg)
+![METHOD](https://img.shields.io/badge/method--coverage-55%25-orange.svg)
 
 Thesaurus Linguae Aegyptiae (TLA) backend.
 
@@ -14,7 +14,7 @@ Requirements:
 
 ### 1. Install and populate search engine
 
-The TLA backend app requires Elasticsearch 6.8.4. It can be installed via Docker Compose using the
+The TLA backend app requires Elasticsearch 7.6.2. It can be installed via Docker Compose using the
 configuration shipped with this repository:
 
     docker-compose up -d elasticsearch

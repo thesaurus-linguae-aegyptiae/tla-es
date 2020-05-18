@@ -1,6 +1,5 @@
 package tla.backend.es.model.parts;
 
-import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -27,9 +26,9 @@ public class EditorInfo {
     @Field(type = FieldType.Text)
     private String author;
 
-    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd||epoch_millis")
+    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
-    private Date updated;
+    private EditDate updated;
 
     @Field(type = FieldType.Keyword)
     private String type;

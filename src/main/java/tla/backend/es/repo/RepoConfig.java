@@ -32,6 +32,7 @@ public class RepoConfig extends AbstractElasticsearchConfiguration {
         );
     }
 
+    @Bean
     @Override
     public RestHighLevelClient elasticsearchClient() {
         log.info

@@ -21,6 +21,7 @@ import tla.backend.es.model.CorpusObjectEntity;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
+import tla.backend.es.model.parts.EditorInfo;
 import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
@@ -245,6 +246,10 @@ public class ModelConfig {
         log.debug("initializing model mapper");
         modelMapper = new ModelMapper();
         Translations.ToMapConverter translationsToMapConverter = new Translations.ToMapConverter();
+        modelMapper.createTypeMap(EditorInfo.class, tla.domain.model.EditorInfo.class)
+            .addMapping(
+                EditorInfo::getUpdated, tla.domain.model.EditorInfo::setDateOfLatestUpdate
+            );
         modelMapper.createTypeMap(LemmaEntity.class, LemmaDto.class)
             .addMappings(
                 m -> m.using(translationsToMapConverter).map(
