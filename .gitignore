@@ -1,6 +1,12 @@
-.gradle
-build
-bin
 .env
-settings.gradle
+.gitattributes
+.gradle
+.gradletasknamecache
+.project
 .settings
+app.log
+app.log.*
+bin
+build
+sample.tar.gz
+settings.gradle

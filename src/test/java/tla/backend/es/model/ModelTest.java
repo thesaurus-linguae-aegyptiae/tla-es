@@ -4,18 +4,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.core.EntityMapper;
 
 import tla.backend.App;
-import tla.backend.Util;
 import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.model.parts.EditDate;
 import tla.backend.es.model.parts.EditorInfo;
 import tla.backend.es.model.parts.LemmaWord;
 import tla.backend.es.model.parts.Transcription;
@@ -37,8 +37,7 @@ import java.util.Collections;
 @SpringBootTest(classes = {App.class})
 public class ModelTest {
 
-    @Autowired
-    private EntityMapper mapper;
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Test
     void modelConfigInitialized() {
@@ -124,7 +123,7 @@ public class ModelTest {
         assertTrue(mapper != null, "entitymapper should not be null");
         Translations t1 = Translations.builder().de("übersetzung").en("translation").en("meaning").build();
         Translations t2 = Translations.builder().de(Arrays.asList("übersetzung")).en(Arrays.asList("translation", "meaning")).build();
-        Translations t3 = mapper.mapToObject("{\"de\": [\"übersetzung\"], \"en\": [\"translation\", \"meaning\"]}", Translations.class);
+        Translations t3 = mapper.readValue("{\"de\": [\"übersetzung\"], \"en\": [\"translation\", \"meaning\"]}", Translations.class);
         assertAll("translations objects should be equal",
             () -> assertEquals(t2, t1, "translation instances should be equal regardless of build method parameter type"),
             () -> assertEquals(t3, t1, "deserialized instance should be equal to builder-instantiated"),
@@ -134,18 +133,34 @@ public class ModelTest {
     }
 
     @Test
+    void editInfoEqual() throws Exception {
+        EditorInfo e1 = mapper.readValue(
+            "{\"author\":\"author\", \"updated\":\"2019-12-18\"}",
+            EditorInfo.class
+        );
+        EditorInfo e2 = mapper.readValue(
+            mapper.writeValueAsString(e1),
+            EditorInfo.class
+        );
+        assertAll("test EditorInfo equality",
+            () -> assertEquals(e1, e2, "instances as a whole should be equal"),
+            () -> assertEquals(e1.getUpdated(), e2.getUpdated(), "edit dates should be equals")
+        );
+    }
+
+    @Test
     void thesaurusEntriesEqual() throws Exception {
         ThsEntryEntity t_built = ThsEntryEntity.builder()
             .id("1")
             .eclass("BTSThsEntry")
             .sortKey("1")
-            .editors(EditorInfo.builder().author("author").updated(Util.date("2015-12-31")).build())
+            .editors(EditorInfo.builder().author("author").updated(EditDate.of(2015, 12, 31)).build())
             .build();
-        ThsEntryEntity t_read = mapper.mapToObject(
+        ThsEntryEntity t_read = mapper.readValue(
             "{\"id\":\"ID\",\"eclass\":\"BTSThsEntry\",\"sort_string\":\"1\",\"editors\":{\"author\":\"author\",\"updated\":\"2015-12-31\"}}",
             ThsEntryEntity.class
         );
-        ThsEntryEntity t_round = mapper.mapToObject(mapper.mapToString(t_built), ThsEntryEntity.class);
+        ThsEntryEntity t_round = mapper.readValue(mapper.writeValueAsString(t_built), ThsEntryEntity.class);
         assertAll("thesaurus entry instances should be equal regardless of creation method",
             () -> assertNotEquals(t_built, t_read, "deserialized instance should not be the same as built instance"),
             () -> assertEquals(t_built, t_round, "built instance should remain the same after serialization and deserialization via ES entity mapper"),
@@ -188,12 +203,12 @@ public class ModelTest {
             .id("1")
             .passport(new Passport())
             .build();
-        LemmaEntity l_read = mapper.mapToObject(
+        LemmaEntity l_read = mapper.readValue(
             "{\"id\":\"1\",\"passport\":{}}",
             LemmaEntity.class
         );
-        LemmaEntity l_round = mapper.mapToObject(
-            mapper.mapToString(l_built),
+        LemmaEntity l_round = mapper.readValue(
+            mapper.writeValueAsString(l_built),
             LemmaEntity.class
         );
         assertAll("lemma entry instances should be equal regardless of creation method",
@@ -284,8 +299,8 @@ public class ModelTest {
             () -> assertEquals(1, a.getPassport().extractProperty("annotation.lemma").size()),
             () -> assertTrue(a.getPassport().extractProperty("annotation.lemma").get(0).getLeafNodeValue().length() > 100)
         );
-        AnnotationEntity b = mapper.mapToObject(
-            mapper.mapToString(a),
+        AnnotationEntity b = mapper.readValue(
+            mapper.writeValueAsString(a),
             AnnotationEntity.class
         );
         assertAll("after serialization and deserialization, annotation object should be still the same",
@@ -334,6 +349,8 @@ public class ModelTest {
         );
         assertAll("test corpus object deserialization from JSON file",
             () -> assertNotNull(o),
+            () -> assertNotNull(o.getEditors(), "editor info not null"),
+            () -> assertNotNull(o.getEditors().getUpdated(), "edit date no null"),
             () -> assertNotNull(o.getPaths()),
             () -> assertEquals("bbawarchive", o.getCorpus())
         );
@@ -342,7 +359,9 @@ public class ModelTest {
             () -> assertNotNull(d),
             () -> assertTrue(d instanceof CorpusObjectDto),
             () -> assertNotNull(((CorpusObjectDto) d).getPaths()),
-            () -> assertEquals(o.getRevisionState(), d.getReviewState())
+            () -> assertEquals(o.getRevisionState(), d.getReviewState()),
+            () -> assertNotNull(d.getEditors(), "DTO edit info not null"),
+            () -> assertNotNull(d.getEditors().getUpdated(), "DTO edit date not null")
         );
     }
 

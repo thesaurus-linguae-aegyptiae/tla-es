@@ -1,6 +1,7 @@
 package tla.backend.es.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -26,6 +27,7 @@ import tla.backend.es.model.parts.Translations;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Document(indexName = "occurrence", type = "occurrence")
 @Setting(settingPath = "/elasticsearch/settings/indices/occurrence.json")
 public class OccurrenceEntity implements Indexable {

@@ -1,5 +1,7 @@
 package tla.backend.service;
 
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,8 +16,9 @@ import org.elasticsearch.index.query.Operator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SearchQuery;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,7 @@ import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.repo.LemmaRepo;
 import tla.domain.command.LemmaSearch;
+import tla.domain.command.TypeSpec;
 import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
@@ -32,13 +36,12 @@ import tla.domain.model.Language;
 import tla.domain.model.Passport;
 import tla.domain.model.Script;
 import tla.domain.model.extern.AttestedTimespan;
-import tla.domain.model.meta.BTSeClass;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
 @Slf4j
 @Service
-@BTSeClass("BTSLemmaEntry")
+@ModelClass(value = LemmaEntity.class, path = "lemma")
 public class LemmaService extends QueryService<LemmaEntity> {
 
     @Autowired
@@ -49,6 +52,9 @@ public class LemmaService extends QueryService<LemmaEntity> {
 
     @Autowired
     private ThesaurusService thsService;
+
+    @Autowired
+    private ElasticsearchOperations operations;
 
     public SortedMap<String, Long> countOccurrencesPerText(String lemmaId) {
         return null;
@@ -132,9 +138,9 @@ public class LemmaService extends QueryService<LemmaEntity> {
         return periodCounts.values();
     }
 
-    public Page<LemmaEntity> search(SearchQuery query) {
+    public Page<LemmaEntity> search(Query query) {
         log.info("query: {}", query);
-        return restTemplate.queryForPage(query, LemmaEntity.class);
+        return operations.queryForPage(query, LemmaEntity.class, IndexCoordinates.of("lemma"));
     }
 
     private BoolQueryBuilder scriptFilter(LemmaSearch command) {
@@ -169,7 +175,7 @@ public class LemmaService extends QueryService<LemmaEntity> {
 
     private BoolQueryBuilder wordClassQuery(LemmaSearch command) {
         BoolQueryBuilder query = boolQuery();
-        LemmaSearch.WordClass wordClass = command.getPos();
+        TypeSpec wordClass = command.getPos();
         if (wordClass.getType() != null) {
             if (wordClass.getType().equals("excl_names")) {
                 query.mustNot(termQuery("type", "entity_name"));
@@ -184,7 +190,7 @@ public class LemmaService extends QueryService<LemmaEntity> {
         return query;
     }
 
-    public SearchQuery createLemmaSearchQuery(LemmaSearch command, Pageable pageable) {
+    public Query createLemmaSearchQuery(LemmaSearch command, Pageable pageable) {
         BoolQueryBuilder qb = boolQuery();
         if (command.getTranscription() != null) {
            qb.must(matchQuery("name", command.getTranscription()).operator(Operator.AND));
