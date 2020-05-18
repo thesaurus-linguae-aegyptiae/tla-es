@@ -1,5 +1,5 @@
 ![Java CI](https://github.com/JKatzwinkel/tla-es/workflows/Java%20CI/badge.svg)
-![LINE](https://img.shields.io/badge/line--coverage-56%25-orange.svg)
+![LINE](https://img.shields.io/badge/line--coverage-55%25-orange.svg)
 ![METHOD](https://img.shields.io/badge/method--coverage-54%25-orange.svg)
 
 Thesaurus Linguae Aegyptiae (TLA) backend.

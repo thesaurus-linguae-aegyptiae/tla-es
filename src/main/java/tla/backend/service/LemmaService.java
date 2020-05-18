@@ -22,11 +22,10 @@ import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.model.Passport;
 import tla.domain.model.extern.AttestedTimespan;
-import tla.domain.model.meta.BTSeClass;
 
 @Slf4j
 @Service
-@BTSeClass("BTSLemmaEntry")
+@ModelClass(value = LemmaEntity.class, path = "lemma")
 public class LemmaService extends QueryService<LemmaEntity> {
 
     @Autowired

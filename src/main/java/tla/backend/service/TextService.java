@@ -17,12 +17,11 @@ import org.springframework.stereotype.Service;
 import tla.backend.es.model.OccurrenceEntity;
 import tla.backend.es.model.TextEntity;
 import tla.backend.es.repo.TextRepo;
-import tla.domain.model.meta.BTSeClass;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
 @Service
-@BTSeClass("BTSText")
+@ModelClass(value = TextEntity.class, path = "text")
 public class TextService extends QueryService<TextEntity> {
 
     @Autowired

@@ -32,7 +32,7 @@ import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.BTSeClass;
 
 /**
- * Implementing subclasses must be annotated with {@link BTSeClass} and be instantiated
+ * Implementing subclasses must be annotated with {@link ModelClass} and be instantiated
  * using the no-args default constructor.
  * They should also be annotated with {@link Service} for component scanning / dependency injection.
  */
@@ -42,7 +42,7 @@ public abstract class QueryService<T extends Indexable> {
     @Autowired
     private ElasticsearchRestTemplate restTemplate;
 
-    protected static Map<String, QueryService<? extends Indexable>> eclassServices = new HashMap<>();
+    protected static Map<Class<? extends Indexable>, QueryService<? extends Indexable>> modelClassServices = new HashMap<>();
 
     /**
      * Default constructor registering services under the eclass specified via a {@link BTSeClass}
@@ -50,13 +50,37 @@ public abstract class QueryService<T extends Indexable> {
      */
     protected QueryService() {
         for (Annotation a : this.getClass().getAnnotations()) {
-            if (a instanceof BTSeClass) {
-                eclassServices.put(
-                    ((BTSeClass) a).value(),
+            log.info("annotation on clas {}: {}", this.getClass().getName(), a.getClass().getName());
+            if (a instanceof ModelClass) {
+                log.info("register model class service {}", this.getClass().getName());
+                modelClassServices.put(
+                    ((ModelClass) a).value(),
                     this
                 );
             }
         }
+        log.info("number of registered services: {}", modelClassServices.size());
+    }
+
+    /**
+     * Returns the query service registered for a given model class, or null if no such model class have been
+     * registered.
+     * Registration takes place at construction time of any service with a {@link ModelClass} annotation.
+     */
+    public static QueryService<? extends Indexable> getService(Class<? extends Indexable> modelClass) {
+        if (modelClassServices.containsKey(modelClass)) {
+            return modelClassServices.get(modelClass);
+        } else {
+            log.error("No service registered for eclass '{}'!'", modelClass);
+            return null;
+        }
+    }
+
+    /**
+     * Returns all model classes for which there are services registered.
+     */
+    public static Collection<Class<? extends Indexable>> getRegisteredModelClasses() {
+        return modelClassServices.keySet();
     }
 
     /**
@@ -232,7 +256,8 @@ public abstract class QueryService<T extends Indexable> {
      * Tries to find the ES document identified by eclass and ID.
      */
     public BaseEntity retrieveSingleBTSDoc(String eclass, String id) {
-        QueryService<? extends Indexable> service = eclassServices.get(eclass);
+        Class<? extends BaseEntity> modelClass = ModelConfig.getModelClass(eclass);
+        QueryService<? extends Indexable> service = modelClassServices.getOrDefault(modelClass, null);
         if (service == null) {
             log.error("Could not find entity service for eclass {}!", eclass);
             return null;
