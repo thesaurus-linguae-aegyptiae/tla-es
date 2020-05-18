@@ -6,10 +6,9 @@ import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.CorpusObjectEntity;
 import tla.backend.es.repo.CorpusObjectRepo;
-import tla.domain.model.meta.BTSeClass;
 
 @Service
-@BTSeClass("BTSTCObject")
+@ModelClass(value = CorpusObjectEntity.class, path = "object")
 public class CorpusObjectService extends QueryService<CorpusObjectEntity> {
 
     @Autowired
