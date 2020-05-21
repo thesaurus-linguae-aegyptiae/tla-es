@@ -16,6 +16,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
 import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.model.CorpusObjectEntity;
 import tla.backend.es.model.LemmaEntity;
@@ -23,6 +24,7 @@ import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.model.parts.EditorInfo;
 import tla.backend.es.model.parts.Translations;
+
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.DocumentDto;
@@ -319,10 +321,12 @@ public class ModelConfig {
      */
     public static DocumentDto toDTO(Indexable entity) throws NullPointerException {
         if (entity != null) {
-            return modelMapper.map(
+            Class<? extends DocumentDto> dtoClass = getModelClassDTO(entity.getClass());
+            Object dto = modelMapper.map(
                 entity,
-                getModelClassDTO(entity.getClass())
+                dtoClass
             );
+            return dtoClass.cast(dto);
         }
         throw new NullPointerException();
     }

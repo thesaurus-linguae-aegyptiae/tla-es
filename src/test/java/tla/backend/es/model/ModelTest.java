@@ -269,7 +269,7 @@ public class ModelTest {
     }
 
     @Test
-    void annotationModelMapping() {
+    void annotationModelMapping() throws Exception {
         AnnotationEntity a = AnnotationEntity.builder()
             .id("ID")
             .eclass("BTSAnnotation")
@@ -277,7 +277,7 @@ public class ModelTest {
             .revisionState("published")
             .passport(Passport.of(Map.of("lemma", Collections.emptyMap())))
             .build();
-        DocumentDto d = a.toDTO();
+        AnnotationDto d = AnnotationDto.class.cast(a.toDTO());
         assertAll("test annotation entity to DTO conversion",
             () -> assertEquals(a.getEclass(), d.getEclass()),
             () -> assertEquals(a.getName(), d.getName()),
@@ -362,6 +362,38 @@ public class ModelTest {
             () -> assertEquals(o.getRevisionState(), d.getReviewState()),
             () -> assertNotNull(d.getEditors(), "DTO edit info not null"),
             () -> assertNotNull(d.getEditors().getUpdated(), "DTO edit date not null")
+        );
+    }
+
+    @Test
+    void commentDeserializeSimple() throws Exception {
+        CommentEntity c = mapper.readValue(
+            "{\"eclass\":\"BTSComment\",\"id\":\"ID\",\"body\":\"comment\",\"relations\":{\"partOf\":[{\"id\":\"1\",\"eclass\":\"BTSText\",\"ranges\":[{\"from\":\"a\",\"to\":\"b\"}]}]}}",
+            CommentEntity.class
+        );
+        assertAll("comment deserialization ok",
+            () -> assertNotNull(c, "instance not null"),
+            () -> assertNotNull(c.getBody(), "body"),
+            () -> assertEquals("comment", c.getBody(), "content"),
+            () -> assertNotNull(c.getRelations(), "relations"),
+            () -> assertEquals(1, c.getRelations().size(), "relation predicate count"),
+            () -> assertNotNull(c.getRelations().get("partOf"), "predicate partof"),
+            () -> assertEquals(1, c.getRelations().get("partOf").size(), "1 relation"),
+            () -> assertNotNull(c.getRelations().get("partOf").get(0), "first relation"),
+            () -> assertNotNull(c.getRelations().get("partOf").get(0).getRanges(), "text range"),
+            () -> assertTrue(!c.getRelations().get("partOf").get(0).getRanges().isEmpty(), "text range"),
+            () -> assertNotNull(c.getRelations().get("partOf").get(0).getRanges().get(0).getFrom(), "text range boundary")
+        );
+        CommentEntity c2 = CommentEntity.builder()
+            .id(c.getId())
+            .eclass(c.getEclass())
+            .body(c.getBody())
+            .relations(c.getRelations())
+            .build();
+        assertAll("equality",
+            () -> assertEquals(c, c2, "instances"),
+            () -> assertEquals(c.toString(), c2.toString(), "str repr"),
+            () -> assertEquals(c.hashCode(), c2.hashCode(), "hashcode")
         );
     }
 
