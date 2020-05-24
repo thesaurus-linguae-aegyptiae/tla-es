@@ -1,11 +1,8 @@
 package tla.backend.es.model.parts;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import org.modelmapper.AbstractConverter;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -17,17 +14,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
-
+import lombok.extern.slf4j.Slf4j;
 import tla.domain.model.Language;
 
 @Data
+@Slf4j
 @Builder
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Translations {
-	
+
 	// https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html
-	
+
 	@Singular("de")
 	@Field(type = FieldType.Text, analyzer = "german")
 	private List<String> de;
@@ -39,24 +37,41 @@ public class Translations {
 	@Singular("fr")
 	@Field(type = FieldType.Text, analyzer = "french")
 	private List<String> fr;
-	
+
 	@Singular("ar")
 	@Field(type = FieldType.Text, analyzer = "arabic")
 	private List<String> ar;
-	
+
 	@Singular("it")
 	@Field(type = FieldType.Text, analyzer = "italian")
 	private List<String> it;
 
 	/**
-	 * Default constructor used by deserialization via ES entity mapper
+	 * Retrieves translation(s) for a given language.
 	 */
-	public Translations() {
-		this.de = Collections.emptyList();
-		this.en = Collections.emptyList();
-		this.fr = Collections.emptyList();
-		this.ar = Collections.emptyList();
-		this.it = Collections.emptyList();
+	@SuppressWarnings("unchecked")
+	public List<String> get(Language lang) {
+		String getterName = String.format(
+			"get%s",
+			lang.toString().toUpperCase().charAt(0) + lang.toString().substring(1)
+		);
+		try {
+			Object res = Translations.class.getMethod(getterName).invoke(this);
+			if (res != null && res instanceof List) {
+				return (List<String>) res;
+			}
+		} catch (Exception e) {
+			log.error(
+				String.format(
+					"Could not access translations in %s via method %s on %s!",
+					lang.toString(),
+					getterName,
+					this
+				),
+				e
+			);
+		}
+		return null;
 	}
 
 	/**
@@ -64,17 +79,23 @@ public class Translations {
 	 */
 	public SortedMap<Language, List<String>> toMap() {
 		SortedMap<Language, List<String>> converted = new TreeMap<Language, List<String>>();
-		for (Entry<Language, List<String>> e : 
-			Map.of(
-				Language.DE, this.getDe(),
-				Language.EN, this.getEn(),
-				Language.FR, this.getFr(),
-				Language.AR, this.getAr(),
-				Language.IT, this.getIt()
-			).entrySet()
-		) {
-			if (!e.getValue().isEmpty()) {
-				converted.put(e.getKey(), e.getValue());
+		for (Language lang : Language.values()) {
+			try {
+				List<String> langTranslations = this.get(lang);
+				if (langTranslations != null) {
+					converted.put(
+						lang,
+						(List<String>) langTranslations
+					);
+				}
+			} catch (Exception e) {
+				log.error(
+					String.format(
+						"Could not map translations %s",
+						this
+					),
+					e
+				);
 			}
 		}
 		return converted;
