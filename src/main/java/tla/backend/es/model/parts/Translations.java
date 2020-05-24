@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 import tla.domain.model.Language;
@@ -20,6 +21,7 @@ import tla.domain.model.Language;
 @Data
 @Slf4j
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Translations {
@@ -58,7 +60,9 @@ public class Translations {
 		try {
 			Object res = Translations.class.getMethod(getterName).invoke(this);
 			if (res != null && res instanceof List) {
-				return (List<String>) res;
+				if (!((List<String>) res).isEmpty()) {
+					return (List<String>) res;
+				}	
 			}
 		} catch (Exception e) {
 			log.error(
