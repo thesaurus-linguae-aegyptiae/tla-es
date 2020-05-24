@@ -16,10 +16,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.parts.Transcription;
 import tla.backend.es.model.parts.Translations;
+import tla.domain.model.meta.AbstractBTSBaseClass;
+import tla.domain.model.meta.BTSeClass;
 import tla.backend.es.model.parts.Token;
 
 @Getter
@@ -27,19 +30,21 @@ import tla.backend.es.model.parts.Token;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@BTSeClass("BTSSentence")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Document(indexName = "sentence", type = "sentence")
 @Setting(settingPath = "/elasticsearch/settings/indices/sentence.json")
-public class SentenceEntity implements Indexable {
+public class SentenceEntity extends AbstractBTSBaseClass implements Indexable {
+
+    @Id
+    @NonNull
+    @Field(type = FieldType.Keyword)
+    private String id;
 
     @Field(type = FieldType.Keyword)
     @JsonAlias("text")
     private String textId;
-
-    @Id
-    @Field(type = FieldType.Keyword)
-    private String id;
 
     @Field(type = FieldType.Keyword)
     private String type;

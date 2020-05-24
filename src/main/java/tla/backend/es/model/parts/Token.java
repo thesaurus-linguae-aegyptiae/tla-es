@@ -27,8 +27,8 @@ public class Token {
     private String type;
 
     @Field(type = FieldType.Text)
-    @JsonAlias("label")
-    private String name;
+    @JsonAlias("name")
+    private String label;
 
     @Field(type = FieldType.Object)
     private Lemmatization lemma;
@@ -44,6 +44,9 @@ public class Token {
 
     @Field(type = FieldType.Object)
     private Translations translations;
+
+    @Field(type = FieldType.Boolean)
+    private boolean rubrum;
 
     @Getter
     @Setter
