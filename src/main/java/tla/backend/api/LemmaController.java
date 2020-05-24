@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,15 +47,6 @@ public class LemmaController extends EntityController<LemmaEntity> {
     @Override
     public QueryService<LemmaEntity> getService() {
         return queryService;
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/count")
-    public ResponseEntity<Long> countLemmata() {
-        log.debug("counting lemmata: {}", repo.count());
-        return new ResponseEntity<Long>(
-            repo.count(),
-            HttpStatus.OK
-        );
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/frequencies")
@@ -99,22 +90,27 @@ public class LemmaController extends EntityController<LemmaEntity> {
     )
     public ResponseEntity<SearchResultsWrapper<LemmaDto>> search(@RequestBody LemmaSearch command, Pageable pageable) throws Exception {
         log.info("page: {}", pageable);
-        Page<LemmaEntity> page = queryService.search(
+        SearchHits<LemmaEntity> hits = queryService.search(
             queryService.createLemmaSearchQuery(command, pageable)
         );
+        PageInfo page = PageInfo.builder()
+            .number(pageable.getPageNumber())
+            .totalElements(hits.getTotalHits())
+            .size(QueryService.SEARCH_RESULT_PAGE_SIZE)
+            .numberOfElements(QueryService.SEARCH_RESULT_PAGE_SIZE)
+            .totalPages(
+                (int) hits.getTotalHits() / QueryService.SEARCH_RESULT_PAGE_SIZE + 1 // TODO
+            ).build();
         return new ResponseEntity<>(
             new SearchResultsWrapper<>(
-                page.getContent().stream().map(
-                    entity -> modelMapper.map(
-                        entity,
+                hits.getSearchHits().stream().map(
+                    hit -> modelMapper.map(
+                        hit.getContent(),
                         LemmaDto.class
                     )
                 ).collect(Collectors.toList()),
                 command,
-                modelMapper.map(
-                    page,
-                    PageInfo.class
-                )
+                page
             ),
             HttpStatus.OK
         );

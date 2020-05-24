@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -21,9 +20,9 @@ import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
@@ -67,9 +66,6 @@ public class LemmaService extends QueryService<LemmaEntity> {
     @Autowired
     private ElasticsearchOperations operations;
 
-    public SortedMap<String, Long> countOccurrencesPerText(String lemmaId) {
-        return null;
-    }
 
     @Override
     public ElasticsearchRepository<LemmaEntity, String> getRepo() {
@@ -174,9 +170,13 @@ public class LemmaService extends QueryService<LemmaEntity> {
         );
     }
 
-    public Page<LemmaEntity> search(Query query) {
+    public SearchHits<LemmaEntity> search(Query query) {
         log.info("query: {}", query);
-        return operations.queryForPage(query, LemmaEntity.class, IndexCoordinates.of("lemma"));
+        return operations.search(
+            query,
+            LemmaEntity.class,
+            IndexCoordinates.of("lemma")
+        );
     }
 
     private BoolQueryBuilder scriptFilter(LemmaSearch command) {

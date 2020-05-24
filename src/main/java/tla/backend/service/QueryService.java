@@ -39,6 +39,11 @@ import tla.domain.model.meta.BTSeClass;
 @Slf4j
 public abstract class QueryService<T extends Indexable> {
 
+    /**
+     * How many search results fit in 1 page.
+     */
+    public static final int SEARCH_RESULT_PAGE_SIZE = 20;
+
     @Autowired
     protected RestHighLevelClient restClient;
 

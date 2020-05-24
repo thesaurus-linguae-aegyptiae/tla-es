@@ -51,4 +51,20 @@ public abstract class EntityController<T extends Indexable> {
         throw new ObjectNotFoundException();
     }
 
+    /**
+     * Counts documents in index.
+     */
+    @RequestMapping(
+        value = "/count",
+        method = RequestMethod.GET,
+        consumes = MediaType.ALL_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<Long> count() {
+        return new ResponseEntity<Long>(
+            getService().getRepo().count(),
+            HttpStatus.OK
+        );
+    }
+
 }
