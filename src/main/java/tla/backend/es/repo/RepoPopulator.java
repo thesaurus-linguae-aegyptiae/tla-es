@@ -101,18 +101,17 @@ public class RepoPopulator {
         public void ingest() {
             try {
                 ((ElasticsearchRepository<S, String>) QueryService.getService(modelClass).getRepo()).saveAll(this.batch);
+                this.count += this.batch.size();
+                this.batch.clear();
             } catch (Exception e) {
                 log.error(
                     String.format(
-                        "%s ingestor could not save %d docs!",
-                        this.modelClass.getName(),
-                        this.batch.size()
-                    ),
-                    e
+                        "%s ingestor could not save %d docs (%s)! Trying again...",
+                        this.modelClass.getSimpleName(),
+                        this.batch.size(),
+                        e.getClass().getSimpleName()
+                    )
                 );
-            } finally {
-                this.count += this.batch.size();
-                this.batch.clear();
             }
         }
     }
@@ -205,7 +204,7 @@ public class RepoPopulator {
             log.info(
                 "ingested {} documents of type {}",
                 batchIngestor.count,
-                batchIngestor.modelClass.getName()
+                batchIngestor.modelClass.getSimpleName()
             );
         }
     }

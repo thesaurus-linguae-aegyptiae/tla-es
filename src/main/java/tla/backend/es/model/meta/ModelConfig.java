@@ -35,7 +35,7 @@ import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
 
 /**
- * If a model class is to be aded, it has to be annotated with {@link @BTSeClass} and {@link TLADTO}
+ * If a model class is to be added, it has to be annotated with {@link @BTSeClass} and {@link TLADTO}
  * and registered in here.
  */
 @Slf4j

@@ -10,9 +10,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.BucketOrder;
+import org.elasticsearch.search.aggregations.bucket.nested.Nested;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.LemmaEntity;
+import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.repo.LemmaRepo;
@@ -49,6 +57,9 @@ public class LemmaService extends QueryService<LemmaEntity> {
 
     @Autowired
     private TextService textService;
+
+    @Autowired
+    private SentenceService sentenceService;
 
     @Autowired
     private ThesaurusService thsService;
@@ -93,7 +104,7 @@ public class LemmaService extends QueryService<LemmaEntity> {
      * total occurrences for each one.
      */
     public Collection<AttestedTimespan> computeAttestedTimespans(String lemmaId) {
-        Map<String, Long> freqPerText = textService.countOccurrencesPerText(lemmaId);
+        Map<String, Long> freqPerText = sentenceService.lemmaFrequencyPerText(lemmaId);
         Map<String, AttestedTimespan> periodCounts = new HashMap<>();
         for (Entry<String, Long> e : freqPerText.entrySet()) {
             TextEntity t = textService.retrieve(e.getKey());
@@ -136,6 +147,31 @@ public class LemmaService extends QueryService<LemmaEntity> {
             }
         }
         return periodCounts.values();
+    }
+
+    public Map<String, Long> getMostFrequent(int limit) {
+        SearchResponse response = query(
+            SentenceEntity.class,
+            matchAllQuery(),
+            AggregationBuilders.nested(
+                "aggs",
+                "tokens"
+            ).subAggregation(
+                AggregationBuilders.terms("lemmata").field(
+                    "tokens.lemma.id"
+                ).order(
+                    BucketOrder.count(false)
+                ).size(limit)
+            )
+        );
+        Nested aggs = response.getAggregations().get("aggs");
+        Terms terms = aggs.getAggregations().get("lemmata");
+        return terms.getBuckets().stream().collect(
+            Collectors.toMap(
+                Terms.Bucket::getKeyAsString,
+                Terms.Bucket::getDocCount
+            )
+        );
     }
 
     public Page<LemmaEntity> search(Query query) {

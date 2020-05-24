@@ -30,8 +30,8 @@ import tla.domain.model.meta.TLADTO;
 
 @Data
 @SuperBuilder
-@TLADTO(CommentDto.class)
 @BTSeClass("BTSComment")
+@TLADTO(CommentDto.class)
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -33,6 +33,13 @@
             "lowercase"
           ]
         },
+        "transcription_analyzer": {
+          "type": "custom",
+          "tokenizer": "whitespace",
+          "filter": [
+            "lowercase"
+          ]
+        },
         "hieroglyph_analyzer": {
           "type": "custom",
           "tokenizer": "hieroglyph_tokenizer"
