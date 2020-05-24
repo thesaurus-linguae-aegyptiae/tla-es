@@ -277,6 +277,8 @@ public class ModelConfig {
                 )
             ).addMapping(
                 TextEntity::getRevisionState, TextDto::setReviewState
+            ).addMapping(
+                TextEntity::getSentences, TextDto::setSentenceIds
             );
         modelMapper.createTypeMap(CorpusObjectEntity.class, CorpusObjectDto.class)
             .addMappings(

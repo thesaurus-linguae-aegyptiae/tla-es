@@ -8,6 +8,7 @@ import org.modelmapper.AbstractConverter;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
@@ -23,9 +24,8 @@ import tla.domain.model.Language;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Translations {
-
-    // https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-lang-analyzer.html
 
     @Field(type = FieldType.Text, analyzer = "german")
     private List<String> de;
