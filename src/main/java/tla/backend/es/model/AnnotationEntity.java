@@ -14,8 +14,8 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import tla.backend.es.model.meta.BaseEntity;
@@ -43,7 +43,7 @@ public class AnnotationEntity extends BaseEntity {
     @Field(type = FieldType.Object)
     private Passport passport;
 
-    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     @Field(type = FieldType.Text, analyzer = "german")
     private Collection<String> body;
 
