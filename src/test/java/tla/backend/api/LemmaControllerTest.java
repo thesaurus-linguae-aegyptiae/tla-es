@@ -1,5 +1,6 @@
 package tla.backend.api;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,8 +62,9 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
             .id("1")
             .eclass("BTSLemmaEntry")
             .editors(EditorInfo.builder().author("author").updated(EditDate.of(1854,10,31)).build())
-            .translations(Translations.builder().de("übersetzung").build())
-            .word(new LemmaWord("N35:G47", new Transcription("nfr", "nfr")))
+            .translations(
+                Translations.builder().de(List.of("übersetzung")).build()
+            ).word(new LemmaWord("N35:G47", new Transcription("nfr", "nfr")))
             .build();
         String ser = new ObjectMapper().writeValueAsString(l1);
         LemmaEntity l2 = mapper.readValue(ser, LemmaEntity.class);
@@ -99,8 +101,9 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
                                 .build()
                         )
                         .sortKey("1")
-                        .translations(Translations.builder().de("deutsch").en("english").build())
-                        .build()
+                        .translations(
+                            Translations.builder().de(List.of("deutsch")).en(List.of("english")).build()
+                        ).build()
                 )
             );
         mockMvc.perform(

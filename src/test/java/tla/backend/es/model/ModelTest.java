@@ -121,14 +121,16 @@ public class ModelTest {
     @Test
     void translationsEqual() throws Exception {
         assertTrue(mapper != null, "entitymapper should not be null");
-        Translations t1 = Translations.builder().de("übersetzung").en("translation").en("meaning").build();
+        Translations t1 = Translations.builder().de(List.of("übersetzung")).en(List.of("translation", "meaning")).build();
         Translations t2 = Translations.builder().de(Arrays.asList("übersetzung")).en(Arrays.asList("translation", "meaning")).build();
         Translations t3 = mapper.readValue("{\"de\": [\"übersetzung\"], \"en\": [\"translation\", \"meaning\"]}", Translations.class);
         assertAll("translations objects should be equal",
             () -> assertEquals(t2, t1, "translation instances should be equal regardless of build method parameter type"),
             () -> assertEquals(t3, t1, "deserialized instance should be equal to builder-instantiated"),
-            () -> assertTrue(t1.getFr().isEmpty(), "builder-built french translations array should be empty"),
-            () -> assertTrue(t3.getFr().isEmpty(), "deserialized french translations array should be empty")
+            () -> assertNull(t1.getFr(), "builder-built french translations array should be null"),
+            () -> assertNull(t3.getFr(), "deserialized french translations array should be null"),
+            () -> assertEquals(t3.hashCode(), t1.hashCode(), "hashcodes equal"),
+            () -> assertNull(t3.get(null), "undefined language causes null")
         );
     }
 
@@ -239,7 +241,7 @@ public class ModelTest {
             .type("subst")
             .revisionState("published")
             .sortKey("Id")
-            .translations(Translations.builder().de("übersetzung").build())
+            .translations(Translations.builder().de(List.of("übersetzung")).build())
             .word(
                 new LemmaWord(
                     "N35:G47",
