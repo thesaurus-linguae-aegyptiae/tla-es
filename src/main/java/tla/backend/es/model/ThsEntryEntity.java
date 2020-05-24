@@ -72,6 +72,8 @@ public class ThsEntryEntity extends TLAEntity {
 
     /**
      * Convert multilingual synonyms extracted from passport to {@link Translations} object.
+     *
+     * @return {@link Translations} instance or <code>null</code> if no synonyms are in passport
      */
     private Translations extractTranslationsFromPassport() {
         Translations res = null;
