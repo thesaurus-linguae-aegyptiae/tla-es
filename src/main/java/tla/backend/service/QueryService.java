@@ -26,8 +26,9 @@ import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
-import tla.domain.dto.DocumentDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
+import tla.domain.dto.meta.AbstractDto;
+import tla.domain.dto.meta.DocumentDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.BTSeClass;
 
@@ -119,11 +120,11 @@ public abstract class QueryService<T extends Indexable> {
      * and inshallah all documents referenced by it.
      * @see {@link ModelConfig#toDTO}
      */
-    public SingleDocumentWrapper<DocumentDto> getDetails(String id) {
+    public SingleDocumentWrapper<? extends AbstractDto> getDetails(String id) {
         T document = this.retrieve(id);
-        final SingleDocumentWrapper<DocumentDto> container;
+        final SingleDocumentWrapper<? extends AbstractDto> container;
         if (document != null) {
-            container = new SingleDocumentWrapper<>(
+            container = new SingleDocumentWrapper<AbstractDto>(
                 ModelConfig.toDTO(document)
             );
             Collection<BaseEntity> relatedObjects = new HashSet<>();
@@ -132,7 +133,7 @@ public abstract class QueryService<T extends Indexable> {
             relatedObjects.forEach(
                 relatedObject -> {
                     container.addRelated(
-                        ModelConfig.toDTO(relatedObject)
+                        (DocumentDto) ModelConfig.toDTO(relatedObject)
                     );
                 }
             );

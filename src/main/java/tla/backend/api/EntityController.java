@@ -12,8 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import tla.backend.error.ObjectNotFoundException;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.service.QueryService;
-import tla.domain.dto.DocumentDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
+import tla.domain.dto.meta.AbstractDto;
 
 /**
  * Generic TLA entity REST controller.
@@ -39,10 +39,10 @@ public abstract class EntityController<T extends Indexable> {
         consumes = MediaType.ALL_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<SingleDocumentWrapper<DocumentDto>> get(@PathVariable String id) throws ObjectNotFoundException {
-        SingleDocumentWrapper<DocumentDto> result = getService().getDetails(id);
+    public ResponseEntity<SingleDocumentWrapper<? extends AbstractDto>> get(@PathVariable String id) throws ObjectNotFoundException {
+        SingleDocumentWrapper<? extends AbstractDto> result = getService().getDetails(id);
         if (result != null) {
-            return new ResponseEntity<SingleDocumentWrapper<DocumentDto>>(
+            return new ResponseEntity<SingleDocumentWrapper<? extends AbstractDto>>(
                 result,
                 HttpStatus.OK
             );

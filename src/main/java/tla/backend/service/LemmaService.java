@@ -36,9 +36,9 @@ import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.repo.LemmaRepo;
 import tla.domain.command.LemmaSearch;
 import tla.domain.command.TypeSpec;
-import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
+import tla.domain.dto.meta.AbstractDto;
 import tla.domain.model.Language;
 import tla.domain.model.Passport;
 import tla.domain.model.Script;
@@ -80,12 +80,12 @@ public class LemmaService extends QueryService<LemmaEntity> {
      * @see {@link #computeAttestedTimespans(String)}
      */
     @Override
-    public SingleDocumentWrapper<DocumentDto> getDetails(String id) {
+    public SingleDocumentWrapper<? extends AbstractDto> getDetails(String id) {
         LemmaEntity lemma = retrieve(id);
         if (lemma == null) {
             return null;
         }
-        SingleDocumentWrapper<DocumentDto> wrapper = super.getDetails(id);
+        SingleDocumentWrapper<? extends AbstractDto> wrapper = super.getDetails(id);
         ((LemmaDto) wrapper.getDoc()).setAttestations(
             new LinkedList<>(
                 this.computeAttestedTimespans(id)

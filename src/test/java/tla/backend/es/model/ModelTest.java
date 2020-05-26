@@ -182,7 +182,7 @@ public class ModelTest {
             () -> assertEquals(1, t.getTranslations().getFr().size()),
             () -> assertEquals("21e dynastie", t.getTranslations().getFr().get(0))
         );
-        DocumentDto dto = t.toDTO();
+        DocumentDto dto = (DocumentDto) t.toDTO();
         assertAll("test thesaurus entity to DTO mapping",
             () -> assertTrue(dto instanceof ThsEntryDto),
             () -> assertNotNull(dto.getReviewState(), "review status must not be null"),
@@ -249,7 +249,7 @@ public class ModelTest {
                 )
             )
             .build();
-        DocumentDto dto = l.toDTO();
+        DocumentDto dto = (DocumentDto) l.toDTO();
         assertTrue(dto instanceof LemmaDto);
         LemmaDto d = (LemmaDto) dto;
         assertAll("lemma entity should be mapped to DTO correctly",
@@ -331,7 +331,7 @@ public class ModelTest {
             "src/test/resources/sample/text/2A5EGGJVHVFVVL42QSWVLJORYE.json",
             TextEntity.class
         );
-        DocumentDto d = t.toDTO();
+        DocumentDto d = (DocumentDto) t.toDTO();
         assertAll("test text to DTO mapping",
             () -> assertNotNull(d),
             () -> assertTrue(d instanceof TextDto),
@@ -356,7 +356,7 @@ public class ModelTest {
             () -> assertNotNull(o.getPaths()),
             () -> assertEquals("bbawarchive", o.getCorpus())
         );
-        DocumentDto d = o.toDTO();
+        DocumentDto d = (DocumentDto) o.toDTO();
         assertAll("test corpus object to DTO mapping",
             () -> assertNotNull(d),
             () -> assertTrue(d instanceof CorpusObjectDto),

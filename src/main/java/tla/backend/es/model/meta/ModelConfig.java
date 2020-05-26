@@ -20,17 +20,22 @@ import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.model.CorpusObjectEntity;
 import tla.backend.es.model.LemmaEntity;
+import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.model.parts.EditorInfo;
 import tla.backend.es.model.parts.Translations;
+import tla.backend.es.model.parts.Token;
 
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
-import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
+import tla.domain.dto.SentenceDto;
 import tla.domain.dto.TextDto;
 import tla.domain.dto.ThsEntryDto;
+import tla.domain.dto.meta.AbstractDto;
+import tla.domain.model.SentenceToken;
+import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
 
@@ -321,9 +326,9 @@ public class ModelConfig {
      * @return An instance of the DTO class corresponding to the passed entity's class,
      * created using the application context's model mapper instance.
      */
-    public static DocumentDto toDTO(Indexable entity) throws NullPointerException {
+    public static AbstractDto toDTO(Indexable entity) throws NullPointerException {
         if (entity != null) {
-            Class<? extends DocumentDto> dtoClass = getModelClassDTO(entity.getClass());
+            Class<? extends AbstractDto> dtoClass = getModelClassDTO(entity.getClass());
             Object dto = modelMapper.map(
                 entity,
                 dtoClass
@@ -339,9 +344,9 @@ public class ModelConfig {
      *
      * @param modelClass Any {@link Indexable} class which defines its respective DTO class with
      * a {@link TLADO} annotation.
-     * @return A {@link DocumentDto} subclass.
+     * @return A {@link AbstractBTSBaseClass} subclass.
      */
-    public static Class<? extends DocumentDto> getModelClassDTO(Class<? extends Indexable> modelClass) {
+    public static Class<? extends AbstractDto> getModelClassDTO(Class<? extends Indexable> modelClass) {
         for (Annotation annotation : modelClass.getAnnotations()) {
             if (annotation instanceof TLADTO) {
                 return ((TLADTO) annotation).value();

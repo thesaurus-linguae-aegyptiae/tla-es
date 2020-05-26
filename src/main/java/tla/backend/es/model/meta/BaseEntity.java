@@ -16,7 +16,7 @@ import lombok.NonNull;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 import tla.backend.es.model.parts.EditorInfo;
-import tla.domain.dto.DocumentDto;
+import tla.domain.dto.meta.AbstractDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.AbstractBTSBaseClass;
 
@@ -82,7 +82,7 @@ public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexab
     /**
      * Converts an instance to a DTO of the type specified via {@link TLADTO} annotation
      */
-    public DocumentDto toDTO() {
+    public AbstractDto toDTO() {
         return ModelConfig.toDTO(this);
     }
 
