@@ -1,5 +1,7 @@
 package tla.backend.es.model.parts;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,7 +13,6 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 @Getter
 @Setter
@@ -45,12 +46,8 @@ public class Token {
     @Field(type = FieldType.Object)
     private Translations translations;
 
-    @Field(type = FieldType.Boolean)
-    private boolean rubrum;
-
-    public void setRubrum(boolean value) {
-        this.rubrum = value ? value : null;
-    }
+    @Field(type = FieldType.Keyword)
+    private List<String> flags;
 
     @Getter
     @Setter
