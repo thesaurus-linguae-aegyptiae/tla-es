@@ -18,15 +18,22 @@ import tla.backend.es.model.meta.TLAEntity;
 import tla.backend.es.model.parts.EditDate;
 import tla.backend.es.model.parts.EditorInfo;
 import tla.backend.es.model.parts.LemmaWord;
+import tla.backend.es.model.parts.PartOfSpeech;
+import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Transcription;
 import tla.backend.es.model.parts.Translations;
+import tla.backend.es.model.parts.Token.Flexion;
+import tla.backend.es.model.parts.Token.Lemmatization;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
-import tla.domain.dto.DocumentDto;
+import tla.domain.dto.meta.DocumentDto;
 import tla.domain.dto.LemmaDto;
+import tla.domain.dto.SentenceDto;
 import tla.domain.dto.TextDto;
 import tla.domain.dto.ThsEntryDto;
+import tla.domain.model.Language;
 import tla.domain.model.Passport;
+import tla.domain.model.SentenceToken;
 import tla.domain.model.meta.BTSeClass;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -396,6 +403,47 @@ public class ModelTest {
             () -> assertEquals(c, c2, "instances"),
             () -> assertEquals(c.toString(), c2.toString(), "str repr"),
             () -> assertEquals(c.hashCode(), c2.hashCode(), "hashcode")
+        );
+    }
+
+    @Test
+    void mapSentenceToDTO() throws Exception {
+        Flexion f = new Flexion();
+        Lemmatization l = new Lemmatization();
+        SentenceEntity.Context c = SentenceEntity.Context.builder()
+            .textId("textId").line("[1]").pos(0).build();
+        l.setPos(new PartOfSpeech("substantive", "masc"));
+        f.setNumeric(3L);
+        Token t = new Token();
+        t.setFlexion(f);
+        t.setLemma(l);
+        t.setTranslations(Translations.builder().de(List.of("bedeutung")).build());;
+        SentenceEntity s = SentenceEntity.builder()
+            .id("ID")
+            .context(c)
+            .transcription(new Transcription("nfr", "nfr"))
+            .translations(Translations.builder().de(List.of("uebersetzung")).build())
+            .tokens(List.of(t))
+            .build();
+        SentenceDto dto = (SentenceDto) ModelConfig.toDTO(s);
+        assertAll("test sentence entity to DTO mapping",
+            () -> assertNotNull(dto, "instance"),
+            () -> assertNotNull(dto.getTranscription(), "transcription"),
+            () -> assertEquals("nfr", dto.getTranscription().getUnicode(), "transcription unicode"),
+            () -> assertNotNull(dto.getTranslations(), "translations"),
+            () -> assertTrue(dto.getTranslations().containsKey(Language.DE), "german translation"),
+            () -> assertEquals(List.of("uebersetzung"), dto.getTranslations().get(Language.DE), "translation value"),
+            () -> assertNotNull(dto.getTokens(), "tokens"),
+            () -> assertEquals(1, dto.getTokens().size(), "1 token"),
+            () -> assertNotNull(dto.getContext(), "sentence context in DTO"),
+            () -> assertEquals(s.getContext().getLine(), dto.getContext().getLine(), "lc")
+        );
+        SentenceToken tdto = dto.getTokens().get(0);
+        assertAll("test sentence token to DTO mapping",
+            () -> assertNotNull(tdto, "token"),
+            () -> assertNotNull(tdto.getFlexion(), "flexion"),
+            () -> assertEquals(3L, tdto.getFlexion().getNumeric(), "flexcode"),
+            () -> assertNotNull(tdto.getLemma(), "lemmatization")
         );
     }
 

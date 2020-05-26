@@ -296,6 +296,16 @@ public class ModelConfig {
         modelMapper.createTypeMap(AnnotationEntity.class, AnnotationDto.class).addMapping(
             AnnotationEntity::getRevisionState, AnnotationDto::setReviewState
         );
+        modelMapper.createTypeMap(SentenceEntity.class, SentenceDto.class).addMappings(
+            m -> m.using(translationsToMapConverter).map(
+                SentenceEntity::getTranslations, SentenceDto::setTranslations
+            )
+        );
+        modelMapper.createTypeMap(Token.class, SentenceToken.class).addMappings(
+            m -> m.using(translationsToMapConverter).map(
+                Token::getTranslations, SentenceToken::setTranslations
+            )
+        );
         return modelMapper;
     }
 

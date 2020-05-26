@@ -48,6 +48,10 @@ public class Token {
     @Field(type = FieldType.Boolean)
     private boolean rubrum;
 
+    public void setRubrum(boolean value) {
+        this.rubrum = value ? value : null;
+    }
+
     @Getter
     @Setter
     @NoArgsConstructor

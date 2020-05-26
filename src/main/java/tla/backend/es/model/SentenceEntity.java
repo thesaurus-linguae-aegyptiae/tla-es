@@ -21,16 +21,22 @@ import lombok.Setter;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.parts.Transcription;
 import tla.backend.es.model.parts.Translations;
+import tla.domain.dto.SentenceDto;
 import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.BTSeClass;
+import tla.domain.model.meta.TLADTO;
 import tla.backend.es.model.parts.Token;
 
+/**
+ * Represents a single sentence from a text document.
+ */
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @BTSeClass("BTSSentence")
+@TLADTO(SentenceDto.class)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Document(indexName = "sentence", type = "sentence")
@@ -43,17 +49,10 @@ public class SentenceEntity extends AbstractBTSBaseClass implements Indexable {
     private String id;
 
     @Field(type = FieldType.Keyword)
-    @JsonAlias("text")
-    private String textId;
-
-    @Field(type = FieldType.Keyword)
     private String type;
 
-    @Field(type = FieldType.Text)
-    private String line;
-
-    @Field(type = FieldType.Text)
-    private String paragraph;
+    @Field(type = FieldType.Object)
+    private Context context;
 
     @Field(type = FieldType.Object)
     private Translations translations;
@@ -63,5 +62,45 @@ public class SentenceEntity extends AbstractBTSBaseClass implements Indexable {
 
     @Field(type = FieldType.Nested)
     private Collection<Token> tokens;
+
+    /**
+     * Tells you to which text document this sentence belongs and its position
+     * within the text's content.
+     */
+    @Getter
+    @Setter
+    @Builder
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    public static class Context {
+
+        /**
+         * ID of the text document to which this sentence belongs.
+         */
+        @Field(type = FieldType.Keyword)
+        @JsonAlias("text")
+        private String textId;
+
+        /**
+         * Label of whichever "new line" marker token found in the preceding sentences
+         * is closest to the beginning of this sentence.
+         */
+        @Field(type = FieldType.Text)
+        private String line;
+
+        /**
+         * Label of whichever "new paragraph" marker token found in the preceding sentences
+         * is closest to the beginning of this sentence.
+         */
+        @Field(type = FieldType.Text)
+        @JsonAlias("para")
+        private String paragraph;
+
+        /**
+         * This sentence's positon in the containing text's array of sentences, starting
+         * with <code>0</code>.
+         */
+        @Field(type = FieldType.Integer)
+        private int pos;
+    }
 
 }
