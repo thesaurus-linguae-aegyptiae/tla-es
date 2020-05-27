@@ -407,6 +407,20 @@ public class ModelTest {
     }
 
     @Test
+    void sentenceDeserialize() throws Exception {
+        SentenceEntity s = tla.domain.util.IO.loadFromFile(
+            "src/test/resources/sample/sentence/IBYCcRHLQNYWZE3htMe7qAXwMmY.json",
+            SentenceEntity.class
+        );
+        assertAll("deserialize sentence",
+            () -> assertNotNull(s, "sentence instance"),
+            () -> assertNotNull(s.getTokens(), "contains words"),
+            () -> assertTrue(!s.getTokens().isEmpty(), "tokens not empty")
+        );
+    }
+
+
+    @Test
     void mapSentenceToDTO() throws Exception {
         Flexion f = new Flexion();
         Lemmatization l = new Lemmatization();

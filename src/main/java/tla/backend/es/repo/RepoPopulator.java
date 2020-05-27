@@ -86,13 +86,12 @@ public class RepoPopulator {
                 );
                 this.add(doc);
             } catch (IOException e) {
-                log.error(
+                log.info(
                     String.format(
                         "ingestor could not instantiate %s class from %s",
                         this.modelClass.getName(),
                         json.subSequence(0, 30)
-                    ),
-                    e
+                    )
                 );
             }
         }

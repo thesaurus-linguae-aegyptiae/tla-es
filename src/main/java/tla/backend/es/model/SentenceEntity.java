@@ -70,6 +70,8 @@ public class SentenceEntity extends AbstractBTSBaseClass implements Indexable {
     @Getter
     @Setter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static class Context {
 
