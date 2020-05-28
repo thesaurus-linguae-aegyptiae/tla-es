@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.service.LemmaService;
-import tla.backend.service.QueryService;
+import tla.backend.service.EntityService;
 import tla.domain.command.LemmaSearch;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.PageInfo;
@@ -45,7 +45,7 @@ public class LemmaController extends EntityController<LemmaEntity> {
     private ModelMapper modelMapper;
 
     @Override
-    public QueryService<LemmaEntity> getService() {
+    public EntityService<LemmaEntity> getService() {
         return queryService;
     }
 
@@ -96,10 +96,10 @@ public class LemmaController extends EntityController<LemmaEntity> {
         PageInfo page = PageInfo.builder()
             .number(pageable.getPageNumber())
             .totalElements(hits.getTotalHits())
-            .size(QueryService.SEARCH_RESULT_PAGE_SIZE)
-            .numberOfElements(QueryService.SEARCH_RESULT_PAGE_SIZE)
+            .size(EntityService.SEARCH_RESULT_PAGE_SIZE)
+            .numberOfElements(EntityService.SEARCH_RESULT_PAGE_SIZE)
             .totalPages(
-                (int) hits.getTotalHits() / QueryService.SEARCH_RESULT_PAGE_SIZE + 1 // TODO
+                (int) hits.getTotalHits() / EntityService.SEARCH_RESULT_PAGE_SIZE + 1 // TODO
             ).build();
         return new ResponseEntity<>(
             new SearchResultsWrapper<>(

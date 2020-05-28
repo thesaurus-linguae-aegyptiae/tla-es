@@ -14,7 +14,7 @@ import tla.domain.model.Passport;
 
 @Service
 @ModelClass(value = ThsEntryEntity.class, path = "ths")
-public class ThesaurusService extends QueryService<ThsEntryEntity> {
+public class ThesaurusService extends EntityService<ThsEntryEntity> {
 
     @Autowired
     private ThesaurusRepo thsRepo;

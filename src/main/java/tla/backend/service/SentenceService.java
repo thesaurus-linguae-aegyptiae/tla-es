@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @ModelClass(value = SentenceEntity.class, path = "sentence")
-public class SentenceService extends QueryService<SentenceEntity> {
+public class SentenceService extends EntityService<SentenceEntity> {
 
     private final static String LEMMA_FREQ_AGG_NAME = "aggr_around_text_id";
 

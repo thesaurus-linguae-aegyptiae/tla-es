@@ -28,11 +28,11 @@ public class ServiceTest {
         }
         assertNotNull(lemmaServiceModelClassAnnotation, "lemma service should have expected annotation");
         assertAll("test if services register themselves",
-            () -> assertTrue(QueryService.modelClassServices.size() > 0),
-            () -> assertTrue(QueryService.modelClassServices.containsKey(LemmaEntity.class)),
-            () -> assertTrue(QueryService.modelClassServices.containsKey(ThsEntryEntity.class)),
-            () -> assertTrue(QueryService.modelClassServices.containsKey(AnnotationEntity.class)),
-            () -> assertTrue(QueryService.getRegisteredModelClasses().size() > 0)
+            () -> assertTrue(EntityService.modelClassServices.size() > 0),
+            () -> assertTrue(EntityService.modelClassServices.containsKey(LemmaEntity.class)),
+            () -> assertTrue(EntityService.modelClassServices.containsKey(ThsEntryEntity.class)),
+            () -> assertTrue(EntityService.modelClassServices.containsKey(AnnotationEntity.class)),
+            () -> assertTrue(EntityService.getRegisteredModelClasses().size() > 0)
         );
     }
 }

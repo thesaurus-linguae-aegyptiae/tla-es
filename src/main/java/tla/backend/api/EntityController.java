@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.error.ObjectNotFoundException;
 import tla.backend.es.model.meta.Indexable;
-import tla.backend.service.QueryService;
+import tla.backend.service.EntityService;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.dto.meta.AbstractDto;
 
@@ -28,7 +28,7 @@ public abstract class EntityController<T extends Indexable> {
     /**
      * Must return a presumably autowired entity service of appropriate type.
      */
-    public abstract QueryService<T> getService();
+    public abstract EntityService<T> getService();
 
     /**
      * Returns a document wrapper containing a single document and all documents it references.

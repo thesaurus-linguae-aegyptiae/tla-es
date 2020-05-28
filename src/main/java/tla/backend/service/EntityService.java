@@ -38,7 +38,7 @@ import tla.domain.model.meta.BTSeClass;
  * They should also be annotated with {@link Service} for component scanning / dependency injection.
  */
 @Slf4j
-public abstract class QueryService<T extends Indexable> {
+public abstract class EntityService<T extends Indexable> {
 
     /**
      * How many search results fit in 1 page.
@@ -48,13 +48,13 @@ public abstract class QueryService<T extends Indexable> {
     @Autowired
     protected RestHighLevelClient restClient;
 
-    protected static Map<Class<? extends Indexable>, QueryService<? extends Indexable>> modelClassServices = new HashMap<>();
+    protected static Map<Class<? extends Indexable>, EntityService<? extends Indexable>> modelClassServices = new HashMap<>();
 
     /**
      * Default constructor registering services under the eclass specified via a {@link BTSeClass}
      * annotation.
      */
-    protected QueryService() {
+    protected EntityService() {
         for (Annotation a : this.getClass().getAnnotations()) {
             if (a instanceof ModelClass) {
                 modelClassServices.put(
@@ -66,11 +66,11 @@ public abstract class QueryService<T extends Indexable> {
     }
 
     /**
-     * Returns the query service registered for a given model class, or null if no such model class have been
+     * Returns the entity service registered for a given model class, or null if no such model class have been
      * registered.
      * Registration takes place at construction time of any service with a {@link ModelClass} annotation.
      */
-    public static QueryService<? extends Indexable> getService(Class<? extends Indexable> modelClass) {
+    public static EntityService<? extends Indexable> getService(Class<? extends Indexable> modelClass) {
         if (modelClassServices.containsKey(modelClass)) {
             return modelClassServices.get(modelClass);
         } else {
@@ -260,7 +260,7 @@ public abstract class QueryService<T extends Indexable> {
      */
     public BaseEntity retrieveSingleBTSDoc(String eclass, String id) {
         Class<? extends BaseEntity> modelClass = ModelConfig.getModelClass(eclass);
-        QueryService<? extends Indexable> service = modelClassServices.getOrDefault(modelClass, null);
+        EntityService<? extends Indexable> service = modelClassServices.getOrDefault(modelClass, null);
         if (service == null) {
             log.error("Could not find entity service for eclass {}!", eclass);
             return null;

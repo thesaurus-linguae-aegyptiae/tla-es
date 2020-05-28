@@ -19,15 +19,15 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.service.ModelClass;
-import tla.backend.service.QueryService;
+import tla.backend.service.EntityService;
 
 /**
  * Repository populator batch-indexing documents read from <code>*.tar.gz</code> file.
- * In order to be able to batch-ingest a document type, a {@link QueryService} implementation
+ * In order to be able to batch-ingest a document type, a {@link EntityService} implementation
  * must exist and be typed for the model class to which the document is to be mapped.
- * This query service subclass must be annotated with a {@link ModelClass} annotation specifying
+ * This entity service subclass must be annotated with a {@link ModelClass} annotation specifying
  * the model class <i>and</i> the directory within the TAR archive in which files of the
- * document type in question are located. The query service subclass must also return
+ * document type in question are located. The entity service subclass must also return
  * the correct {@link ElasticsearchRepository} instance necessary to batch-index a bunch of
  * documents using its {@link ElasticsearchRepository#saveAll(Iterable)} method.
  *
@@ -73,7 +73,7 @@ public class RepoPopulator {
         public RepoBatchIngestor(Class<S> modelClass) {
             this.modelClass = modelClass;
             this.path = getModelClassServicePath(
-                QueryService.getService(modelClass)
+                EntityService.getService(modelClass)
             );
             this.batch = new ArrayList<>();
             this.count = 0;
@@ -111,14 +111,14 @@ public class RepoPopulator {
         }
 
         /**
-         * Get the {@link QueryService} instance of which the {@link ModelClass} annotation specifies the
+         * Get the {@link EntityService} instance of which the {@link ModelClass} annotation specifies the
          * same model class as this batch indexer is typed for, and uses that service's {@link ElasticsearchRepository}
          * to batch-index all entities currently in the cache.
          */
         @SuppressWarnings("unchecked")
         public void ingest() {
             try {
-                ((ElasticsearchRepository<S, String>) QueryService.getService(modelClass).getRepo()).saveAll(this.batch);
+                ((ElasticsearchRepository<S, String>) EntityService.getService(modelClass).getRepo()).saveAll(this.batch);
                 this.count += this.batch.size();
                 this.batch.clear();
             } catch (Exception e) {
@@ -148,7 +148,7 @@ public class RepoPopulator {
     /**
      * Return the <code>path</code> value of a entity service's {@link ModelClass} annotation
      */
-    private static String getModelClassServicePath(QueryService<? extends Indexable> service) {
+    private static String getModelClassServicePath(EntityService<? extends Indexable> service) {
         for (Annotation a : service.getClass().getAnnotations()) {
             if (a instanceof ModelClass) {
                 return ((ModelClass) a).path();
@@ -162,9 +162,9 @@ public class RepoPopulator {
      * on the {@link RepoPopulator} class.
      */
     private void registerRepoIngestors() {
-        for (Class<? extends Indexable> modelClass : QueryService.getRegisteredModelClasses()) {
+        for (Class<? extends Indexable> modelClass : EntityService.getRegisteredModelClasses()) {
             String modelPath = getModelClassServicePath(
-                QueryService.getService(modelClass)
+                EntityService.getService(modelClass)
             );
             if (modelPath != null && !modelPath.isEmpty()) {
                 this.repoIngestors.put(

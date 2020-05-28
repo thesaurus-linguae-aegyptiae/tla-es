@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import tla.backend.es.model.SentenceEntity;
-import tla.backend.service.QueryService;
+import tla.backend.service.EntityService;
 import tla.backend.service.SentenceService;
 
 @RestController
@@ -16,7 +16,7 @@ public class SentenceController extends EntityController<SentenceEntity> {
     private SentenceService service;
 
     @Override
-    public QueryService<SentenceEntity> getService() {
+    public EntityService<SentenceEntity> getService() {
         return this.service;
     }
 

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import tla.backend.es.model.ThsEntryEntity;
-import tla.backend.service.QueryService;
+import tla.backend.service.EntityService;
 import tla.backend.service.ThesaurusService;
 
 @RestController
@@ -16,7 +16,7 @@ public class ThesaurusController extends EntityController<ThsEntryEntity> {
     private ThesaurusService thsService;
 
     @Override
-    public QueryService<ThsEntryEntity> getService() {
+    public EntityService<ThsEntryEntity> getService() {
         return thsService;
     }
 

@@ -9,7 +9,7 @@ import tla.backend.es.repo.CorpusObjectRepo;
 
 @Service
 @ModelClass(value = CorpusObjectEntity.class, path = "object")
-public class CorpusObjectService extends QueryService<CorpusObjectEntity> {
+public class CorpusObjectService extends EntityService<CorpusObjectEntity> {
 
     @Autowired
     private CorpusObjectRepo repo;

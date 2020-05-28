@@ -12,7 +12,7 @@ import tla.backend.es.repo.TextRepo;
 
 @Service
 @ModelClass(value = TextEntity.class, path = "text")
-public class TextService extends QueryService<TextEntity> {
+public class TextService extends EntityService<TextEntity> {
 
     @Autowired
     private TextRepo textRepo;

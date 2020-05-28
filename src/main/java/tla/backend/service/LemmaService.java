@@ -18,7 +18,7 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-
+import org.elasticsearch.search.sort.SortBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -49,7 +49,7 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 @Slf4j
 @Service
 @ModelClass(value = LemmaEntity.class, path = "lemma")
-public class LemmaService extends QueryService<LemmaEntity> {
+public class LemmaService extends EntityService<LemmaEntity> {
 
     @Autowired
     private LemmaRepo repo;
@@ -73,7 +73,7 @@ public class LemmaService extends QueryService<LemmaEntity> {
     }
 
     /**
-     * Extends superclass implementation {@link QueryService#getDetails(String)}
+     * Extends superclass implementation {@link EntityService#getDetails(String)}
      * in that lemma attestations are computed from occurrences and put into the
      * wrapped lemma DTO.
      *
@@ -253,6 +253,7 @@ public class LemmaService extends QueryService<LemmaEntity> {
         return new NativeSearchQueryBuilder()
             .withQuery(qb)
             .withPageable(pageable)
+            .withSort(SortBuilders.fieldSort("sortKey"))
             .build();
     }
 
