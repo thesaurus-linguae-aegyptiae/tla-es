@@ -10,10 +10,14 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.SentenceEntity;
+import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.repo.SentenceRepo;
+import tla.domain.model.ObjectReference;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -29,6 +33,28 @@ public class SentenceService extends QueryService<SentenceEntity> {
     @Override
     public ElasticsearchRepository<SentenceEntity, String> getRepo() {
         return repo;
+    }
+
+    /**
+     * make sure containing text gets included.
+     */
+    @Override
+    protected Collection<BaseEntity> retrieveRelatedDocs(SentenceEntity document) {
+        Collection<BaseEntity> relatedDocuments = super.retrieveRelatedDocs(document);
+        relatedDocuments.addAll(
+            this.retrieveReferencedObjects(
+                List.of(
+                    ObjectReference.builder()
+                        .id(
+                            document.getContext().getTextId()
+                        )
+                        .eclass(
+                            "BTSText"
+                        ).build()
+                )
+            )
+        );
+        return relatedDocuments;
     }
 
     /**

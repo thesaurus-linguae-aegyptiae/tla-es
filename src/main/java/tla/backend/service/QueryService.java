@@ -1,8 +1,8 @@
 package tla.backend.service;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -193,7 +193,7 @@ public abstract class QueryService<T extends Indexable> {
             );
             return retrieveReferencedObjects(previews);
         }
-        return Collections.emptyList();
+        return new ArrayList<BaseEntity>();
     }
 
     /**
@@ -212,7 +212,7 @@ public abstract class QueryService<T extends Indexable> {
             }
             return retrieveReferencedObjects(previews);
         }
-        return Collections.emptyList();
+        return new ArrayList<BaseEntity>();
     }
 
     /**
