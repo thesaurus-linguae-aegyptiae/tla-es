@@ -18,7 +18,9 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -226,6 +228,21 @@ public class LemmaService extends EntityService<LemmaEntity> {
         return query;
     }
 
+    private SortBuilder<?> sortBuilder(LemmaSearch command) {
+        if (command.getSort() != null) {
+            String[] segm = command.getSort().split("\\.");
+            if (segm.length > 1) {
+                return SortBuilders.fieldSort(segm[0]).order(
+                    segm[1].equals("desc") ? SortOrder.DESC : SortOrder.ASC
+                );
+            } else {
+                return SortBuilders.fieldSort(segm[0]).order(SortOrder.ASC);
+            }
+        }
+        return SortBuilders.fieldSort("sortKey").order(SortOrder.ASC);
+    }
+
+
     public Query createLemmaSearchQuery(LemmaSearch command, Pageable pageable) {
         BoolQueryBuilder qb = boolQuery();
         if (command.getTranscription() != null) {
@@ -253,7 +270,7 @@ public class LemmaService extends EntityService<LemmaEntity> {
         return new NativeSearchQueryBuilder()
             .withQuery(qb)
             .withPageable(pageable)
-            .withSort(SortBuilders.fieldSort("sortKey"))
+            .withSort(sortBuilder(command))
             .build();
     }
 
