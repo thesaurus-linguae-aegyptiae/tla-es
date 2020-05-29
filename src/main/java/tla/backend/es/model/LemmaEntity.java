@@ -60,7 +60,8 @@ public class LemmaEntity extends TLAEntity {
     @NoArgsConstructor
     @AllArgsConstructor
     @JsonInclude(Include.NON_NULL)
-    private static class AttestedTimeSpan {
+    public static class AttestedTimeSpan {
+
         @Field(type = FieldType.Integer)
         private Integer begin;
 

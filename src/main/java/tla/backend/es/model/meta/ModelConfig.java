@@ -35,6 +35,7 @@ import tla.domain.dto.TextDto;
 import tla.domain.dto.ThsEntryDto;
 import tla.domain.dto.meta.AbstractDto;
 import tla.domain.model.SentenceToken;
+import tla.domain.model.extern.AttestedTimespan;
 import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
@@ -262,10 +263,11 @@ public class ModelConfig {
                 m -> m.using(translationsToMapConverter).map(
                     LemmaEntity::getTranslations, LemmaDto::setTranslations
                 )
-            )
-            .addMapping(
+            ).addMapping(
                 LemmaEntity::getRevisionState, LemmaDto::setReviewState
             );
+        modelMapper.createTypeMap(LemmaEntity.AttestedTimeSpan.class, AttestedTimespan.Period.class)
+            .addMapping(LemmaEntity.AttestedTimeSpan::getBegin, AttestedTimespan.Period::setBegin);
         modelMapper.createTypeMap(ThsEntryEntity.class, ThsEntryDto.class)
             .addMappings(
                 m -> m.using(translationsToMapConverter).map(

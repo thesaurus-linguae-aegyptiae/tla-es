@@ -241,6 +241,9 @@ public class ModelTest {
 
     @Test
     void lemmaModelMapping() {
+        Passport p = new Passport();
+        Passport n = new Passport("leaf value");
+        p.add("key", n);
         LemmaEntity l = LemmaEntity.builder()
             .id("Id")
             .eclass("BTSLemmaEntry")
@@ -248,6 +251,8 @@ public class ModelTest {
             .type("subst")
             .revisionState("published")
             .sortKey("Id")
+            .timeSpan(new LemmaEntity.AttestedTimeSpan(-2375, -30))
+            .passport(p)
             .translations(Translations.builder().de(List.of("übersetzung")).build())
             .word(
                 new LemmaWord(
@@ -262,9 +267,14 @@ public class ModelTest {
         assertAll("lemma entity should be mapped to DTO correctly",
             () -> assertEquals(l.getRevisionState(), d.getReviewState(), "review status should be present"),
             () -> assertEquals(l.getSortKey(), d.getSortKey(), "sort key should be copied"),
+            () -> assertNotNull(d.getTimeSpan(), "time span"),
+            () -> assertEquals(-2375, d.getTimeSpan().getBegin(), "first year"),
+            () -> assertEquals(-30, d.getTimeSpan().getEnd(), "last year"),
             () -> assertTrue(!d.getTranslations().isEmpty(), "translations should not be empty"),
             () -> assertEquals(1, l.getWords().size(), "expect 1 word"),
-            () -> assertNotNull(d.getWords().get(0).getTranscription(), "word should have transcription")
+            () -> assertNotNull(d.getWords().get(0).getTranscription(), "word should have transcription"),
+            () -> assertTrue(!d.getPassport().isEmpty(), "passport not empty"),
+            () -> assertEquals(List.of("key"), d.getPassport().getFields(), "passport key set")
         );
     }
 
