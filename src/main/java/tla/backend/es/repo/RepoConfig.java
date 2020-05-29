@@ -95,7 +95,13 @@ public class RepoConfig extends AbstractElasticsearchConfiguration {
                 );
                 return res;
             } catch (Exception e) {
-                log.error("well fuck, {}", e);
+                log.warn(
+                    String.format(
+                        "passport to map conversion failed for passport %s",
+                        source
+                    ),
+                    e
+                );
             }
             return null;
         }

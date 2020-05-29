@@ -37,6 +37,7 @@ import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.repo.LemmaRepo;
 import tla.domain.command.LemmaSearch;
+import tla.domain.command.SearchCommand;
 import tla.domain.command.TypeSpec;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
@@ -228,18 +229,46 @@ public class LemmaService extends EntityService<LemmaEntity> {
         return query;
     }
 
-    private SortBuilder<?> sortBuilder(LemmaSearch command) {
-        if (command.getSort() != null) {
-            String[] segm = command.getSort().split("\\.");
-            if (segm.length > 1) {
-                return SortBuilders.fieldSort(segm[0]).order(
-                    segm[1].equals("desc") ? SortOrder.DESC : SortOrder.ASC
-                );
+    private static class SortSpec {
+        private String field;
+        private SortOrder order;
+
+        public SortSpec(String field) {
+            this(field, SortOrder.ASC);
+        }
+
+        public SortSpec(String field, SortOrder order) {
+            this.field = field;
+            this.order = order;
+        }
+
+        public SortSpec(String field, String order) {
+            this(
+                field,
+                order.toLowerCase().equals("desc") ? SortOrder.DESC : SortOrder.ASC
+            );
+        }
+
+        public static SortSpec from(SearchCommand<LemmaDto> command) {
+            if (command.getSort() != null) {
+                String[] segm = command.getSort().split("\\.");
+                if (segm.length > 1) {
+                    return new SortSpec(segm[0], segm[1]);
+                } else {
+                    return new SortSpec(segm[0]);
+                }
             } else {
-                return SortBuilders.fieldSort(segm[0]).order(SortOrder.ASC);
+                return new SortSpec("id");
             }
         }
-        return SortBuilders.fieldSort("sortKey").order(SortOrder.ASC);
+
+        public SortBuilder<?> primary() {
+            return SortBuilders.fieldSort(this.field).order(this.order);
+        }
+
+        public SortBuilder<?> secondary() {
+            return SortBuilders.fieldSort("id").order(this.order);
+        }
     }
 
 
@@ -270,7 +299,8 @@ public class LemmaService extends EntityService<LemmaEntity> {
         return new NativeSearchQueryBuilder()
             .withQuery(qb)
             .withPageable(pageable)
-            .withSort(sortBuilder(command))
+            .withSort(SortSpec.from(command).primary())
+            .withSort(SortSpec.from(command).secondary())
             .build();
     }
 

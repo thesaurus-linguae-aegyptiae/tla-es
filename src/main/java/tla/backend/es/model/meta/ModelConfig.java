@@ -266,8 +266,7 @@ public class ModelConfig {
             ).addMapping(
                 LemmaEntity::getRevisionState, LemmaDto::setReviewState
             );
-        modelMapper.createTypeMap(LemmaEntity.AttestedTimeSpan.class, AttestedTimespan.Period.class)
-            .addMapping(LemmaEntity.AttestedTimeSpan::getBegin, AttestedTimespan.Period::setBegin);
+        modelMapper.createTypeMap(LemmaEntity.AttestedTimeSpan.class, AttestedTimespan.Period.class);
         modelMapper.createTypeMap(ThsEntryEntity.class, ThsEntryDto.class)
             .addMappings(
                 m -> m.using(translationsToMapConverter).map(
