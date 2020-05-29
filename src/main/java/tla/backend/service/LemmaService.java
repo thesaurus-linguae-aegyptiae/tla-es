@@ -229,9 +229,12 @@ public class LemmaService extends EntityService<LemmaEntity> {
         return query;
     }
 
-    private static class SortSpec {
-        private String field;
-        private SortOrder order;
+    protected static class SortSpec {
+
+        public static final String DELIMITER = "_";
+
+        protected String field;
+        protected SortOrder order;
 
         public SortSpec(String field) {
             this(field, SortOrder.ASC);
@@ -250,10 +253,18 @@ public class LemmaService extends EntityService<LemmaEntity> {
         }
 
         public static SortSpec from(SearchCommand<LemmaDto> command) {
-            if (command.getSort() != null) {
-                String[] segm = command.getSort().split("\\.");
+            return from(command.getSort());
+        }
+
+        public static SortSpec from(String source) {
+            if (source != null) {
+                String[] segm = source.split(DELIMITER);
+                String field = String.join(
+                    DELIMITER,
+                    Arrays.asList(segm).subList(0, segm.length - 1)
+                );
                 if (segm.length > 1) {
-                    return new SortSpec(segm[0], segm[1]);
+                    return new SortSpec(field, segm[segm.length - 1]);
                 } else {
                     return new SortSpec(segm[0]);
                 }
