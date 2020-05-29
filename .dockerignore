@@ -2,7 +2,6 @@ bin
 build
 docker-compose.yml
 .dockerignore
-.env.template
 .git
 .gitattributes
 .github
@@ -14,3 +13,4 @@ gradlew.bat
 .project
 README.md
 .settings
+sample.tar.gz

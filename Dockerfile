@@ -1,9 +1,16 @@
-FROM gradle:6.3-jdk11 AS build
+FROM gradle:6.4-jdk11 AS build
 
 COPY --chown=gradle:gradle . /home/gradle/tla
 WORKDIR /home/gradle/tla
 
-RUN gradle bootJar --no-daemon
+ARG es_port
+ARG es_host
+ARG sample_url
+ENV ES_PORT ${es_port}
+ENV ES_HOST ${es_host}
+ENV SAMPLE_URL ${sample_url}
+
+RUN gradle populate bootJar --no-daemon
 
 
 FROM openjdk:11-jre-slim
