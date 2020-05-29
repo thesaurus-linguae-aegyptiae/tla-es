@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 
 import tla.backend.AbstractMockMvcTest;
 import tla.backend.es.model.ThsEntryEntity;
@@ -64,10 +66,13 @@ public class ThsControllerTest extends AbstractMockMvcTest {
             );
         mockMvc.perform(
             get("/ths/get/xxx")
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
         )
             .andExpect(
                 status().isOk()
+            )
+            .andExpect(
+                content().contentType(MediaType.APPLICATION_JSON_VALUE)
             )
             .andExpect(jsonPath("$.doc.relations.partOf[0].id").value("2"));
     }

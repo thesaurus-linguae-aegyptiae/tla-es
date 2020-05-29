@@ -1,8 +1,8 @@
 package tla.backend.service;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,8 +26,9 @@ import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
-import tla.domain.dto.DocumentDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
+import tla.domain.dto.meta.AbstractDto;
+import tla.domain.dto.meta.DocumentDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.BTSeClass;
 
@@ -37,37 +38,39 @@ import tla.domain.model.meta.BTSeClass;
  * They should also be annotated with {@link Service} for component scanning / dependency injection.
  */
 @Slf4j
-public abstract class QueryService<T extends Indexable> {
+public abstract class EntityService<T extends Indexable> {
+
+    /**
+     * How many search results fit in 1 page.
+     */
+    public static final int SEARCH_RESULT_PAGE_SIZE = 20;
 
     @Autowired
-    private RestHighLevelClient restClient;
+    protected RestHighLevelClient restClient;
 
-    protected static Map<Class<? extends Indexable>, QueryService<? extends Indexable>> modelClassServices = new HashMap<>();
+    protected static Map<Class<? extends Indexable>, EntityService<? extends Indexable>> modelClassServices = new HashMap<>();
 
     /**
      * Default constructor registering services under the eclass specified via a {@link BTSeClass}
      * annotation.
      */
-    protected QueryService() {
+    protected EntityService() {
         for (Annotation a : this.getClass().getAnnotations()) {
-            log.info("annotation on clas {}: {}", this.getClass().getName(), a.getClass().getName());
             if (a instanceof ModelClass) {
-                log.info("register model class service {}", this.getClass().getName());
                 modelClassServices.put(
                     ((ModelClass) a).value(),
                     this
                 );
             }
         }
-        log.info("number of registered services: {}", modelClassServices.size());
     }
 
     /**
-     * Returns the query service registered for a given model class, or null if no such model class have been
+     * Returns the entity service registered for a given model class, or null if no such model class have been
      * registered.
      * Registration takes place at construction time of any service with a {@link ModelClass} annotation.
      */
-    public static QueryService<? extends Indexable> getService(Class<? extends Indexable> modelClass) {
+    public static EntityService<? extends Indexable> getService(Class<? extends Indexable> modelClass) {
         if (modelClassServices.containsKey(modelClass)) {
             return modelClassServices.get(modelClass);
         } else {
@@ -117,11 +120,11 @@ public abstract class QueryService<T extends Indexable> {
      * and inshallah all documents referenced by it.
      * @see {@link ModelConfig#toDTO}
      */
-    public SingleDocumentWrapper<DocumentDto> getDetails(String id) {
+    public SingleDocumentWrapper<? extends AbstractDto> getDetails(String id) {
         T document = this.retrieve(id);
-        final SingleDocumentWrapper<DocumentDto> container;
+        final SingleDocumentWrapper<? extends AbstractDto> container;
         if (document != null) {
-            container = new SingleDocumentWrapper<>(
+            container = new SingleDocumentWrapper<AbstractDto>(
                 ModelConfig.toDTO(document)
             );
             Collection<BaseEntity> relatedObjects = new HashSet<>();
@@ -130,7 +133,7 @@ public abstract class QueryService<T extends Indexable> {
             relatedObjects.forEach(
                 relatedObject -> {
                     container.addRelated(
-                        ModelConfig.toDTO(relatedObject)
+                        (DocumentDto) ModelConfig.toDTO(relatedObject)
                     );
                 }
             );
@@ -190,7 +193,7 @@ public abstract class QueryService<T extends Indexable> {
             );
             return retrieveReferencedObjects(previews);
         }
-        return Collections.emptyList();
+        return new ArrayList<BaseEntity>();
     }
 
     /**
@@ -209,7 +212,7 @@ public abstract class QueryService<T extends Indexable> {
             }
             return retrieveReferencedObjects(previews);
         }
-        return Collections.emptyList();
+        return new ArrayList<BaseEntity>();
     }
 
     /**
@@ -257,7 +260,7 @@ public abstract class QueryService<T extends Indexable> {
      */
     public BaseEntity retrieveSingleBTSDoc(String eclass, String id) {
         Class<? extends BaseEntity> modelClass = ModelConfig.getModelClass(eclass);
-        QueryService<? extends Indexable> service = modelClassServices.getOrDefault(modelClass, null);
+        EntityService<? extends Indexable> service = modelClassServices.getOrDefault(modelClass, null);
         if (service == null) {
             log.error("Could not find entity service for eclass {}!", eclass);
             return null;

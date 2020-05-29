@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import tla.backend.es.model.TextEntity;
-import tla.backend.service.QueryService;
+import tla.backend.service.EntityService;
 import tla.backend.service.TextService;
 
 @RestController
@@ -16,7 +16,7 @@ public class TextController extends EntityController<TextEntity> {
     private TextService textService;
 
     @Override
-    public QueryService<TextEntity> getService() {
+    public EntityService<TextEntity> getService() {
         return textService;
     }
 

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tla.backend.es.model.AnnotationEntity;
 import tla.backend.service.AnnotationService;
-import tla.backend.service.QueryService;
+import tla.backend.service.EntityService;
 
 @RestController
 @RequestMapping("/annotation")
@@ -16,7 +16,7 @@ public class AnnotationController extends EntityController<AnnotationEntity> {
     private AnnotationService queryService;
 
     @Override
-    public QueryService<AnnotationEntity> getService() {
+    public EntityService<AnnotationEntity> getService() {
         return queryService;
     }
 

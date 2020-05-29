@@ -1,5 +1,6 @@
 package tla.backend.api;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 
 import tla.backend.AbstractMockMvcTest;
 import tla.backend.es.model.LemmaEntity;
@@ -22,8 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class LemmaControllerTest extends AbstractMockMvcTest {
 
@@ -61,8 +62,9 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
             .id("1")
             .eclass("BTSLemmaEntry")
             .editors(EditorInfo.builder().author("author").updated(EditDate.of(1854,10,31)).build())
-            .translations(Translations.builder().de("übersetzung").build())
-            .word(new LemmaWord("N35:G47", new Transcription("nfr", "nfr")))
+            .translations(
+                Translations.builder().de(List.of("übersetzung")).build()
+            ).word(new LemmaWord("N35:G47", new Transcription("nfr", "nfr")))
             .build();
         String ser = new ObjectMapper().writeValueAsString(l1);
         LemmaEntity l2 = mapper.readValue(ser, LemmaEntity.class);
@@ -78,7 +80,7 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
     void getInexistentLemma() throws Exception {
         mockMvc.perform(
             get("/lemma/get/10070")
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
             .andExpect(
                 status().isNotFound()
@@ -99,16 +101,20 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
                                 .build()
                         )
                         .sortKey("1")
-                        .translations(Translations.builder().de("deutsch").en("english").build())
-                        .build()
+                        .translations(
+                            Translations.builder().de(List.of("deutsch")).en(List.of("english")).build()
+                        ).build()
                 )
             );
         mockMvc.perform(
             get("/lemma/get/whatever")
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
             .andExpect(
                 status().isOk()
+            )
+            .andExpect(
+                content().contentType(MediaType.APPLICATION_JSON_VALUE)
             )
             .andExpect(jsonPath("$.doc.id").value("ID"))
             .andExpect(jsonPath("$.doc.editors.author").value("author"))

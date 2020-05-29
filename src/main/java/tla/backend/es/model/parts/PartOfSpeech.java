@@ -6,19 +6,21 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class LemmaWord {
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public class PartOfSpeech {
 
-    @Field(type = FieldType.Text, analyzer = "hieroglyph_analyzer")
-    private String glyphs;
+    @Field(type = FieldType.Keyword)
+    private String type;
 
-    @Field(type = FieldType.Object)
-    private Transcription transcription;
+    @Field(type = FieldType.Keyword)
+    private String subtype;
 
 }

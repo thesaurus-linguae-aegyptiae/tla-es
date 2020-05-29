@@ -9,7 +9,7 @@ import tla.backend.es.repo.AnnotationRepo;
 
 @Service
 @ModelClass(value = AnnotationEntity.class, path = "annotation")
-public class AnnotationService extends QueryService<AnnotationEntity> {
+public class AnnotationService extends EntityService<AnnotationEntity> {
 
     @Autowired
     private AnnotationRepo repo;

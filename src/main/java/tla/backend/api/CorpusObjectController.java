@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tla.backend.es.model.CorpusObjectEntity;
 import tla.backend.service.CorpusObjectService;
-import tla.backend.service.QueryService;
+import tla.backend.service.EntityService;
 
 @RestController
 @RequestMapping("/object")
@@ -16,7 +16,7 @@ public class CorpusObjectController extends EntityController<CorpusObjectEntity>
     private CorpusObjectService service;
 
     @Override
-    public QueryService<CorpusObjectEntity> getService() {
+    public EntityService<CorpusObjectEntity> getService() {
         return service;
     }
 

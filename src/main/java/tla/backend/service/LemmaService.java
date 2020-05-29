@@ -1,32 +1,57 @@
 package tla.backend.service;
 
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.BucketOrder;
+import org.elasticsearch.search.aggregations.bucket.nested.Nested;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.LemmaEntity;
+import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.repo.LemmaRepo;
-import tla.domain.dto.DocumentDto;
+import tla.domain.command.LemmaSearch;
+import tla.domain.command.TypeSpec;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
+import tla.domain.dto.meta.AbstractDto;
+import tla.domain.model.Language;
 import tla.domain.model.Passport;
+import tla.domain.model.Script;
 import tla.domain.model.extern.AttestedTimespan;
+
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 @Slf4j
 @Service
 @ModelClass(value = LemmaEntity.class, path = "lemma")
-public class LemmaService extends QueryService<LemmaEntity> {
+public class LemmaService extends EntityService<LemmaEntity> {
 
     @Autowired
     private LemmaRepo repo;
@@ -35,11 +60,14 @@ public class LemmaService extends QueryService<LemmaEntity> {
     private TextService textService;
 
     @Autowired
+    private SentenceService sentenceService;
+
+    @Autowired
     private ThesaurusService thsService;
 
-    public SortedMap<String, Long> countOccurrencesPerText(String lemmaId) {
-        return null;
-    }
+    @Autowired
+    private ElasticsearchOperations operations;
+
 
     @Override
     public ElasticsearchRepository<LemmaEntity, String> getRepo() {
@@ -47,19 +75,19 @@ public class LemmaService extends QueryService<LemmaEntity> {
     }
 
     /**
-     * Extends superclass implementation {@link QueryService#getDetails(String)}
+     * Extends superclass implementation {@link EntityService#getDetails(String)}
      * in that lemma attestations are computed from occurrences and put into the
      * wrapped lemma DTO.
      *
      * @see {@link #computeAttestedTimespans(String)}
      */
     @Override
-    public SingleDocumentWrapper<DocumentDto> getDetails(String id) {
+    public SingleDocumentWrapper<? extends AbstractDto> getDetails(String id) {
         LemmaEntity lemma = retrieve(id);
         if (lemma == null) {
             return null;
         }
-        SingleDocumentWrapper<DocumentDto> wrapper = super.getDetails(id);
+        SingleDocumentWrapper<? extends AbstractDto> wrapper = super.getDetails(id);
         ((LemmaDto) wrapper.getDoc()).setAttestations(
             new LinkedList<>(
                 this.computeAttestedTimespans(id)
@@ -74,7 +102,7 @@ public class LemmaService extends QueryService<LemmaEntity> {
      * total occurrences for each one.
      */
     public Collection<AttestedTimespan> computeAttestedTimespans(String lemmaId) {
-        Map<String, Long> freqPerText = textService.countOccurrencesPerText(lemmaId);
+        Map<String, Long> freqPerText = sentenceService.lemmaFrequencyPerText(lemmaId);
         Map<String, AttestedTimespan> periodCounts = new HashMap<>();
         for (Entry<String, Long> e : freqPerText.entrySet()) {
             TextEntity t = textService.retrieve(e.getKey());
@@ -117,6 +145,133 @@ public class LemmaService extends QueryService<LemmaEntity> {
             }
         }
         return periodCounts.values();
+    }
+
+    public Map<String, Long> getMostFrequent(int limit) {
+        SearchResponse response = query(
+            SentenceEntity.class,
+            matchAllQuery(),
+            AggregationBuilders.nested(
+                "aggs",
+                "tokens"
+            ).subAggregation(
+                AggregationBuilders.terms("lemmata").field(
+                    "tokens.lemma.id"
+                ).order(
+                    BucketOrder.count(false)
+                ).size(limit)
+            )
+        );
+        Nested aggs = response.getAggregations().get("aggs");
+        Terms terms = aggs.getAggregations().get("lemmata");
+        return terms.getBuckets().stream().collect(
+            Collectors.toMap(
+                Terms.Bucket::getKeyAsString,
+                Terms.Bucket::getDocCount
+            )
+        );
+    }
+
+    public SearchHits<LemmaEntity> search(Query query) {
+        log.info("query: {}", query);
+        return operations.search(
+            query,
+            LemmaEntity.class,
+            IndexCoordinates.of("lemma")
+        );
+    }
+
+    private BoolQueryBuilder scriptFilter(LemmaSearch command) {
+        BoolQueryBuilder scriptFilter = boolQuery();
+        List<Script> scripts = Arrays.asList(command.getScript());
+        if (!scripts.contains(Script.HIERATIC)) {
+            if (scripts.contains(Script.DEMOTIC)) {
+                scriptFilter.must(prefixQuery("id", "d"));
+            }
+        } else {
+            if (!scripts.contains(Script.DEMOTIC)) {
+                scriptFilter.mustNot(prefixQuery("id", "d"));
+            }
+        }
+        return scriptFilter;
+    }
+
+    private BoolQueryBuilder translationQuery(LemmaSearch command) {
+        BoolQueryBuilder translationsQuery = boolQuery();
+        if (command.getTranslation().getLang() != null && command.getTranslation().getLang().length > 0) {
+            for (Language lang : command.getTranslation().getLang()) {
+                translationsQuery.should(
+                    matchQuery(
+                        String.format("translations.%s", lang),
+                        command.getTranslation().getText()
+                    )
+                );
+            }
+        }
+        return translationsQuery;
+    }
+
+    private BoolQueryBuilder wordClassQuery(LemmaSearch command) {
+        BoolQueryBuilder query = boolQuery();
+        TypeSpec wordClass = command.getPos();
+        if (wordClass.getType() != null) {
+            if (wordClass.getType().equals("excl_names")) {
+                query.mustNot(termQuery("type", "entity_name"));
+            } else if (wordClass.getType().equals("any")) {
+            } else if (!wordClass.getType().trim().isEmpty()) {
+                query.must(termQuery("type", wordClass.getType()));
+            }
+        }
+        if (wordClass.getSubtype() != null && !wordClass.getSubtype().trim().isEmpty()) {
+            query.must(termQuery("subtype", wordClass.getSubtype()));
+        }
+        return query;
+    }
+
+    private SortBuilder<?> sortBuilder(LemmaSearch command) {
+        if (command.getSort() != null) {
+            String[] segm = command.getSort().split("\\.");
+            if (segm.length > 1) {
+                return SortBuilders.fieldSort(segm[0]).order(
+                    segm[1].equals("desc") ? SortOrder.DESC : SortOrder.ASC
+                );
+            } else {
+                return SortBuilders.fieldSort(segm[0]).order(SortOrder.ASC);
+            }
+        }
+        return SortBuilders.fieldSort("sortKey").order(SortOrder.ASC);
+    }
+
+
+    public Query createLemmaSearchQuery(LemmaSearch command, Pageable pageable) {
+        BoolQueryBuilder qb = boolQuery();
+        if (command.getTranscription() != null) {
+           qb.must(matchQuery("name", command.getTranscription()).operator(Operator.AND));
+        }
+        if (command.getTranslation() != null) {
+            qb.must(translationQuery(command));
+        }
+        if (command.getScript() != null && command.getScript().length > 0) {
+            qb.filter(scriptFilter(command));
+        }
+        if (command.getBibliography() != null && !command.getBibliography().trim().isEmpty()) {
+            qb.must(
+                matchQuery("passport.bibliography.bibliographical_text_field", command.getBibliography()).operator(Operator.AND)
+            );
+        }
+        if (command.getRoot() != null && !command.getRoot().trim().isEmpty()) {
+            qb.must(
+                matchQuery("relations.root.name", command.getRoot())
+            );
+        }
+        if (command.getPos() != null) {
+            qb.must(wordClassQuery(command));
+        }
+        return new NativeSearchQueryBuilder()
+            .withQuery(qb)
+            .withPageable(pageable)
+            .withSort(sortBuilder(command))
+            .build();
     }
 
 }

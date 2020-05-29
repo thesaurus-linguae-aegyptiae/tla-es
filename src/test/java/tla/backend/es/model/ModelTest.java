@@ -18,15 +18,22 @@ import tla.backend.es.model.meta.TLAEntity;
 import tla.backend.es.model.parts.EditDate;
 import tla.backend.es.model.parts.EditorInfo;
 import tla.backend.es.model.parts.LemmaWord;
+import tla.backend.es.model.parts.PartOfSpeech;
+import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Transcription;
 import tla.backend.es.model.parts.Translations;
+import tla.backend.es.model.parts.Token.Flexion;
+import tla.backend.es.model.parts.Token.Lemmatization;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
-import tla.domain.dto.DocumentDto;
+import tla.domain.dto.meta.DocumentDto;
 import tla.domain.dto.LemmaDto;
+import tla.domain.dto.SentenceDto;
 import tla.domain.dto.TextDto;
 import tla.domain.dto.ThsEntryDto;
+import tla.domain.model.Language;
 import tla.domain.model.Passport;
+import tla.domain.model.SentenceToken;
 import tla.domain.model.meta.BTSeClass;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -121,14 +128,16 @@ public class ModelTest {
     @Test
     void translationsEqual() throws Exception {
         assertTrue(mapper != null, "entitymapper should not be null");
-        Translations t1 = Translations.builder().de("übersetzung").en("translation").en("meaning").build();
+        Translations t1 = Translations.builder().de(List.of("übersetzung")).en(List.of("translation", "meaning")).build();
         Translations t2 = Translations.builder().de(Arrays.asList("übersetzung")).en(Arrays.asList("translation", "meaning")).build();
         Translations t3 = mapper.readValue("{\"de\": [\"übersetzung\"], \"en\": [\"translation\", \"meaning\"]}", Translations.class);
         assertAll("translations objects should be equal",
             () -> assertEquals(t2, t1, "translation instances should be equal regardless of build method parameter type"),
             () -> assertEquals(t3, t1, "deserialized instance should be equal to builder-instantiated"),
-            () -> assertTrue(t1.getFr().isEmpty(), "builder-built french translations array should be empty"),
-            () -> assertTrue(t3.getFr().isEmpty(), "deserialized french translations array should be empty")
+            () -> assertNull(t1.getFr(), "builder-built french translations array should be null"),
+            () -> assertNull(t3.getFr(), "deserialized french translations array should be null"),
+            () -> assertEquals(t3.hashCode(), t1.hashCode(), "hashcodes equal"),
+            () -> assertNull(t3.get(null), "undefined language causes null")
         );
     }
 
@@ -180,7 +189,7 @@ public class ModelTest {
             () -> assertEquals(1, t.getTranslations().getFr().size()),
             () -> assertEquals("21e dynastie", t.getTranslations().getFr().get(0))
         );
-        DocumentDto dto = t.toDTO();
+        DocumentDto dto = (DocumentDto) t.toDTO();
         assertAll("test thesaurus entity to DTO mapping",
             () -> assertTrue(dto instanceof ThsEntryDto),
             () -> assertNotNull(dto.getReviewState(), "review status must not be null"),
@@ -239,7 +248,7 @@ public class ModelTest {
             .type("subst")
             .revisionState("published")
             .sortKey("Id")
-            .translations(Translations.builder().de("übersetzung").build())
+            .translations(Translations.builder().de(List.of("übersetzung")).build())
             .word(
                 new LemmaWord(
                     "N35:G47",
@@ -247,7 +256,7 @@ public class ModelTest {
                 )
             )
             .build();
-        DocumentDto dto = l.toDTO();
+        DocumentDto dto = (DocumentDto) l.toDTO();
         assertTrue(dto instanceof LemmaDto);
         LemmaDto d = (LemmaDto) dto;
         assertAll("lemma entity should be mapped to DTO correctly",
@@ -269,7 +278,7 @@ public class ModelTest {
     }
 
     @Test
-    void annotationModelMapping() {
+    void annotationModelMapping() throws Exception {
         AnnotationEntity a = AnnotationEntity.builder()
             .id("ID")
             .eclass("BTSAnnotation")
@@ -277,7 +286,7 @@ public class ModelTest {
             .revisionState("published")
             .passport(Passport.of(Map.of("lemma", Collections.emptyMap())))
             .build();
-        DocumentDto d = a.toDTO();
+        AnnotationDto d = AnnotationDto.class.cast(a.toDTO());
         assertAll("test annotation entity to DTO conversion",
             () -> assertEquals(a.getEclass(), d.getEclass()),
             () -> assertEquals(a.getName(), d.getName()),
@@ -329,7 +338,7 @@ public class ModelTest {
             "src/test/resources/sample/text/2A5EGGJVHVFVVL42QSWVLJORYE.json",
             TextEntity.class
         );
-        DocumentDto d = t.toDTO();
+        DocumentDto d = (DocumentDto) t.toDTO();
         assertAll("test text to DTO mapping",
             () -> assertNotNull(d),
             () -> assertTrue(d instanceof TextDto),
@@ -354,7 +363,7 @@ public class ModelTest {
             () -> assertNotNull(o.getPaths()),
             () -> assertEquals("bbawarchive", o.getCorpus())
         );
-        DocumentDto d = o.toDTO();
+        DocumentDto d = (DocumentDto) o.toDTO();
         assertAll("test corpus object to DTO mapping",
             () -> assertNotNull(d),
             () -> assertTrue(d instanceof CorpusObjectDto),
@@ -362,6 +371,93 @@ public class ModelTest {
             () -> assertEquals(o.getRevisionState(), d.getReviewState()),
             () -> assertNotNull(d.getEditors(), "DTO edit info not null"),
             () -> assertNotNull(d.getEditors().getUpdated(), "DTO edit date not null")
+        );
+    }
+
+    @Test
+    void commentDeserializeSimple() throws Exception {
+        CommentEntity c = mapper.readValue(
+            "{\"eclass\":\"BTSComment\",\"id\":\"ID\",\"body\":\"comment\",\"relations\":{\"partOf\":[{\"id\":\"1\",\"eclass\":\"BTSText\",\"ranges\":[{\"from\":\"a\",\"to\":\"b\"}]}]}}",
+            CommentEntity.class
+        );
+        assertAll("comment deserialization ok",
+            () -> assertNotNull(c, "instance not null"),
+            () -> assertNotNull(c.getBody(), "body"),
+            () -> assertEquals("comment", c.getBody(), "content"),
+            () -> assertNotNull(c.getRelations(), "relations"),
+            () -> assertEquals(1, c.getRelations().size(), "relation predicate count"),
+            () -> assertNotNull(c.getRelations().get("partOf"), "predicate partof"),
+            () -> assertEquals(1, c.getRelations().get("partOf").size(), "1 relation"),
+            () -> assertNotNull(c.getRelations().get("partOf").get(0), "first relation"),
+            () -> assertNotNull(c.getRelations().get("partOf").get(0).getRanges(), "text range"),
+            () -> assertTrue(!c.getRelations().get("partOf").get(0).getRanges().isEmpty(), "text range"),
+            () -> assertNotNull(c.getRelations().get("partOf").get(0).getRanges().get(0).getFrom(), "text range boundary")
+        );
+        CommentEntity c2 = CommentEntity.builder()
+            .id(c.getId())
+            .eclass(c.getEclass())
+            .body(c.getBody())
+            .relations(c.getRelations())
+            .build();
+        assertAll("equality",
+            () -> assertEquals(c, c2, "instances"),
+            () -> assertEquals(c.toString(), c2.toString(), "str repr"),
+            () -> assertEquals(c.hashCode(), c2.hashCode(), "hashcode")
+        );
+    }
+
+    @Test
+    void sentenceDeserialize() throws Exception {
+        SentenceEntity s = tla.domain.util.IO.loadFromFile(
+            "src/test/resources/sample/sentence/IBYCcRHLQNYWZE3htMe7qAXwMmY.json",
+            SentenceEntity.class
+        );
+        assertAll("deserialize sentence",
+            () -> assertNotNull(s, "sentence instance"),
+            () -> assertNotNull(s.getTokens(), "contains words"),
+            () -> assertTrue(!s.getTokens().isEmpty(), "tokens not empty")
+        );
+    }
+
+
+    @Test
+    void mapSentenceToDTO() throws Exception {
+        Flexion f = new Flexion();
+        Lemmatization l = new Lemmatization();
+        SentenceEntity.Context c = SentenceEntity.Context.builder()
+            .textId("textId").line("[1]").pos(0).build();
+        l.setPos(new PartOfSpeech("substantive", "masc"));
+        f.setNumeric(3L);
+        Token t = new Token();
+        t.setFlexion(f);
+        t.setLemma(l);
+        t.setTranslations(Translations.builder().de(List.of("bedeutung")).build());;
+        SentenceEntity s = SentenceEntity.builder()
+            .id("ID")
+            .context(c)
+            .transcription(new Transcription("nfr", "nfr"))
+            .translations(Translations.builder().de(List.of("uebersetzung")).build())
+            .tokens(List.of(t))
+            .build();
+        SentenceDto dto = (SentenceDto) ModelConfig.toDTO(s);
+        assertAll("test sentence entity to DTO mapping",
+            () -> assertNotNull(dto, "instance"),
+            () -> assertNotNull(dto.getTranscription(), "transcription"),
+            () -> assertEquals("nfr", dto.getTranscription().getUnicode(), "transcription unicode"),
+            () -> assertNotNull(dto.getTranslations(), "translations"),
+            () -> assertTrue(dto.getTranslations().containsKey(Language.DE), "german translation"),
+            () -> assertEquals(List.of("uebersetzung"), dto.getTranslations().get(Language.DE), "translation value"),
+            () -> assertNotNull(dto.getTokens(), "tokens"),
+            () -> assertEquals(1, dto.getTokens().size(), "1 token"),
+            () -> assertNotNull(dto.getContext(), "sentence context in DTO"),
+            () -> assertEquals(s.getContext().getLine(), dto.getContext().getLine(), "lc")
+        );
+        SentenceToken tdto = dto.getTokens().get(0);
+        assertAll("test sentence token to DTO mapping",
+            () -> assertNotNull(tdto, "token"),
+            () -> assertNotNull(tdto.getFlexion(), "flexion"),
+            () -> assertEquals(3L, tdto.getFlexion().getNumeric(), "flexcode"),
+            () -> assertNotNull(tdto.getLemma(), "lemmatization")
         );
     }
 

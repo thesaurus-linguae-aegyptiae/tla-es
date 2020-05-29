@@ -16,24 +16,31 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
 import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.model.CorpusObjectEntity;
 import tla.backend.es.model.LemmaEntity;
+import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.model.parts.EditorInfo;
 import tla.backend.es.model.parts.Translations;
+import tla.backend.es.model.parts.Token;
+
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
-import tla.domain.dto.DocumentDto;
 import tla.domain.dto.LemmaDto;
+import tla.domain.dto.SentenceDto;
 import tla.domain.dto.TextDto;
 import tla.domain.dto.ThsEntryDto;
+import tla.domain.dto.meta.AbstractDto;
+import tla.domain.model.SentenceToken;
+import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
 
 /**
- * If a model class is to be aded, it has to be annotated with {@link @BTSeClass} and {@link TLADTO}
+ * If a model class is to be added, it has to be annotated with {@link @BTSeClass} and {@link TLADTO}
  * and registered in here.
  */
 @Slf4j
@@ -275,6 +282,8 @@ public class ModelConfig {
                 )
             ).addMapping(
                 TextEntity::getRevisionState, TextDto::setReviewState
+            ).addMapping(
+                TextEntity::getSentences, TextDto::setSentenceIds
             );
         modelMapper.createTypeMap(CorpusObjectEntity.class, CorpusObjectDto.class)
             .addMappings(
@@ -286,6 +295,16 @@ public class ModelConfig {
             );
         modelMapper.createTypeMap(AnnotationEntity.class, AnnotationDto.class).addMapping(
             AnnotationEntity::getRevisionState, AnnotationDto::setReviewState
+        );
+        modelMapper.createTypeMap(SentenceEntity.class, SentenceDto.class).addMappings(
+            m -> m.using(translationsToMapConverter).map(
+                SentenceEntity::getTranslations, SentenceDto::setTranslations
+            )
+        );
+        modelMapper.createTypeMap(Token.class, SentenceToken.class).addMappings(
+            m -> m.using(translationsToMapConverter).map(
+                Token::getTranslations, SentenceToken::setTranslations
+            )
         );
         return modelMapper;
     }
@@ -317,12 +336,14 @@ public class ModelConfig {
      * @return An instance of the DTO class corresponding to the passed entity's class,
      * created using the application context's model mapper instance.
      */
-    public static DocumentDto toDTO(Indexable entity) throws NullPointerException {
+    public static AbstractDto toDTO(Indexable entity) throws NullPointerException {
         if (entity != null) {
-            return modelMapper.map(
+            Class<? extends AbstractDto> dtoClass = getModelClassDTO(entity.getClass());
+            Object dto = modelMapper.map(
                 entity,
-                getModelClassDTO(entity.getClass())
+                dtoClass
             );
+            return dtoClass.cast(dto);
         }
         throw new NullPointerException();
     }
@@ -333,9 +354,9 @@ public class ModelConfig {
      *
      * @param modelClass Any {@link Indexable} class which defines its respective DTO class with
      * a {@link TLADO} annotation.
-     * @return A {@link DocumentDto} subclass.
+     * @return A {@link AbstractBTSBaseClass} subclass.
      */
-    public static Class<? extends DocumentDto> getModelClassDTO(Class<? extends Indexable> modelClass) {
+    public static Class<? extends AbstractDto> getModelClassDTO(Class<? extends Indexable> modelClass) {
         for (Annotation annotation : modelClass.getAnnotations()) {
             if (annotation instanceof TLADTO) {
                 return ((TLADTO) annotation).value();

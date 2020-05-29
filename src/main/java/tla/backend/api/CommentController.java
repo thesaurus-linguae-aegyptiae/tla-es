@@ -4,20 +4,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import tla.backend.es.model.ThsEntryEntity;
+import tla.backend.es.model.CommentEntity;
+import tla.backend.service.CommentService;
 import tla.backend.service.EntityService;
-import tla.backend.service.ThesaurusService;
 
 @RestController
-@RequestMapping("/ths")
-public class ThesaurusController extends EntityController<ThsEntryEntity> {
+@RequestMapping("/comment")
+public class CommentController extends EntityController<CommentEntity> {
 
     @Autowired
-    private ThesaurusService thsService;
+    private CommentService service;
+    
 
     @Override
-    public EntityService<ThsEntryEntity> getService() {
-        return thsService;
+    public EntityService<CommentEntity> getService() {
+        return this.service;
     }
 
 }

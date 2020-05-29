@@ -14,10 +14,8 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -41,21 +39,22 @@ public class ThsEntryEntity extends TLAEntity {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final List<String> timespanPropertyPaths = List.of(
-        "thesaurus_date.main_group.beginning",
-        "thesaurus_date.main_group.end"
-    );
-
     private static final String SYNONYMS_PASSPORT_PATH = "synonyms.synonym_group";
     private static final String SYNONYM_VALUE_PATH = "synonym";
     private static final String SYNONYM_LANG_PATH = "language";
+    private static final String DATE_START_PASSPORT_PATH = "thesaurus_date.main_group.beginning";
+    private static final String DATE_END_PASSPORT_PATH = "thesaurus_date.main_group.end";
+
+    private static final List<String> timespanPropertyPaths = List.of(
+        DATE_START_PASSPORT_PATH,
+        DATE_END_PASSPORT_PATH
+    );
 
     @Field(type = FieldType.Keyword)
     @JsonAlias({"sortkey", "sort_key", "sort_string", "sortString"})
     private String sortKey;
 
     @Field(type = FieldType.Object)
-    @Getter(AccessLevel.NONE)
     private Translations translations;
 
     /**
@@ -72,6 +71,8 @@ public class ThsEntryEntity extends TLAEntity {
 
     /**
      * Convert multilingual synonyms extracted from passport to {@link Translations} object.
+     *
+     * @return {@link Translations} instance or <code>null</code> if no synonyms are in passport
      */
     private Translations extractTranslationsFromPassport() {
         Translations res = null;

@@ -1,16 +1,19 @@
 package tla.backend.api;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,19 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.LemmaEntity;
-import tla.backend.es.model.OccurrenceEntity;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.service.LemmaService;
-import tla.backend.service.QueryService;
+import tla.backend.service.EntityService;
+import tla.domain.command.LemmaSearch;
 import tla.domain.dto.LemmaDto;
+import tla.domain.dto.extern.PageInfo;
+import tla.domain.dto.extern.SearchResultsWrapper;
 
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.BucketOrder;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 
 @Slf4j
 @RestController
@@ -47,15 +45,15 @@ public class LemmaController extends EntityController<LemmaEntity> {
     private ModelMapper modelMapper;
 
     @Override
-    public QueryService<LemmaEntity> getService() {
+    public EntityService<LemmaEntity> getService() {
         return queryService;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/count")
-    public ResponseEntity<Long> countLemmata() {
-        log.debug("counting lemmata: {}", repo.count());
-        return new ResponseEntity<Long>(
-            repo.count(),
+    @RequestMapping(method = RequestMethod.GET, value = "/frequencies")
+    public ResponseEntity<Map<String, Long>> getFrequencies() {
+        Map<String, Long> freq = queryService.getMostFrequent(2000);
+        return new ResponseEntity<Map<String, Long>>(
+            freq,
             HttpStatus.OK
         );
     }
@@ -84,32 +82,36 @@ public class LemmaController extends EntityController<LemmaEntity> {
         return repo.findAll(Sort.by("sortKey"));
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{id}/texts")
-    public ResponseEntity<List<String>> countOccurrencesInTexts(@PathVariable String id) throws IOException {
-        TermQueryBuilder queryBuilder = QueryBuilders.termQuery(
-            "lemma.id",
-            id
+    @RequestMapping(
+        value = "/search",
+        method = RequestMethod.POST,
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<SearchResultsWrapper<LemmaDto>> search(@RequestBody LemmaSearch command, Pageable pageable) throws Exception {
+        log.info("page: {}", pageable);
+        SearchHits<LemmaEntity> hits = queryService.search(
+            queryService.createLemmaSearchQuery(command, pageable)
         );
-        TermsAggregationBuilder aggrBuilder = AggregationBuilders
-            .terms("top_texts")
-            .field("location.textId")
-            .order(BucketOrder.count(false))
-            .size(100000);
-        SearchResponse response = queryService.query(
-            OccurrenceEntity.class,
-            queryBuilder,
-            aggrBuilder
-        );
-        Terms topTexts = (Terms) response.getAggregations().asMap().get("top_texts");
-        List<String> result = topTexts.getBuckets().stream()
-            .map(
-                b -> {return String.format("%s: %d", b.getKeyAsString(), b.getDocCount());}
-            )
-            .collect(
-                Collectors.toList()
-            );
-        return new ResponseEntity<List<String>>(
-            result,
+        PageInfo page = PageInfo.builder()
+            .number(pageable.getPageNumber())
+            .totalElements(hits.getTotalHits())
+            .size(EntityService.SEARCH_RESULT_PAGE_SIZE)
+            .numberOfElements(EntityService.SEARCH_RESULT_PAGE_SIZE)
+            .totalPages(
+                (int) hits.getTotalHits() / EntityService.SEARCH_RESULT_PAGE_SIZE + 1 // TODO
+            ).build();
+        return new ResponseEntity<>(
+            new SearchResultsWrapper<>(
+                hits.getSearchHits().stream().map(
+                    hit -> modelMapper.map(
+                        hit.getContent(),
+                        LemmaDto.class
+                    )
+                ).collect(Collectors.toList()),
+                command,
+                page
+            ),
             HttpStatus.OK
         );
     }
