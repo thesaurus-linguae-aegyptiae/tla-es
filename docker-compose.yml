@@ -18,7 +18,7 @@ services:
             context: .
             args:
                 - es_port=${ES_PORT}
-                - es_host=localhost
+                - es_host=127.0.0.1
                 - sample_url=${SAMPLE_URL}
         ports:
             - 8090:8090

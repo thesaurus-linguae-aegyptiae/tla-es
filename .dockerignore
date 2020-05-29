@@ -13,4 +13,5 @@ gradlew.bat
 .project
 README.md
 .settings
+settings.gradle
 sample.tar.gz

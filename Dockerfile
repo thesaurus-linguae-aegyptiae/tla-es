@@ -10,7 +10,7 @@ ENV ES_PORT ${es_port}
 ENV ES_HOST ${es_host}
 ENV SAMPLE_URL ${sample_url}
 
-RUN gradle populate bootJar --no-daemon
+RUN curl "http:/${ES_HOST}:${ES_PORT}" && gradle test populate bootJar --no-daemon
 
 
 FROM openjdk:11-jre-slim
