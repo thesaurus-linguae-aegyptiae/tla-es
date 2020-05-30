@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
@@ -47,7 +49,10 @@ import tla.domain.model.Passport;
 import tla.domain.model.Script;
 import tla.domain.model.extern.AttestedTimespan;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.elasticsearch.index.query.QueryBuilders.prefixQuery;
 
 @Slf4j
 @Service
@@ -219,14 +224,41 @@ public class LemmaService extends EntityService<LemmaEntity> {
             if (wordClass.getType().equals("excl_names")) {
                 query.mustNot(termQuery("type", "entity_name"));
             } else if (wordClass.getType().equals("any")) {
-            } else if (!wordClass.getType().trim().isEmpty()) {
+            } else if (!wordClass.getType().isBlank()) {
                 query.must(termQuery("type", wordClass.getType()));
             }
         }
-        if (wordClass.getSubtype() != null && !wordClass.getSubtype().trim().isEmpty()) {
+        if (wordClass.getSubtype() != null && !wordClass.getSubtype().isBlank()) {
             query.must(termQuery("subtype", wordClass.getSubtype()));
         }
         return query;
+    }
+
+    /**
+     * Make sure query string is lowercased in query.
+     */
+    private static QueryBuilder termQuery(String field, String value) {
+        if (value == null || value.isBlank()) {
+            return boolQuery();
+        } else {
+            return org.elasticsearch.index.query.QueryBuilders.termQuery(
+                field,
+                value.toLowerCase()
+            );
+        }
+    }
+
+    private BoolQueryBuilder annotationTypeQuery(LemmaSearch command) {
+        BoolQueryBuilder q = boolQuery();
+        TypeSpec anno = command.getAnnotationType();
+        if (anno.getType() != null) {
+            if (!anno.getType().isBlank()) {
+                q.must(
+                    termQuery("relations.contains.eclass", "BTSAnnotation")
+                );
+            }
+        }
+        return q;
     }
 
     protected static class SortSpec {
@@ -306,6 +338,9 @@ public class LemmaService extends EntityService<LemmaEntity> {
         }
         if (command.getPos() != null) {
             qb.must(wordClassQuery(command));
+        }
+        if (command.getAnnotationType() != null) {
+            qb.must(annotationTypeQuery(command));
         }
         return new NativeSearchQueryBuilder()
             .withQuery(qb)
