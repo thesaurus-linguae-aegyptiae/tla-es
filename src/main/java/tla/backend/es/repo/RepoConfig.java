@@ -19,7 +19,10 @@ import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.RestClients;
 import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchCustomConversions;
+import org.springframework.data.elasticsearch.core.convert.MappingElasticsearchConverter;
+import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +40,21 @@ public class RepoConfig extends AbstractElasticsearchConfiguration {
     @Primary
     public ElasticsearchRestTemplate elasticsearchRestTemplate() {
         return new ElasticsearchRestTemplate(
-            elasticsearchClient()
+            elasticsearchClient(),
+            elasticsearchConverter()
         );
+    }
+
+    @Bean
+    public ElasticsearchConverter elasticsearchConverter() {
+        MappingElasticsearchConverter mappingElasticsearchConverter = new MappingElasticsearchConverter(
+            new SimpleElasticsearchMappingContext()
+        );
+        mappingElasticsearchConverter.setConversions(
+            elasticsearchCustomConversions()
+        );
+        mappingElasticsearchConverter.afterPropertiesSet();
+        return mappingElasticsearchConverter;
     }
 
     @Bean
@@ -95,7 +111,13 @@ public class RepoConfig extends AbstractElasticsearchConfiguration {
                 );
                 return res;
             } catch (Exception e) {
-                log.error("well fuck, {}", e);
+                log.warn(
+                    String.format(
+                        "passport to map conversion failed for passport %s",
+                        source
+                    ),
+                    e
+                );
             }
             return null;
         }

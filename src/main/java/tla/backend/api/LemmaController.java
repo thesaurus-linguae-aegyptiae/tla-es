@@ -97,8 +97,12 @@ public class LemmaController extends EntityController<LemmaEntity> {
             .number(pageable.getPageNumber())
             .totalElements(hits.getTotalHits())
             .size(EntityService.SEARCH_RESULT_PAGE_SIZE)
-            .numberOfElements(EntityService.SEARCH_RESULT_PAGE_SIZE)
-            .totalPages(
+            .numberOfElements(
+                Math.min(
+                    EntityService.SEARCH_RESULT_PAGE_SIZE,
+                    hits.getSearchHits().size()
+                )
+            ).totalPages(
                 (int) hits.getTotalHits() / EntityService.SEARCH_RESULT_PAGE_SIZE + 1 // TODO
             ).build();
         return new ResponseEntity<>(

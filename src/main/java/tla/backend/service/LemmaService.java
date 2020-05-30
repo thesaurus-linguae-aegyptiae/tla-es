@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
@@ -37,6 +39,7 @@ import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.repo.LemmaRepo;
 import tla.domain.command.LemmaSearch;
+import tla.domain.command.SearchCommand;
 import tla.domain.command.TypeSpec;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
@@ -46,7 +49,10 @@ import tla.domain.model.Passport;
 import tla.domain.model.Script;
 import tla.domain.model.extern.AttestedTimespan;
 
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.elasticsearch.index.query.QueryBuilders.prefixQuery;
 
 @Slf4j
 @Service
@@ -218,28 +224,94 @@ public class LemmaService extends EntityService<LemmaEntity> {
             if (wordClass.getType().equals("excl_names")) {
                 query.mustNot(termQuery("type", "entity_name"));
             } else if (wordClass.getType().equals("any")) {
-            } else if (!wordClass.getType().trim().isEmpty()) {
+            } else if (!wordClass.getType().isBlank()) {
                 query.must(termQuery("type", wordClass.getType()));
             }
         }
-        if (wordClass.getSubtype() != null && !wordClass.getSubtype().trim().isEmpty()) {
+        if (wordClass.getSubtype() != null && !wordClass.getSubtype().isBlank()) {
             query.must(termQuery("subtype", wordClass.getSubtype()));
         }
         return query;
     }
 
-    private SortBuilder<?> sortBuilder(LemmaSearch command) {
-        if (command.getSort() != null) {
-            String[] segm = command.getSort().split("\\.");
-            if (segm.length > 1) {
-                return SortBuilders.fieldSort(segm[0]).order(
-                    segm[1].equals("desc") ? SortOrder.DESC : SortOrder.ASC
+    /**
+     * Make sure query string is lowercased in query.
+     */
+    private static QueryBuilder termQuery(String field, String value) {
+        if (value == null || value.isBlank()) {
+            return boolQuery();
+        } else {
+            return org.elasticsearch.index.query.QueryBuilders.termQuery(
+                field,
+                value.toLowerCase()
+            );
+        }
+    }
+
+    private BoolQueryBuilder annotationTypeQuery(LemmaSearch command) {
+        BoolQueryBuilder q = boolQuery();
+        TypeSpec anno = command.getAnnotationType();
+        if (anno.getType() != null) {
+            if (!anno.getType().isBlank()) {
+                q.must(
+                    termQuery("relations.contains.eclass", "BTSAnnotation")
                 );
-            } else {
-                return SortBuilders.fieldSort(segm[0]).order(SortOrder.ASC);
             }
         }
-        return SortBuilders.fieldSort("sortKey").order(SortOrder.ASC);
+        return q;
+    }
+
+    protected static class SortSpec {
+
+        public static final String DELIMITER = "_";
+
+        protected String field;
+        protected SortOrder order;
+
+        public SortSpec(String field) {
+            this(field, SortOrder.ASC);
+        }
+
+        public SortSpec(String field, SortOrder order) {
+            this.field = field;
+            this.order = order;
+        }
+
+        public SortSpec(String field, String order) {
+            this(
+                field,
+                order.toLowerCase().equals("desc") ? SortOrder.DESC : SortOrder.ASC
+            );
+        }
+
+        public static SortSpec from(SearchCommand<LemmaDto> command) {
+            return from(command.getSort());
+        }
+
+        public static SortSpec from(String source) {
+            if (source != null) {
+                String[] segm = source.split(DELIMITER);
+                String field = String.join(
+                    DELIMITER,
+                    Arrays.asList(segm).subList(0, segm.length - 1)
+                );
+                if (segm.length > 1) {
+                    return new SortSpec(field, segm[segm.length - 1]);
+                } else {
+                    return new SortSpec(segm[0]);
+                }
+            } else {
+                return new SortSpec("id");
+            }
+        }
+
+        public SortBuilder<?> primary() {
+            return SortBuilders.fieldSort(this.field).order(this.order);
+        }
+
+        public SortBuilder<?> secondary() {
+            return SortBuilders.fieldSort("id").order(this.order);
+        }
     }
 
 
@@ -267,10 +339,14 @@ public class LemmaService extends EntityService<LemmaEntity> {
         if (command.getPos() != null) {
             qb.must(wordClassQuery(command));
         }
+        if (command.getAnnotationType() != null) {
+            qb.must(annotationTypeQuery(command));
+        }
         return new NativeSearchQueryBuilder()
             .withQuery(qb)
             .withPageable(pageable)
-            .withSort(sortBuilder(command))
+            .withSort(SortSpec.from(command).primary())
+            .withSort(SortSpec.from(command).secondary())
             .build();
     }
 
