@@ -52,10 +52,10 @@ public class ModelTest {
         assertAll("make sure model config class has been initialized",
             () -> assertTrue(ModelConfig.isInitialized(), "flag should be set"),
             () -> assertNotNull(modelClasses, "model class list should not be null"),
-            () -> assertNotNull(ModelConfig.getModelClassConfigs(), "model configurations registry expected"),
+            () -> assertNotNull(ModelConfig.getEclassConfigs(), "model configurations registry expected"),
             () -> assertEquals(
                 modelClasses.size(),
-                ModelConfig.getModelClassConfigs().size(),
+                ModelConfig.getEclassConfigs().size(),
                 String.format(
                     "number of model class configurations registered should be the same as model classes known to ModelConfig (%s)",
                     String.join(
@@ -77,7 +77,7 @@ public class ModelTest {
     @Test
     void registerModelClass() throws Exception {
         int numberOfRegisteredModels = ModelConfig.getModelClasses().size();
-        int numberOfRegisteredModelConfigs = ModelConfig.getModelClassConfigs().size();
+        int numberOfRegisteredModelConfigs = ModelConfig.getEclassConfigs().size();
         try {
             Map<String, ModelConfig.BTSeClassConfig> conf = ModelConfig.registerModelClass(
                 CorrectlyAnnotatedDummyModelClass.class
@@ -88,7 +88,7 @@ public class ModelTest {
                 () -> assertEquals("made_up_index_name", conf.get("BTSMadeUpModel").getIndex(), "expect index name"),
                 () -> assertEquals(CorrectlyAnnotatedDummyModelClass.class, conf.get("BTSMadeUpModel").getModelClass(), "expect class"),
                 () -> assertEquals(numberOfRegisteredModels + 1, ModelConfig.getModelClasses().size(), "expect one more known model class"),
-                () -> assertEquals(numberOfRegisteredModelConfigs + 1, ModelConfig.getModelClassConfigs().size(), "expect one more registered config"),
+                () -> assertEquals(numberOfRegisteredModelConfigs + 1, ModelConfig.getEclassConfigs().size(), "expect one more registered config"),
                 () -> assertEquals(conf.get("BTSMadeUpModel").getIndex(), ModelConfig.getIndexName(CorrectlyAnnotatedDummyModelClass.class)),
                 () -> assertEquals(CorrectlyAnnotatedDummyModelClass.class, ModelConfig.getModelClass("BTSMadeUpModel"))
             );

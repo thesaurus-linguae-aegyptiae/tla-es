@@ -17,7 +17,7 @@ public class CommentController extends EntityController<CommentEntity> {
     
 
     @Override
-    public EntityService<CommentEntity> getService() {
+    public EntityService<CommentEntity, ?> getService() {
         return this.service;
     }
 

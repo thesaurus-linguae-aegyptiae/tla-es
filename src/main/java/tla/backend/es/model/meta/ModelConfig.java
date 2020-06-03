@@ -76,7 +76,7 @@ public class ModelConfig {
     private static List<Class<? extends BaseEntity>> modelClasses = new LinkedList<>();
 
     @Getter
-    private static Map<String, BTSeClassConfig> modelClassConfigs;
+    private static Map<String, BTSeClassConfig> eclassConfigs;
 
     public ModelConfig() {
         setModelClasses(
@@ -95,7 +95,7 @@ public class ModelConfig {
      * Extract eclass configurations from all registered model classes.
      */
     private static void initModelConfig() {
-        modelClassConfigs = new HashMap<>();
+        eclassConfigs = new HashMap<>();
         modelClasses.forEach(
             clazz -> {
                 try {
@@ -191,7 +191,7 @@ public class ModelConfig {
             if (!modelClasses.contains(modelClass)) {
                 modelClasses.add(modelClass);
             }
-            modelClassConfigs.putAll(conf);
+            eclassConfigs.putAll(conf);
             return conf;
         } else {
             throw new Exception(
@@ -208,11 +208,11 @@ public class ModelConfig {
      * classes passed.
      */
     public static void setModelClasses(List<Class<? extends BaseEntity>> classes) {
-        if (modelClassConfigs != null) {
-            modelClassConfigs.clear();
+        if (eclassConfigs != null) {
+            eclassConfigs.clear();
             log.info(
                 "erase model class registry containing eclasses: {}",
-                String.join(", ", modelClassConfigs.keySet())
+                String.join(", ", eclassConfigs.keySet())
             );
         } else {
             log.info(
@@ -224,7 +224,7 @@ public class ModelConfig {
         initModelConfig();
         log.info(
             "configured eclass class registry updated: {}",
-            String.join(", ", modelClassConfigs.keySet())
+            String.join(", ", eclassConfigs.keySet())
         );
     }
 
@@ -232,14 +232,14 @@ public class ModelConfig {
      * Look up the model class registered for a given eclass.
      */
     public static Class<? extends BaseEntity> getModelClass(String eclass) {
-        return modelClassConfigs.get(eclass).getModelClass();
+        return eclassConfigs.get(eclass).getModelClass();
     }
 
     /**
      * Tells whether the {@link ModelConfig} class has been instantiated (presumably by spring DI).
      */
     public static boolean isInitialized() {
-        return getModelClassConfigs() != null && modelMapper != null;
+        return getEclassConfigs() != null && modelMapper != null;
     }
 
     @Bean
@@ -315,10 +315,8 @@ public class ModelConfig {
      * attribute of the {@link Document} annotation.
      */
     public static String getIndexName(Class<? extends Indexable> clazz) {
-        for (Annotation annotation : clazz.getAnnotations()) {
-            if (annotation instanceof Document) {
-                return ((Document) annotation).indexName();
-            }
+        for (Annotation annotation : clazz.getAnnotationsByType(Document.class)) {
+            return ((Document) annotation).indexName();
         }
         throw new IllegalArgumentException(
             String.format(

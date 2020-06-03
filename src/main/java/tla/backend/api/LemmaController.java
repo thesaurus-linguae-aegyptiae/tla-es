@@ -45,7 +45,7 @@ public class LemmaController extends EntityController<LemmaEntity> {
     private ModelMapper modelMapper;
 
     @Override
-    public EntityService<LemmaEntity> getService() {
+    public EntityService<LemmaEntity, ? extends AbstractDto> getService() {
         return queryService;
     }
 

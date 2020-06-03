@@ -9,10 +9,11 @@ import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.TextEntity;
 import tla.backend.es.repo.TextRepo;
+import tla.domain.dto.TextDto;
 
 @Service
 @ModelClass(value = TextEntity.class, path = "text")
-public class TextService extends EntityService<TextEntity> {
+public class TextService extends EntityService<TextEntity, TextDto> {
 
     @Autowired
     private TextRepo textRepo;

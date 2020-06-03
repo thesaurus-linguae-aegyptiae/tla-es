@@ -49,15 +49,10 @@ import tla.domain.model.Passport;
 import tla.domain.model.Script;
 import tla.domain.model.extern.AttestedTimespan;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import static org.elasticsearch.index.query.QueryBuilders.prefixQuery;
-
 @Slf4j
 @Service
 @ModelClass(value = LemmaEntity.class, path = "lemma")
-public class LemmaService extends EntityService<LemmaEntity> {
+public class LemmaService extends EntityService<LemmaEntity, LemmaDto> {
 
     @Autowired
     private LemmaRepo repo;

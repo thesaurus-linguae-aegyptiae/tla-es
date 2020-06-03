@@ -6,10 +6,11 @@ import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.CorpusObjectEntity;
 import tla.backend.es.repo.CorpusObjectRepo;
+import tla.domain.dto.CorpusObjectDto;
 
 @Service
 @ModelClass(value = CorpusObjectEntity.class, path = "object")
-public class CorpusObjectService extends EntityService<CorpusObjectEntity> {
+public class CorpusObjectService extends EntityService<CorpusObjectEntity, CorpusObjectDto> {
 
     @Autowired
     private CorpusObjectRepo repo;

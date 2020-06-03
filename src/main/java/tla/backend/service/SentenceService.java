@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.repo.SentenceRepo;
+import tla.domain.dto.SentenceDto;
 import tla.domain.model.ObjectReference;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @ModelClass(value = SentenceEntity.class, path = "sentence")
-public class SentenceService extends EntityService<SentenceEntity> {
+public class SentenceService extends EntityService<SentenceEntity, SentenceDto> {
 
     private final static String LEMMA_FREQ_AGG_NAME = "aggr_around_text_id";
 

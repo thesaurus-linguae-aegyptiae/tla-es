@@ -28,7 +28,7 @@ public abstract class EntityController<T extends Indexable> {
     /**
      * Must return a presumably autowired entity service of appropriate type.
      */
-    public abstract EntityService<T> getService();
+    public abstract EntityService<T, ? extends AbstractDto> getService();
 
     /**
      * Returns a document wrapper containing a single document and all documents it references.

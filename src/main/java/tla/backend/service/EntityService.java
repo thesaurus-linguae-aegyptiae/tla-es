@@ -31,6 +31,7 @@ import tla.domain.dto.meta.AbstractDto;
 import tla.domain.dto.meta.DocumentDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.BTSeClass;
+import tla.domain.model.meta.TLADTO;
 
 /**
  * Implementing subclasses must be annotated with {@link ModelClass} and be instantiated
@@ -38,7 +39,7 @@ import tla.domain.model.meta.BTSeClass;
  * They should also be annotated with {@link Service} for component scanning / dependency injection.
  */
 @Slf4j
-public abstract class EntityService<T extends Indexable> {
+public abstract class EntityService<T extends Indexable, D extends AbstractDto> {
 
     /**
      * How many search results fit in 1 page.
@@ -48,21 +49,57 @@ public abstract class EntityService<T extends Indexable> {
     @Autowired
     protected RestHighLevelClient restClient;
 
-    protected static Map<Class<? extends Indexable>, EntityService<? extends Indexable>> modelClassServices = new HashMap<>();
+    @Autowired
+    private ElasticsearchOperations operations;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    private Class<T> modelClass = null;
+    private Class<D> dtoClass = null;
+    private String indexName = null;
+    protected static Map<Class<? extends Indexable>, EntityService<? extends Indexable, ? extends AbstractDto>> modelClassServices = new HashMap<>();
+    protected static Map<Class<? extends Indexable>, AbstractDto> modelClassDtos = new HashMap<>();
 
     /**
      * Default constructor registering services under the eclass specified via a {@link BTSeClass}
      * annotation.
      */
+    @SuppressWarnings("unchecked")
     protected EntityService() {
-        for (Annotation a : this.getClass().getAnnotations()) {
-            if (a instanceof ModelClass) {
-                modelClassServices.put(
-                    ((ModelClass) a).value(),
-                    this
-                );
-            }
+        for (Annotation a : this.getClass().getAnnotationsByType(ModelClass.class)) {
+            this.modelClass = (Class<T>) ((ModelClass) a).value();
+            modelClassServices.put(
+                this.modelClass,
+                this
+            );
         }
+    }
+
+    /**
+     * Returns the domain class a service is taking care of (extracted from its
+     * {@link ModelClass} annotation.
+     */
+    public Class<T> getModelClass() {
+        return this.modelClass;
+    }
+
+    /**
+     * Return index where ES stores entities of the type a service is about.
+     */
+    public String getIndexName() {
+        if (this.indexName == null) {
+            this.indexName = ModelConfig.getIndexName(this.modelClass);
+        }
+        return this.indexName;
+    }
+
+    /**
+     * Returns indexname for class which implements {@link Indexable} and has
+     * its own {@link EntityService}.
+     */
+    public String getIndexName(Class<? extends Indexable> modelClass) {
+        return modelClassServices.get(modelClass).getIndexName();
     }
 
     /**
@@ -70,13 +107,32 @@ public abstract class EntityService<T extends Indexable> {
      * registered.
      * Registration takes place at construction time of any service with a {@link ModelClass} annotation.
      */
-    public static EntityService<? extends Indexable> getService(Class<? extends Indexable> modelClass) {
+    public static EntityService<? extends Indexable, ? extends AbstractDto> getService(Class<? extends Indexable> modelClass) {
         if (modelClassServices.containsKey(modelClass)) {
             return modelClassServices.get(modelClass);
         } else {
             log.error("No service registered for eclass '{}'!'", modelClass);
             return null;
         }
+    }
+
+    /**
+     * Return the class specified via {@link TLADTO} annotation on top
+     * of the model class a service is for.
+     *
+     * @see #getModelClass()
+     */
+    @SuppressWarnings("unchecked")
+    public Class<D> getDtoClass() {
+        if (this.dtoClass != null) {
+            return this.dtoClass;
+        } else {
+            for (Annotation a : getModelClass().getAnnotationsByType(TLADTO.class)) {
+                this.dtoClass = (Class<D>) ((TLADTO) a).value();
+                return this.dtoClass;
+            }
+        }
+        return null;
     }
 
     /**
@@ -260,7 +316,7 @@ public abstract class EntityService<T extends Indexable> {
      */
     public BaseEntity retrieveSingleBTSDoc(String eclass, String id) {
         Class<? extends BaseEntity> modelClass = ModelConfig.getModelClass(eclass);
-        EntityService<? extends Indexable> service = modelClassServices.getOrDefault(modelClass, null);
+        EntityService<?, ?> service = modelClassServices.getOrDefault(modelClass, null);
         if (service == null) {
             log.error("Could not find entity service for eclass {}!", eclass);
             return null;

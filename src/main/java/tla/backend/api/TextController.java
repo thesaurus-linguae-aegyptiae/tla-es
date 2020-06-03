@@ -16,7 +16,7 @@ public class TextController extends EntityController<TextEntity> {
     private TextService textService;
 
     @Override
-    public EntityService<TextEntity> getService() {
+    public EntityService<TextEntity, ?> getService() {
         return textService;
     }
 

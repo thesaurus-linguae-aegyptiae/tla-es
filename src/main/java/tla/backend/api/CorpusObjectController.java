@@ -16,7 +16,7 @@ public class CorpusObjectController extends EntityController<CorpusObjectEntity>
     private CorpusObjectService service;
 
     @Override
-    public EntityService<CorpusObjectEntity> getService() {
+    public EntityService<CorpusObjectEntity, ?> getService() {
         return service;
     }
 

@@ -149,7 +149,7 @@ public class RepoPopulator {
     /**
      * Return the <code>path</code> value of a entity service's {@link ModelClass} annotation
      */
-    private static String getModelClassServicePath(EntityService<? extends Indexable> service) {
+    private static String getModelClassServicePath(EntityService<? extends Indexable, ?> service) {
         for (Annotation a : service.getClass().getAnnotations()) {
             if (a instanceof ModelClass) {
                 return ((ModelClass) a).path();

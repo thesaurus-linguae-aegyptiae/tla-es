@@ -9,12 +9,13 @@ import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.repo.ThesaurusRepo;
+import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.Passport;
 
 @Service
 @ModelClass(value = ThsEntryEntity.class, path = "ths")
-public class ThesaurusService extends EntityService<ThsEntryEntity> {
+public class ThesaurusService extends EntityService<ThsEntryEntity, ThsEntryDto> {
 
     @Autowired
     private ThesaurusRepo thsRepo;

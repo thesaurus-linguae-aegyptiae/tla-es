@@ -6,10 +6,11 @@ import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.CommentEntity;
 import tla.backend.es.repo.CommentRepo;
+import tla.domain.dto.CommentDto;
 
 @Service
 @ModelClass(value = CommentEntity.class, path = "comment")
-public class CommentService extends EntityService<CommentEntity> {
+public class CommentService extends EntityService<CommentEntity, CommentDto> {
 
     @Autowired
     private CommentRepo repo;

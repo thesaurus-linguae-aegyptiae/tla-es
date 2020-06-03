@@ -6,10 +6,11 @@ import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.repo.AnnotationRepo;
+import tla.domain.dto.AnnotationDto;
 
 @Service
 @ModelClass(value = AnnotationEntity.class, path = "annotation")
-public class AnnotationService extends EntityService<AnnotationEntity> {
+public class AnnotationService extends EntityService<AnnotationEntity, AnnotationDto> {
 
     @Autowired
     private AnnotationRepo repo;
