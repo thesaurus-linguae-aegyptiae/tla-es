@@ -5,19 +5,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.elasticsearch.search.aggregations.AggregationBuilder;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +36,9 @@ import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
+import tla.domain.command.SearchCommand;
+import tla.domain.dto.extern.PageInfo;
+import tla.domain.dto.extern.SearchResultsWrapper;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.dto.meta.AbstractDto;
 import tla.domain.dto.meta.DocumentDto;
@@ -336,6 +349,90 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
             )
         );
         return null;
+    }
+
+    /**
+     * Maps a bunch of model entities to DTOs.
+     */
+    public Collection<? extends AbstractDto> toDTO(Collection<T> entities) {
+        return entities.stream().map(
+            ModelConfig::toDTO
+        ).collect(Collectors.toList());
+    }
+
+    /**
+     * Try to find a bunch of domain objects in an ES index by running a query.
+     */
+    public SearchHits<T> search(Query query) {
+        log.info("query: {}", tla.domain.util.IO.json(query));
+        return operations.search(
+            query,
+            getModelClass(),
+            IndexCoordinates.of(getIndexName())
+        );
+    }
+
+    /**
+     * Create a serializable transfer object containing page information
+     * about an ES search result.
+     */
+    public PageInfo pageInfo(SearchHits<?> hits, Pageable pageable) {
+        return PageInfo.builder()
+            .number(pageable.getPageNumber())
+            .totalElements(hits.getTotalHits())
+            .size(EntityService.SEARCH_RESULT_PAGE_SIZE)
+            .numberOfElements(
+                Math.min(
+                    EntityService.SEARCH_RESULT_PAGE_SIZE,
+                    hits.getSearchHits().size()
+                )
+            ).totalPages(
+                (int) hits.getTotalHits() / EntityService.SEARCH_RESULT_PAGE_SIZE + 1 // TODO
+            ).build();
+    }
+
+    /**
+     * Converts terms aggregations to a map of field value counts.
+     */
+    public Map<String, Map<String, Long>> facets(SearchHits<?> hits) {
+        if (hits.hasAggregations()) {
+            Map<String, Map<String, Long>> facets = new HashMap<>();
+            for (Aggregation agg : hits.getAggregations().asList()) {
+                facets.put(
+                    agg.getName(),
+                    ((Terms) agg).getBuckets().stream().collect(
+                        Collectors.toMap(
+                            Terms.Bucket::getKeyAsString,
+                            Terms.Bucket::getDocCount
+                        )
+                    )
+                );
+            }
+            return facets;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Takes an Elasticsearch search result and the original page information and search
+     * command, and puts it all into a serializable container ready for return
+     * to the requesting client.
+     */
+    public SearchResultsWrapper<D> wrapSearchResults(
+        SearchHits<T> hits, Pageable pageable, SearchCommand<D> command
+    ) throws Exception {
+        return new SearchResultsWrapper<D>(
+            hits.getSearchHits().stream().map(
+                hit -> modelMapper.map(
+                    hit.getContent(),
+                    getDtoClass()
+                )
+            ).collect(Collectors.toList()),
+            command,
+            pageInfo(hits, pageable),
+            facets(hits)
+        );
     }
 
 }

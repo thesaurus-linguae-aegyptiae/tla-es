@@ -1,7 +1,11 @@
 package tla.backend.service;
 
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.prefixQuery;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,9 +17,9 @@ import java.util.stream.Collectors;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
@@ -25,8 +29,7 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
@@ -65,10 +68,6 @@ public class LemmaService extends EntityService<LemmaEntity, LemmaDto> {
 
     @Autowired
     private ThesaurusService thsService;
-
-    @Autowired
-    private ElasticsearchOperations operations;
-
 
     @Override
     public ElasticsearchRepository<LemmaEntity, String> getRepo() {
@@ -173,15 +172,6 @@ public class LemmaService extends EntityService<LemmaEntity, LemmaDto> {
         );
     }
 
-    public SearchHits<LemmaEntity> search(Query query) {
-        log.info("query: {}", query);
-        return operations.search(
-            query,
-            LemmaEntity.class,
-            IndexCoordinates.of("lemma")
-        );
-    }
-
     private BoolQueryBuilder scriptFilter(LemmaSearch command) {
         BoolQueryBuilder scriptFilter = boolQuery();
         List<Script> scripts = Arrays.asList(command.getScript());
@@ -214,7 +204,7 @@ public class LemmaService extends EntityService<LemmaEntity, LemmaDto> {
 
     private BoolQueryBuilder wordClassQuery(LemmaSearch command) {
         BoolQueryBuilder query = boolQuery();
-        TypeSpec wordClass = command.getPos();
+        TypeSpec wordClass = command.getWordClass();
         if (wordClass.getType() != null) {
             if (wordClass.getType().equals("excl_names")) {
                 query.mustNot(termQuery("type", "entity_name"));
@@ -243,6 +233,9 @@ public class LemmaService extends EntityService<LemmaEntity, LemmaDto> {
         }
     }
 
+    /**
+     * Create query requiring lemma to have annotations.
+     */
     private BoolQueryBuilder annotationTypeQuery(LemmaSearch command) {
         BoolQueryBuilder q = boolQuery();
         TypeSpec anno = command.getAnnotationType();
@@ -256,6 +249,9 @@ public class LemmaService extends EntityService<LemmaEntity, LemmaDto> {
         return q;
     }
 
+    /**
+     * Representation of search order specifications.
+     */
     protected static class SortSpec {
 
         public static final String DELIMITER = "_";
@@ -309,8 +305,49 @@ public class LemmaService extends EntityService<LemmaEntity, LemmaDto> {
         }
     }
 
+    /**
+     * Based on the search command and what fields in there are specified, generate
+     * terms aggregations for faceted search.
+     */
+    protected static List<AbstractAggregationBuilder<?>> lemmaSearchAggregations(LemmaSearch command) {
+        List<AbstractAggregationBuilder<?>> aggs = new ArrayList<>();
+        TypeSpec wc = command.getWordClass();
+        if (wc != null) {
+            if (wc.getType() != null && !wc.getType().isBlank()) {
+                if (wc.getSubtype() == null || wc.getSubtype().isBlank()) {
+                    aggs.add(
+                        AggregationBuilders.terms("wordClass.subtype").field("subtype")
+                    );
+                }
+            } else {
+                aggs.add(
+                    AggregationBuilders.terms("wordClass.type").field("type")
+                );
+            }
+        } else {
+            aggs.add(
+                AggregationBuilders.terms("worClass.type").field("type")
+            );
+        }
+        if (command.getScript() == null || command.getScript().length < 1) {
+            aggs.add(
+                AggregationBuilders.terms("script").script(
+                    new org.elasticsearch.script.Script(
+                        "if (doc['id'].value.startsWith('d')) {return 'demotic';} if (!doc['type'].value.equals('root')) {return 'hieratic';}"
+                    )
+                )
+            );
+        }
+        log.info("add aggregations to query: {}", aggs.size());
+        return aggs;
+    }
 
+
+    /**
+     * Convert a search command transfer object into a native Elasticsearch query.
+     */
     public Query createLemmaSearchQuery(LemmaSearch command, Pageable pageable) {
+        log.info("SEARCH COMMAND: {}", tla.domain.util.IO.json(command));
         BoolQueryBuilder qb = boolQuery();
         if (command.getTranscription() != null) {
            qb.must(matchQuery("name", command.getTranscription()).operator(Operator.AND));
@@ -331,18 +368,22 @@ public class LemmaService extends EntityService<LemmaEntity, LemmaDto> {
                 matchQuery("relations.root.name", command.getRoot())
             );
         }
-        if (command.getPos() != null) {
+        if (command.getWordClass() != null) {
             qb.must(wordClassQuery(command));
         }
         if (command.getAnnotationType() != null) {
             qb.must(annotationTypeQuery(command));
         }
-        return new NativeSearchQueryBuilder()
+        NativeSearchQuery lemmaQuery = new NativeSearchQueryBuilder()
             .withQuery(qb)
             .withPageable(pageable)
             .withSort(SortSpec.from(command).primary())
             .withSort(SortSpec.from(command).secondary())
             .build();
+        lemmaSearchAggregations(command).forEach(
+            agg -> lemmaQuery.addAggregation(agg)
+        );
+        return lemmaQuery;
     }
 
 }
