@@ -338,6 +338,21 @@ public class LemmaService extends EntityService<LemmaEntity, LemmaDto> {
                 )
             );
         }
+        TypeSpec anno = command.getAnnotationType();
+        if (anno == null || anno.getType() == null || anno.getType().isBlank()) {
+            aggs.add(
+                AggregationBuilders.filter(
+                    "annotationType.type",
+                    termQuery("relations.contains.eclass", "BTSAnnotation")
+                ).subAggregation(
+                    AggregationBuilders.terms("subagg").script(
+                        new org.elasticsearch.script.Script(
+                            "return 'Lemma';"
+                        )
+                    )
+                )
+            );
+        }
         log.info("add aggregations to query: {}", aggs.size());
         return aggs;
     }

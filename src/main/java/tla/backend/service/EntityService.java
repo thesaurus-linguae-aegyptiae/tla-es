@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -18,13 +17,13 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.filter.Filter;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Query;
@@ -392,21 +391,40 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
     }
 
     /**
+     * extract a simple map of terms and their counts from
+     * a bucketed aggregation's buckets.
+     */
+    private Map<String, Long> getFacetsFromBuckets(Terms agg) {
+        return ((Terms) agg).getBuckets().stream().collect(
+            Collectors.toMap(
+                Terms.Bucket::getKeyAsString,
+                Terms.Bucket::getDocCount
+            )
+        );
+    }
+
+    /**
      * Converts terms aggregations to a map of field value counts.
      */
     public Map<String, Map<String, Long>> facets(SearchHits<?> hits) {
         if (hits.hasAggregations()) {
             Map<String, Map<String, Long>> facets = new HashMap<>();
             for (Aggregation agg : hits.getAggregations().asList()) {
-                facets.put(
-                    agg.getName(),
-                    ((Terms) agg).getBuckets().stream().collect(
-                        Collectors.toMap(
-                            Terms.Bucket::getKeyAsString,
-                            Terms.Bucket::getDocCount
+                if (agg instanceof Terms) {
+                    facets.put(
+                        agg.getName(),
+                        getFacetsFromBuckets((Terms) agg)
+                    );
+                } else if (agg instanceof Filter) {
+                    ((Filter) agg).getAggregations().asList().stream().filter(
+                        sub -> sub instanceof Terms
+                    ).forEach(
+                        sub -> facets.put(
+                            agg.getName(),
+                            getFacetsFromBuckets((Terms) sub)
                         )
-                    )
-                );
+                    );
+                }
             }
             return facets;
         } else {
