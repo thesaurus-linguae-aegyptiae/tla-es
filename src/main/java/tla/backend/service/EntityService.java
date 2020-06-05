@@ -44,6 +44,7 @@ import tla.domain.dto.meta.DocumentDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
+import tla.error.ObjectNotFoundException;
 
 /**
  * Implementing subclasses must be annotated with {@link ModelClass} and be instantiated

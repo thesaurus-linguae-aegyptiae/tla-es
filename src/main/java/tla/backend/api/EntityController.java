@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
-import tla.backend.error.ObjectNotFoundException;
+import tla.error.ObjectNotFoundException;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.service.EntityService;
 import tla.domain.dto.extern.SingleDocumentWrapper;
@@ -48,7 +48,7 @@ public abstract class EntityController<T extends Indexable> {
             );
         }
         log.error("could not find annotation {}", id);
-        throw new ObjectNotFoundException();
+        throw new ObjectNotFoundException(id);
     }
 
     /**
