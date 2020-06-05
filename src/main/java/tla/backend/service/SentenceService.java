@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.meta.BaseEntity;
+import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.backend.es.repo.SentenceRepo;
+import tla.domain.command.SearchCommand;
 import tla.domain.dto.SentenceDto;
 import tla.domain.model.ObjectReference;
 
@@ -83,6 +85,12 @@ public class SentenceService extends EntityService<SentenceEntity, SentenceDto> 
                 Terms.Bucket::getDocCount
             )
         );
+    }
+
+    @Override
+    protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

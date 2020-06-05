@@ -8,7 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -88,15 +87,12 @@ public class LemmaController extends EntityController<LemmaEntity> {
     )
     public ResponseEntity<?> search(@RequestBody LemmaSearch command, Pageable pageable) {
         log.info("page: {}", tla.domain.util.IO.json(pageable));
-        SearchHits<LemmaEntity> hits = queryService.search(
-            queryService.createLemmaSearchQuery(command, pageable)
-        );
         try {
             return new ResponseEntity<>(
-                queryService.wrapSearchResults(
-                    hits,
-                    pageable,
-                    command
+                queryService.search(
+                    command,
+                    LemmaEntity.class,
+                    pageable
                 ),
                 HttpStatus.OK
             );

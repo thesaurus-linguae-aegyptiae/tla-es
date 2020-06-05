@@ -8,7 +8,9 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.ThsEntryEntity;
+import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.backend.es.repo.ThesaurusRepo;
+import tla.domain.command.SearchCommand;
 import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.Passport;
@@ -26,14 +28,15 @@ public class ThesaurusService extends EntityService<ThsEntryEntity, ThsEntryDto>
     }
 
     /**
-     * If a passport references thesaurus entries at the leaf node located by the specified path,
-     * these thesaurus entries get retrieved from the index.
+     * If a passport references thesaurus entries at the leaf node located by the
+     * specified path, these thesaurus entries get retrieved from the index.
+     *
      * @param passport
      * @param path
      * @return
      */
     public List<ThsEntryEntity> extractThsEntriesFromPassport(Passport passport, String path) {
-        List<Passport> leafNodes =  passport.extractProperty(path);
+        List<Passport> leafNodes = passport.extractProperty(path);
         List<ThsEntryEntity> terms = new LinkedList<>();
         leafNodes.stream().forEach(
             node -> {
@@ -44,9 +47,14 @@ public class ThesaurusService extends EntityService<ThsEntryEntity, ThsEntryDto>
                         )
                     );
                 }
-            }
-        );
+        });
         return terms;
+    }
+
+    @Override
+    protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
