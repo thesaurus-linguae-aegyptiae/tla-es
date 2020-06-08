@@ -26,6 +26,7 @@ import tla.domain.model.Passport;
 import tla.domain.model.extern.AttestedTimespan;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
+import tla.domain.model.meta.UserFriendly;
 
 @Data
 @Slf4j
@@ -35,7 +36,7 @@ import tla.domain.model.meta.TLADTO;
 @TLADTO(ThsEntryDto.class)
 @EqualsAndHashCode(callSuper = true)
 @Document(indexName = "ths", type = "ths")
-public class ThsEntryEntity extends TLAEntity {
+public class ThsEntryEntity extends TLAEntity implements UserFriendly {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -53,6 +54,10 @@ public class ThsEntryEntity extends TLAEntity {
     @Field(type = FieldType.Keyword)
     @JsonAlias({"sortkey", "sort_key", "sort_string", "sortString"})
     private String sortKey;
+
+    @Field(type = FieldType.Keyword)
+    @JsonAlias("hash")
+    private String sUID;
 
     @Field(type = FieldType.Object)
     private Translations translations;
