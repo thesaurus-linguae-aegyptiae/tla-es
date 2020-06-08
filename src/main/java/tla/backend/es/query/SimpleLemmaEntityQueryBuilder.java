@@ -55,7 +55,7 @@ public class SimpleLemmaEntityQueryBuilder extends AbstractEntityQueryBuilder<Le
         if (getCommand().getWordClass() != null) {
             qb.must(wordClassQuery());
         }
-        if (getCommand().getAnnoClass() != null) {
+        if (getCommand().getAnno() != null) {
             qb.must(annotationTypeQuery(getCommand()));
         }
         return qb;
@@ -100,11 +100,11 @@ public class SimpleLemmaEntityQueryBuilder extends AbstractEntityQueryBuilder<Le
                 )
             );
         }
-        TypeSpec anno = getCommand().getAnnoClass();
+        TypeSpec anno = getCommand().getAnno();
         if (anno == null || anno.getType() == null || anno.getType().isBlank()) {
             aggs.add(
                 AggregationBuilders.filter(
-                    "annoClass.type",
+                    "anno.type",
                     termQuery("relations.contains.eclass", "BTSAnnotation")
                 ).subAggregation(
                     AggregationBuilders.terms("subagg").script(
@@ -171,7 +171,7 @@ public class SimpleLemmaEntityQueryBuilder extends AbstractEntityQueryBuilder<Le
      */
     private BoolQueryBuilder annotationTypeQuery(LemmaSearch command) {
         BoolQueryBuilder q = boolQuery();
-        TypeSpec anno = getCommand().getAnnoClass();
+        TypeSpec anno = getCommand().getAnno();
         if (anno.getType() != null) {
             if (!anno.getType().isBlank()) {
                 q.must(
