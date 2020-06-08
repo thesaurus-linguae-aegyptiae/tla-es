@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(Include.NON_NULL)
+@JsonInclude(Include.NON_EMPTY)
 public class EditorInfo {
 
     @Field(type = FieldType.Text)
@@ -29,6 +29,10 @@ public class EditorInfo {
     @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private EditDate updated;
+
+    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
+    private EditDate created;
 
     @Field(type = FieldType.Keyword)
     private String type;
