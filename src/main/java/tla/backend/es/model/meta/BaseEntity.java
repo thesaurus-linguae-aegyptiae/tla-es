@@ -17,8 +17,9 @@ import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 import tla.backend.es.model.parts.EditorInfo;
 import tla.domain.dto.meta.AbstractDto;
-import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.AbstractBTSBaseClass;
+import tla.domain.model.meta.Resolvable;
+import tla.domain.model.meta.TLADTO;
 
 /**
  * Entity model base class. Represents an identifiable stand-alone BTS/TLA document with
@@ -70,7 +71,7 @@ public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexab
      */
     @Singular
     @Field(type = FieldType.Object)
-    private Map<String, List<ObjectReference>> relations;
+    private Map<String, List<Resolvable>> relations;
 
     /**
      * Default constructor initializing the relations map as an empty object.
@@ -86,11 +87,11 @@ public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexab
         return ModelConfig.toDTO(this);
     }
 
-        /**
-     * Creates an objectreference object identifying this instance.
+    /**
+     * Creates an {@link tla.domain.model.ObjectReference} (DTO model) object identifying this instance.
      */
-    public ObjectReference toObjectReference() {
-        return ObjectReference.builder()
+    public tla.domain.model.ObjectReference toObjectReference() {
+        return tla.domain.model.ObjectReference.builder()
             .id(this.getId())
             .eclass(this.getEclass())
             .type(this.getType())

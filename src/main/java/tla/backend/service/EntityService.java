@@ -44,6 +44,7 @@ import tla.domain.dto.meta.AbstractDto;
 import tla.domain.dto.meta.DocumentDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.BTSeClass;
+import tla.domain.model.meta.Resolvable;
 import tla.domain.model.meta.TLADTO;
 import tla.error.ObjectNotFoundException;
 
@@ -221,7 +222,7 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
      * @return A List of TLA documents
      * @see {@link #retrieveSingleBTSDoc(String, String)}
      */
-    protected Collection<BaseEntity> retrieveReferencedObjects(Collection<ObjectReference> references) {
+    protected Collection<BaseEntity> retrieveReferencedObjects(Collection<Resolvable> references) {
         return references.stream().map(
             ref -> {
                 BaseEntity referencedEntity = this.retrieveSingleBTSDoc(
@@ -256,7 +257,7 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
      */
     protected Collection<BaseEntity> retrieveRelatedDocs(T document) {
         if (document instanceof BaseEntity) {
-            Set<ObjectReference> previews = new HashSet<>();
+            Set<Resolvable> previews = new HashSet<>();
             BaseEntity entity = (BaseEntity) document;
             entity.getRelations().entrySet().forEach(
                 e -> {previews.addAll(e.getValue());}
@@ -275,7 +276,7 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
      */
     protected Collection<BaseEntity> retrieveReferencedThesaurusEntries(T document) {
         if (document instanceof TLAEntity) {
-            Set<ObjectReference> previews = new HashSet<>();
+            Set<Resolvable> previews = new HashSet<>();
             TLAEntity entity = (TLAEntity) document;
             if (entity.getPassport() != null) {
                 previews.addAll(entity.getPassport().extractObjectReferences());
