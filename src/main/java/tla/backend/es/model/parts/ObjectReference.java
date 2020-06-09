@@ -7,21 +7,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tla.domain.model.ObjectReference.Range;
-import tla.domain.model.meta.Resolvable;
 
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ObjectReference implements Resolvable {
+public class ObjectReference extends tla.domain.model.ObjectReference {
 
     @Field(type = FieldType.Keyword)
     private String id;
@@ -34,6 +26,10 @@ public class ObjectReference implements Resolvable {
 
     @Field(type = FieldType.Keyword)
     private String type;
+
+    public ObjectReference(){
+        super(null, null, null, null, null);
+    }
 
     /**
      * An optional collection of ranges within the referenced object to which

@@ -21,6 +21,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.meta.TLAEntity;
 import tla.backend.es.model.parts.Translations;
+import tla.backend.es.model.parts.ObjectReference;
 import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.Passport;
 import tla.domain.model.extern.AttestedTimespan;
@@ -46,7 +47,7 @@ public class ThsEntryEntity extends TLAEntity implements UserFriendly {
     private static final String DATE_START_PASSPORT_PATH = "thesaurus_date.main_group.beginning";
     private static final String DATE_END_PASSPORT_PATH = "thesaurus_date.main_group.end";
 
-    private static final List<String> timespanPropertyPaths = List.of(
+    private static final List<String> TIMESPAN_DATES_PASSPORT_PATHS = List.of(
         DATE_START_PASSPORT_PATH,
         DATE_END_PASSPORT_PATH
     );
@@ -61,6 +62,9 @@ public class ThsEntryEntity extends TLAEntity implements UserFriendly {
 
     @Field(type = FieldType.Object)
     private Translations translations;
+
+    @Field(type = FieldType.Object)
+    private List<List<ObjectReference>> paths;
 
     /**
      * Returns translations of a thesaurus entry's label. If no explicit translations exist, this method
@@ -124,7 +128,7 @@ public class ThsEntryEntity extends TLAEntity implements UserFriendly {
      */
     public List<Integer> extractTimespan() {
         List<Integer> years = new ArrayList<>();
-        timespanPropertyPaths.stream().forEach(
+        TIMESPAN_DATES_PASSPORT_PATHS.stream().forEach(
             path -> {
                 this.getPassport().extractProperty(path).stream().forEach(
                     node -> {

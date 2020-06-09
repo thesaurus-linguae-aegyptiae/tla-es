@@ -1,10 +1,13 @@
 package tla.backend.es.model.meta;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -16,6 +19,7 @@ import lombok.NonNull;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 import tla.backend.es.model.parts.EditorInfo;
+import tla.backend.es.model.parts.ObjectReference;
 import tla.domain.dto.meta.AbstractDto;
 import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.Resolvable;
@@ -71,7 +75,12 @@ public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexab
      */
     @Singular
     @Field(type = FieldType.Object)
+    @JsonDeserialize(as = RelatedObjectsMap.class)
     private Map<String, List<Resolvable>> relations;
+
+    public static class RelatedObjectsMap extends TreeMap<String, ArrayList<ObjectReference>> {
+        private static final long serialVersionUID = 6625680396603241503L;
+    }
 
     /**
      * Default constructor initializing the relations map as an empty object.
