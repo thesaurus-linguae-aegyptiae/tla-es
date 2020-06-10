@@ -194,14 +194,8 @@
     ]
   },
   "revisionState": "published",
-  "sentences": [
-    "IBUBd1YQvGxmmkxJohmgHO2fc5I",
-    "IBUBd4xT4lNYAEssgRvX2Wty36A",
-    "IBUBd2CtQZxgz0Cpu14zUZyaZRI",
-    "IBUBd7guA0sKL0kdv8wPzVjc538",
-    "IBUBdQFNinXQ20xQrAW3uBirzg0",
-    "IBUBdWz3yQM5oEN6sfuPsHzGfts",
-    "IBUBd2dLfKRw2UDDqL2RqQWlSos"
+  "translations": [
+    {"de": ["blubb"]}
   ],
   "subtype": null,
   "type": "subtext"

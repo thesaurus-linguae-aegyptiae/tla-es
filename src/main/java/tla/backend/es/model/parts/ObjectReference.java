@@ -8,13 +8,17 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
+import tla.domain.model.ObjectReference.Range;
+import tla.domain.model.meta.Resolvable;
 
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ObjectReference extends tla.domain.model.ObjectReference {
+public class ObjectReference implements Resolvable, Comparable<Resolvable> {
 
+    @NonNull
     @Field(type = FieldType.Keyword)
     private String id;
 
@@ -27,9 +31,7 @@ public class ObjectReference extends tla.domain.model.ObjectReference {
     @Field(type = FieldType.Keyword)
     private String type;
 
-    public ObjectReference(){
-        super(null, null, null, null, null);
-    }
+    public ObjectReference(){}
 
     /**
      * An optional collection of ranges within the referenced object to which
@@ -38,5 +40,10 @@ public class ObjectReference extends tla.domain.model.ObjectReference {
      */
     @Field(type = FieldType.Object, index = false)
     private List<Range> ranges;
+
+    @Override
+    public int compareTo(Resolvable arg0) {
+        return this.getId().compareTo(arg0.getId());
+    }
 
 }

@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.TreeSet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,10 +42,10 @@ public class ThsControllerTest extends AbstractMockMvcTest {
         .eclass("BTSThsEntry")
         .name("wadi")
         .type("findSpot")
-        .relation("partOf", Arrays.asList(
+        .relation("partOf", new TreeSet<>(Arrays.asList(
             ObjectReference.builder().id("2").name("region1").type("findSpot").eclass("BTSThsEntry").build(),
             ObjectReference.builder().id("3").name("region2").type("findSpot").eclass("BTSThsEntry").build()
-        ))
+        )))
         .build();
     }
 

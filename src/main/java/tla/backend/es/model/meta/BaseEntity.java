@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -41,8 +43,8 @@ import tla.domain.model.meta.TLADTO;
  */
 @Data
 @SuperBuilder
-@EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@EqualsAndHashCode(callSuper = true, exclude = {"relations"})
 public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexable {
 
     @Id
@@ -76,9 +78,9 @@ public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexab
     @Singular
     @Field(type = FieldType.Object)
     @JsonDeserialize(as = RelatedObjectsMap.class)
-    private Map<String, List<Resolvable>> relations;
+    private Map<String, Set<Resolvable>> relations;
 
-    public static class RelatedObjectsMap extends TreeMap<String, ArrayList<ObjectReference>> {
+    public static class RelatedObjectsMap extends TreeMap<String, TreeSet<ObjectReference>> {
         private static final long serialVersionUID = 6625680396603241503L;
     }
 

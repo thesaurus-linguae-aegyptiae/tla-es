@@ -16,6 +16,7 @@ import tla.domain.dto.CorpusObjectDto;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
+import tla.domain.model.meta.UserFriendly;
 
 @Getter
 @Setter
@@ -25,12 +26,15 @@ import tla.domain.model.meta.TLADTO;
 @TLADTO(CorpusObjectDto.class)
 @EqualsAndHashCode(callSuper = true)
 @Document(indexName = "object", type = "object")
-public class CorpusObjectEntity extends TLAEntity {
+public class CorpusObjectEntity extends TLAEntity implements UserFriendly {
 
     @Field(type = FieldType.Keyword)
     String corpus;
 
     @Field(type = FieldType.Object)
     List<List<ObjectReference>> paths;
+
+    @Field(type = FieldType.Keyword)
+    private String sUID;
 
 }

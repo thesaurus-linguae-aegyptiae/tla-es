@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -37,6 +38,7 @@ import tla.domain.model.meta.UserFriendly;
 @TLADTO(ThsEntryDto.class)
 @EqualsAndHashCode(callSuper = true)
 @Document(indexName = "ths", type = "ths")
+@Setting(settingPath = "/elasticsearch/settings/indices/ths.json")
 public class ThsEntryEntity extends TLAEntity implements UserFriendly {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
@@ -57,7 +59,6 @@ public class ThsEntryEntity extends TLAEntity implements UserFriendly {
     private String sortKey;
 
     @Field(type = FieldType.Keyword)
-    @JsonAlias("hash")
     private String sUID;
 
     @Field(type = FieldType.Object)

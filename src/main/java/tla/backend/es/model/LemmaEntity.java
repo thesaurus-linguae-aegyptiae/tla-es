@@ -37,6 +37,9 @@ import tla.domain.model.meta.TLADTO;
 @Setting(settingPath = "/elasticsearch/settings/indices/lemma.json")
 public class LemmaEntity extends TLAEntity {
 
+    @Field(type = FieldType.Search_As_You_Type, analyzer = "transcription_analyzer")
+    private String name;
+
     @Field(type = FieldType.Keyword)
     @JsonAlias({"sortString", "sort_string", "sort_key"})
     private String sortKey;

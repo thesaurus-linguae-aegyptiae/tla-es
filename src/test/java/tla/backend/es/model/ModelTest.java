@@ -163,10 +163,11 @@ public class ModelTest {
             .id("1")
             .eclass("BTSThsEntry")
             .sortKey("1")
+            .sUID("gd7")
             .editors(EditorInfo.builder().author("author").updated(EditDate.of(2015, 12, 31)).build())
             .build();
         ThsEntryEntity t_read = mapper.readValue(
-            "{\"id\":\"ID\",\"eclass\":\"BTSThsEntry\",\"sort_string\":\"1\",\"editors\":{\"author\":\"author\",\"updated\":\"2015-12-31\"}}",
+            "{\"id\":\"ID\",\"hash\":\"gd7\",\"eclass\":\"BTSThsEntry\",\"sort_string\":\"1\",\"editors\":{\"author\":\"author\",\"updated\":\"2015-12-31\"}}",
             ThsEntryEntity.class
         );
         ThsEntryEntity t_round = mapper.readValue(mapper.writeValueAsString(t_built), ThsEntryEntity.class);
@@ -324,8 +325,14 @@ public class ModelTest {
         );
         assertAll("after serialization and deserialization, annotation object should be still the same",
             () -> assertEquals(a, b),
-            () -> assertEquals(a.hashCode(), b.hashCode()),
-            () -> assertEquals(a.toString(), b.toString())
+            () -> assertEquals(
+                tla.domain.util.IO.json(a),
+                tla.domain.util.IO.json(b)
+            ),
+            () -> assertNotNull(b.getBody(), "body"),
+            () -> assertEquals(a.getBody(), b.getBody(), "body"),
+            () -> assertEquals(a.toString(), b.toString()),
+            () -> assertEquals(a.hashCode(), b.hashCode())
         );
     }
 
