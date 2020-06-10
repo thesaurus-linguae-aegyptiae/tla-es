@@ -59,7 +59,7 @@ public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexab
     @Field(type = FieldType.Keyword)
     private String revisionState;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Search_As_You_Type)
     private String name;
 
     /**

@@ -3,8 +3,10 @@ package tla.backend.service;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -14,7 +16,9 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.filter.Filter;
@@ -22,10 +26,13 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
@@ -35,6 +42,7 @@ import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.query.AbstractEntityIDsQueryBuilder;
 import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.extern.PageInfo;
@@ -436,6 +444,18 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
     }
 
     /**
+     * Extract DTO objects out of a list of searchresults of an entity type.
+     */
+    public List<D> hitsToDTO(SearchHits<T> hits) {
+        return hits.getSearchHits().stream().map(
+            hit -> modelMapper.map(
+                hit.getContent(),
+                getDtoClass()
+            )
+        ).collect(Collectors.toList());
+    }
+
+    /**
      * Takes an Elasticsearch search result and the original page information and search
      * command, and puts it all into a serializable container ready for return
      * to the requesting client.
@@ -444,17 +464,45 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
         SearchHits<T> hits, Pageable pageable, SearchCommand<D> command
     ) throws Exception {
         return new SearchResultsWrapper<D>(
-            hits.getSearchHits().stream().map(
-                hit -> modelMapper.map(
-                    hit.getContent(),
-                    getDtoClass()
-                )
-            ).collect(Collectors.toList()),
+            hitsToDTO(hits),
             command,
             pageInfo(hits, pageable),
             facets(hits)
         );
     }
+
+    /**
+     * Returns a list of matches for a simple multi field prefix query which
+     * can be used for input field content assist and such. Can optionally filter
+     * by object type.
+     */
+    public List<D> autoComplete(String type, String term) {
+        if (term.length() < 3) {
+            return Collections.emptyList();
+        }
+        NativeSearchQuery query = new NativeSearchQueryBuilder()
+            .withFields("name", "id", "type", "subtype", "eclass", "translations.*")
+            .withFilter(
+                (type != null && !type.isBlank()) ? QueryBuilders.termQuery("type", type) :
+                    QueryBuilders.boolQuery()
+            ).withQuery(
+                new MultiMatchQueryBuilder(term)
+                    .type(MultiMatchQueryBuilder.Type.BOOL_PREFIX)
+                    .field("id")
+                    .field("name", 2)
+                    .field("name._2gram")
+                    .field("name._3gram")
+                    .field("translations.de")
+                    .field("translations.en")
+                    .field("translations.fr")
+            ).withPageable(
+                PageRequest.of(0, 60)
+            ).build();
+        return hitsToDTO(
+            search(query)
+        );
+    }
+
 
     /**
      * take a search command and based on the type figure out which
