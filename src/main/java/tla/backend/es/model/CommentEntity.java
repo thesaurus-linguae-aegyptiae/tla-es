@@ -35,8 +35,8 @@ import tla.domain.model.meta.TLADTO;
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Document(indexName = "comment", type = "comment")
 @ToString(of = {"id", "body", "revisionState"}, callSuper = true)
+@Document(indexName = "comment")
 public class CommentEntity extends AbstractBTSBaseClass implements Indexable {
 
     @Id

@@ -36,7 +36,7 @@ import tla.domain.model.meta.UserFriendly;
 @BTSeClass("BTSThsEntry")
 @TLADTO(ThsEntryDto.class)
 @EqualsAndHashCode(callSuper = true)
-@Document(indexName = "ths", type = "ths")
+@Document(indexName = "ths")
 public class ThsEntryEntity extends TLAEntity implements UserFriendly {
 
     private static ObjectMapper objectMapper = new ObjectMapper();

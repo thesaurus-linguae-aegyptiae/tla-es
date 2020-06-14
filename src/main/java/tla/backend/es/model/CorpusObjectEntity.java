@@ -21,7 +21,7 @@ import tla.domain.model.meta.UserFriendly;
 @NoArgsConstructor
 @BTSeClass("BTSTCObject")
 @TLADTO(CorpusObjectDto.class)
-@Document(indexName = "object", type = "object")
+@Document(indexName = "object")
 public class CorpusObjectEntity extends TLAEntity implements UserFriendly {
 
     @Field(type = FieldType.Keyword, name = "hash")
