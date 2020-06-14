@@ -344,7 +344,7 @@ public class ModelConfig {
             );
             return dtoClass.cast(dto);
         }
-        throw new NullPointerException();
+        throw new NullPointerException("can't convert null object!");
     }
 
     /**

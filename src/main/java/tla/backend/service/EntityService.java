@@ -201,13 +201,17 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
             Collection<BaseEntity> relatedObjects = new HashSet<>();
             relatedObjects.addAll(this.retrieveRelatedDocs(document));
             relatedObjects.addAll(this.retrieveReferencedThesaurusEntries(document));
-            relatedObjects.forEach(
-                relatedObject -> {
-                    container.addRelated(
-                        (DocumentDto) ModelConfig.toDTO(relatedObject)
-                    );
-                }
-            );
+            try {
+                relatedObjects.forEach(
+                    relatedObject -> {
+                        container.addRelated(
+                            (DocumentDto) ModelConfig.toDTO(relatedObject)
+                        );
+                    }
+                );
+            } catch (Exception e) {
+                log.error("something went wrong during conversion of related objects to DTO");
+            }
         } else {
             container = null;
         }
@@ -230,9 +234,9 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
                     ref.getId()
                 );
                 if (referencedEntity == null) {
-                    log.error(
+                    log.warn(
                         "Could not retrieve referenced object {}",
-                        ref
+                        tla.domain.util.IO.json(ref)
                     );
                 }
                 return referencedEntity;
