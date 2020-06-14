@@ -1,5 +1,17 @@
 package tla.backend.es.model;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.temporal.ChronoField;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,28 +30,24 @@ import tla.backend.es.model.meta.TLAEntity;
 import tla.backend.es.model.parts.EditDate;
 import tla.backend.es.model.parts.EditorInfo;
 import tla.backend.es.model.parts.LemmaWord;
+import tla.backend.es.model.parts.ObjectReference;
 import tla.backend.es.model.parts.PartOfSpeech;
 import tla.backend.es.model.parts.Token;
-import tla.backend.es.model.parts.Transcription;
-import tla.backend.es.model.parts.Translations;
 import tla.backend.es.model.parts.Token.Flexion;
 import tla.backend.es.model.parts.Token.Lemmatization;
+import tla.backend.es.model.parts.Transcription;
+import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
-import tla.domain.dto.meta.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.SentenceDto;
 import tla.domain.dto.TextDto;
 import tla.domain.dto.ThsEntryDto;
+import tla.domain.dto.meta.DocumentDto;
 import tla.domain.model.Language;
 import tla.domain.model.Passport;
 import tla.domain.model.SentenceToken;
 import tla.domain.model.meta.BTSeClass;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 @SpringBootTest(classes = {App.class})
 public class ModelTest {
@@ -370,7 +378,9 @@ public class ModelTest {
             () -> assertNotNull(o),
             () -> assertNotNull(o.getEditors(), "editor info not null"),
             () -> assertNotNull(o.getEditors().getUpdated(), "edit date no null"),
-            () -> assertNotNull(o.getPaths()),
+            () -> assertNotNull(o.getPaths(), "corpus paths"),
+            () -> assertTrue(o.getPaths().length > 0, "paths deserialized"),
+            () -> assertTrue(!o.getPaths()[0].isEmpty(), "corpus object path contains elements"),
             () -> assertEquals("bbawarchive", o.getCorpus())
         );
         DocumentDto d = (DocumentDto) o.toDTO();
@@ -429,7 +439,6 @@ public class ModelTest {
         );
     }
 
-
     @Test
     void mapSentenceToDTO() throws Exception {
         Flexion f = new Flexion();
@@ -444,7 +453,12 @@ public class ModelTest {
         t.setTranslations(Translations.builder().de(List.of("bedeutung")).build());;
         SentenceEntity s = SentenceEntity.builder()
             .id("ID")
-            .context(c)
+            .relation(
+                "partOf",
+                BaseEntity.Relations.of(
+                    ObjectReference.builder().id("textid").eclass("BTSText").type("Text").name("papyrus").build()
+                )
+            ).context(c)
             .transcription(new Transcription("nfr", "nfr"))
             .translations(Translations.builder().de(List.of("uebersetzung")).build())
             .tokens(List.of(t))

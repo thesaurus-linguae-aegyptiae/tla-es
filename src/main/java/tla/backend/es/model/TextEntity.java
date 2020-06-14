@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.model.parts.ObjectPath;
+import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.TextDto;
-import tla.domain.model.ObjectReference;
-import tla.domain.model.Paths;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
 import tla.domain.model.meta.UserFriendly;
@@ -39,16 +39,13 @@ public class TextEntity extends TLAEntity implements UserFriendly {
     String corpus;
 
     @Field(type = FieldType.Object)
-    List<List<ObjectReference>> paths;
+    ObjectPath[] paths;
 
-    @Field(type = FieldType.Keyword)
-    List<String> sentences;
+    @Field(type = FieldType.Object)
+    List<Translations> translations;
 
-    public static class ListToPathsConverter extends AbstractConverter<List<List<ObjectReference>>, Paths> {
-        @Override
-        protected Paths convert(List<List<ObjectReference>> source) {
-            return Paths.of(source);
-        }
-    }
+    @Field(type = FieldType.Integer)
+    @JsonAlias("word_count")
+    private int wordCount;
 
 }

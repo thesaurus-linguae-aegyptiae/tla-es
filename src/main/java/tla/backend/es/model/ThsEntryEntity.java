@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.model.parts.ObjectPath;
 import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.Passport;
@@ -60,6 +61,9 @@ public class ThsEntryEntity extends TLAEntity implements UserFriendly {
 
     @Field(type = FieldType.Object)
     private Translations translations;
+
+    @Field(type = FieldType.Object)
+    private ObjectPath[] paths;
 
     /**
      * Returns translations of a thesaurus entry's label. If no explicit translations exist, this method
@@ -146,7 +150,7 @@ public class ThsEntryEntity extends TLAEntity implements UserFriendly {
         return AttestedTimespan.Period.builder()
             .begin(years.get(0))
             .end(years.get(1))
-            .ths(this.toObjectReference())
+            .ths(this.toDTOReference())
             .build();
     }
 }

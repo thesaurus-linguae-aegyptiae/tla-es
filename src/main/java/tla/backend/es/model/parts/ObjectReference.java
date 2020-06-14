@@ -12,7 +12,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import tla.domain.model.ObjectReference.Range;
 import tla.domain.model.meta.Resolvable;
 
 @Getter
@@ -21,7 +20,7 @@ import tla.domain.model.meta.Resolvable;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ObjectReference implements Resolvable {
+public class ObjectReference implements Resolvable, Comparable<Resolvable> {
 
     @Field(type = FieldType.Keyword)
     private String id;
@@ -41,6 +40,11 @@ public class ObjectReference implements Resolvable {
      * annotations, comments, and some subtexts ("glosses").
      */
     @Field(type = FieldType.Object, index = false)
-    private List<Range> ranges;
+    private List<Resolvable.Range> ranges;
+
+    @Override
+    public int compareTo(Resolvable arg0) {
+        return this.id.compareTo(arg0.getId());
+    }
 
 }

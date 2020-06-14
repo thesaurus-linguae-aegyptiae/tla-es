@@ -31,6 +31,6 @@ public class CorpusObjectEntity extends TLAEntity implements UserFriendly {
     String corpus;
 
     @Field(type = FieldType.Object)
-    List<List<ObjectReference>> paths;
+    ObjectPath[] paths;
 
 }

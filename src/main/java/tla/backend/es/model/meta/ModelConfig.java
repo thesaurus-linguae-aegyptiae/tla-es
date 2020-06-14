@@ -1,11 +1,11 @@
 package tla.backend.es.model.meta;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.lang.annotation.Annotation;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.modelmapper.ModelMapper;
@@ -16,7 +16,6 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
 import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.model.CorpusObjectEntity;
 import tla.backend.es.model.LemmaEntity;
@@ -24,9 +23,8 @@ import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.model.parts.EditorInfo;
-import tla.backend.es.model.parts.Translations;
 import tla.backend.es.model.parts.Token;
-
+import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.LemmaDto;
@@ -275,23 +273,12 @@ public class ModelConfig {
             ).addMapping(
                 ThsEntryEntity::getRevisionState, ThsEntryDto::setReviewState
             );
-        TextEntity.ListToPathsConverter listToPathsConverter = new TextEntity.ListToPathsConverter();
         modelMapper.createTypeMap(TextEntity.class, TextDto.class)
-            .addMappings(
-                m -> m.using(listToPathsConverter).map(
-                    TextEntity::getPaths, TextDto::setPaths
-                )
-            ).addMapping(
+            .addMapping(
                 TextEntity::getRevisionState, TextDto::setReviewState
-            ).addMapping(
-                TextEntity::getSentences, TextDto::setSentenceIds
             );
         modelMapper.createTypeMap(CorpusObjectEntity.class, CorpusObjectDto.class)
-            .addMappings(
-                m -> m.using(listToPathsConverter).map(
-                    CorpusObjectEntity::getPaths, CorpusObjectDto::setPaths
-                )
-            ).addMapping(
+            .addMapping(
                 CorpusObjectEntity::getRevisionState, CorpusObjectDto::setReviewState
             );
         modelMapper.createTypeMap(AnnotationEntity.class, AnnotationDto.class).addMapping(

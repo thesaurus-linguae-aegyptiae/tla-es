@@ -18,14 +18,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.Singular;
+import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.model.meta.Indexable;
+import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Transcription;
 import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.SentenceDto;
 import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
-import tla.backend.es.model.parts.Token;
 
 /**
  * Represents a single sentence from a text document.
@@ -62,6 +64,13 @@ public class SentenceEntity extends AbstractBTSBaseClass implements Indexable {
 
     @Field(type = FieldType.Nested)
     private Collection<Token> tokens;
+    /**
+     * References to related objects grouped by relationship name (<code>partOf</code>,
+     * <code>predecessor</code>, ...).
+     */
+    @Singular
+    @Field(type = FieldType.Object)
+    private Map<String, BaseEntity.Relations> relations;
 
     /**
      * Tells you to which text document this sentence belongs and its position

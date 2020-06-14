@@ -1,10 +1,13 @@
 package tla.backend.es.model.meta;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -12,10 +15,14 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 import tla.backend.es.model.parts.EditorInfo;
+import tla.backend.es.model.parts.ObjectReference;
 import tla.domain.dto.meta.AbstractDto;
 import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.Resolvable;
@@ -71,7 +78,7 @@ public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexab
      */
     @Singular
     @Field(type = FieldType.Object)
-    private Map<String, List<Resolvable>> relations;
+    private Map<String, Relations> relations;
 
     /**
      * Default constructor initializing the relations map as an empty object.
@@ -90,13 +97,35 @@ public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexab
     /**
      * Creates an {@link tla.domain.model.ObjectReference} (DTO model) object identifying this instance.
      */
-    public tla.domain.model.ObjectReference toObjectReference() {
+    public tla.domain.model.ObjectReference toDTOReference() {
         return tla.domain.model.ObjectReference.builder()
             .id(this.getId())
             .eclass(this.getEclass())
             .type(this.getType())
             .name(this.getName())
             .build();
+    }
+
+    /**
+     * A collection of references to other entity objects.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @JsonDeserialize(contentAs = ObjectReference.class)
+    public static class Relations extends ArrayList<Resolvable> {
+
+        private static final long serialVersionUID = -3638905986166571667L;
+
+        public Relations(Collection<Resolvable> refs) {
+            this.addAll(refs);
+        }
+
+        public static Relations of(Resolvable... sources) {
+            return new Relations(
+                Arrays.asList(sources)
+            );
+        }
     }
 
 }
