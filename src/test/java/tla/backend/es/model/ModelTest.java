@@ -346,7 +346,9 @@ public class ModelTest {
         assertAll("test text deserialization from JSON file",
             () -> assertNotNull(t),
             () -> assertNotNull(t.getPaths()),
-            () -> assertEquals("bbawarchive", t.getCorpus())
+            () -> assertEquals("bbawarchive", t.getCorpus()),
+            () -> assertEquals(t.getEditors().getUpdated(), t.getEditors().getCreated(), "creation & edit date"),
+            () -> assertEquals(5, t.getEditors().getUpdated().getLong(ChronoField.DAY_OF_WEEK), "date day of week")
         );
     }
 
@@ -360,7 +362,11 @@ public class ModelTest {
         assertAll("test text to DTO mapping",
             () -> assertNotNull(d),
             () -> assertTrue(d instanceof TextDto),
-            () -> assertEquals(t.getRevisionState(), d.getReviewState())
+            () -> assertEquals(t.getRevisionState(), d.getReviewState()),
+            () -> assertFalse(
+                d.getEditors().getUpdated().after(d.getEditors().getCreated()),
+                "update same day as creation"
+            )
         );
         TextDto dto = (TextDto) d;
         assertAll("test mapped text DTO properties",

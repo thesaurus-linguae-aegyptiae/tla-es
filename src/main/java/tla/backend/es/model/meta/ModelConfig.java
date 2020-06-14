@@ -255,6 +255,8 @@ public class ModelConfig {
         modelMapper.createTypeMap(EditorInfo.class, tla.domain.model.EditorInfo.class)
             .addMapping(
                 EditorInfo::getUpdated, tla.domain.model.EditorInfo::setDateOfLatestUpdate
+            ).addMapping(
+                EditorInfo::getCreated, tla.domain.model.EditorInfo::setCreationDate
             );
         modelMapper.createTypeMap(LemmaEntity.class, LemmaDto.class)
             .addMappings(
