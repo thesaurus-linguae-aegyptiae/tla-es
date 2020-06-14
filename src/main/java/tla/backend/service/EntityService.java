@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
@@ -35,6 +34,7 @@ import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.query.AbstractEntityIDsQueryBuilder;
 import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.extern.PageInfo;
@@ -72,7 +72,6 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
 
     private Class<T> modelClass = null;
     private Class<D> dtoClass = null;
-    private String indexName = null;
     protected static Map<Class<? extends Indexable>, EntityService<? extends Indexable, ? extends AbstractDto>> modelClassServices = new HashMap<>();
     protected static Map<Class<? extends Indexable>, AbstractDto> modelClassDtos = new HashMap<>();
 
@@ -97,24 +96,6 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
      */
     public Class<T> getModelClass() {
         return this.modelClass;
-    }
-
-    /**
-     * Return index where ES stores entities of the type a service is about.
-     */
-    public String getIndexName() {
-        if (this.indexName == null) {
-            this.indexName = ModelConfig.getIndexName(this.modelClass);
-        }
-        return this.indexName;
-    }
-
-    /**
-     * Returns indexname for class which implements {@link Indexable} and has
-     * its own {@link EntityService}.
-     */
-    public String getIndexName(Class<? extends Indexable> modelClass) {
-        return modelClassServices.get(modelClass).getIndexName();
     }
 
     /**
@@ -298,7 +279,7 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
         QueryBuilder queryBuilder,
         AggregationBuilder aggsBuilder
     ) {
-        String index = ModelConfig.getIndexName(entityClass);
+        String index = operations.getIndexCoordinatesFor(entityClass).getIndexName();
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
             .query(queryBuilder);
         if (aggsBuilder != null) {
@@ -374,7 +355,7 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
         return operations.search(
             query,
             getModelClass(),
-            IndexCoordinates.of(getIndexName())
+            operations.getIndexCoordinatesFor(getModelClass())
         );
     }
 

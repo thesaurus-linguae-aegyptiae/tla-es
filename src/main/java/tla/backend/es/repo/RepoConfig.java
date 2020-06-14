@@ -99,9 +99,7 @@ public class RepoConfig extends AbstractElasticsearchConfiguration {
     @WritingConverter
     @SuppressWarnings("unchecked")
     public static class PassportToMap implements Converter<Passport, Map<String, Object>> {
-
-        private static ObjectMapper mapper = new ObjectMapper();
-
+        private static ObjectMapper mapper = tla.domain.util.IO.getMapper();
         @Override
         public Map<String, Object> convert(Passport source) {
             try {
@@ -125,11 +123,9 @@ public class RepoConfig extends AbstractElasticsearchConfiguration {
 
     @ReadingConverter
     public static class MapToPassport implements Converter<Map<String, Object>, Passport> {
-
         @Override
         public Passport convert(Map<String, Object> source) {
             return Passport.of(source);
         }
-
     }
 }

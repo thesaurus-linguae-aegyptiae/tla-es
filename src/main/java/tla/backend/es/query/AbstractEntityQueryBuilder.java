@@ -61,6 +61,14 @@ public abstract class AbstractEntityQueryBuilder<S extends SearchCommand<? exten
     }
 
     /**
+     * What kind of entity we want to get out of this.
+     * @return {@link Indexable} instance of an entity class
+     */
+    public Class<T> targetEntityClass() {
+        return target;
+    }
+
+    /**
      * Supposed to be overwritten by subclasses. Return at least
      * <pre>{@code new SortSpec("id");}</pre>
      */
