@@ -83,22 +83,20 @@ public class SentenceEntity extends AbstractBTSBaseClass implements Indexable {
     @NoArgsConstructor
     @AllArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Context {
-
         /**
          * ID of the text document to which this sentence belongs.
          */
         @Field(type = FieldType.Keyword)
         @JsonAlias("text")
         private String textId;
-
         /**
          * Label of whichever "new line" marker token found in the preceding sentences
          * is closest to the beginning of this sentence.
          */
         @Field(type = FieldType.Text)
         private String line;
-
         /**
          * Label of whichever "new paragraph" marker token found in the preceding sentences
          * is closest to the beginning of this sentence.
@@ -106,7 +104,6 @@ public class SentenceEntity extends AbstractBTSBaseClass implements Indexable {
         @Field(type = FieldType.Text)
         @JsonAlias("para")
         private String paragraph;
-
         /**
          * This sentence's positon in the containing text's array of sentences, starting
          * with <code>0</code>.

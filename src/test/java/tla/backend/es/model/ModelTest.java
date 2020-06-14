@@ -331,9 +331,14 @@ public class ModelTest {
             AnnotationEntity.class
         );
         assertAll("after serialization and deserialization, annotation object should be still the same",
-            () -> assertEquals(a, b),
-            () -> assertEquals(a.hashCode(), b.hashCode()),
-            () -> assertEquals(a.toString(), b.toString())
+            () -> assertNotEquals(a, b, "instance"),
+            () -> assertNotEquals(a.hashCode(), b.hashCode(), "hashcode"),
+            () -> assertEquals(a.toString(), b.toString(), "tostring"),
+            () -> assertEquals(
+                tla.domain.util.IO.json(a),
+                tla.domain.util.IO.json(b),
+                "serialization"
+            )
         );
     }
 
