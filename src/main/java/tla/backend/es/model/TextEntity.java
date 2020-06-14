@@ -2,12 +2,12 @@ package tla.backend.es.model;
 
 import java.util.List;
 
-import org.modelmapper.AbstractConverter;
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +18,7 @@ import tla.domain.model.ObjectReference;
 import tla.domain.model.Paths;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
+import tla.domain.model.meta.UserFriendly;
 
 /**
  * Text and Subtext model
@@ -28,9 +29,11 @@ import tla.domain.model.meta.TLADTO;
 @NoArgsConstructor
 @BTSeClass("BTSText")
 @TLADTO(TextDto.class)
-@EqualsAndHashCode(callSuper = true)
-@Document(indexName = "text", type = "text")
-public class TextEntity extends TLAEntity {
+@Document(indexName = "text")
+public class TextEntity extends TLAEntity implements UserFriendly {
+
+    @Field(type = FieldType.Keyword, name = "hash")
+    private String SUID;
 
     @Field(type = FieldType.Keyword)
     String corpus;

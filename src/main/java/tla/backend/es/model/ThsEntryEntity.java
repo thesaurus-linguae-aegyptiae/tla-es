@@ -55,9 +55,8 @@ public class ThsEntryEntity extends TLAEntity implements UserFriendly {
     @JsonAlias({"sortkey", "sort_key", "sort_string", "sortString"})
     private String sortKey;
 
-    @Field(type = FieldType.Keyword)
-    @JsonAlias("hash")
-    private String sUID;
+    @Field(type = FieldType.Keyword, name = "hash")
+    private String SUID;
 
     @Field(type = FieldType.Object)
     private Translations translations;
