@@ -30,7 +30,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
@@ -80,7 +79,6 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
 
     private Class<T> modelClass = null;
     private Class<D> dtoClass = null;
-    private String indexName = null;
     protected static Map<Class<? extends Indexable>, EntityService<? extends Indexable, ? extends AbstractDto>> modelClassServices = new HashMap<>();
     protected static Map<Class<? extends Indexable>, AbstractDto> modelClassDtos = new HashMap<>();
 
@@ -105,24 +103,6 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
      */
     public Class<T> getModelClass() {
         return this.modelClass;
-    }
-
-    /**
-     * Return index where ES stores entities of the type a service is about.
-     */
-    public String getIndexName() {
-        if (this.indexName == null) {
-            this.indexName = ModelConfig.getIndexName(this.modelClass);
-        }
-        return this.indexName;
-    }
-
-    /**
-     * Returns indexname for class which implements {@link Indexable} and has
-     * its own {@link EntityService}.
-     */
-    public String getIndexName(Class<? extends Indexable> modelClass) {
-        return modelClassServices.get(modelClass).getIndexName();
     }
 
     /**
@@ -209,13 +189,17 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
             Collection<BaseEntity> relatedObjects = new HashSet<>();
             relatedObjects.addAll(this.retrieveRelatedDocs(document));
             relatedObjects.addAll(this.retrieveReferencedThesaurusEntries(document));
-            relatedObjects.forEach(
-                relatedObject -> {
-                    container.addRelated(
-                        (DocumentDto) ModelConfig.toDTO(relatedObject)
-                    );
-                }
-            );
+            try {
+                relatedObjects.forEach(
+                    relatedObject -> {
+                        container.addRelated(
+                            (DocumentDto) ModelConfig.toDTO(relatedObject)
+                        );
+                    }
+                );
+            } catch (Exception e) {
+                log.error("something went wrong during conversion of related objects to DTO");
+            }
         } else {
             container = null;
         }
@@ -238,9 +222,9 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
                     ref.getId()
                 );
                 if (referencedEntity == null) {
-                    log.error(
+                    log.warn(
                         "Could not retrieve referenced object {}",
-                        ref
+                        tla.domain.util.IO.json(ref)
                     );
                 }
                 return referencedEntity;
@@ -302,7 +286,7 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
         QueryBuilder queryBuilder,
         AggregationBuilder aggsBuilder
     ) {
-        String index = ModelConfig.getIndexName(entityClass);
+        String index = operations.getIndexCoordinatesFor(entityClass).getIndexName();
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
             .query(queryBuilder);
         if (aggsBuilder != null) {
@@ -378,7 +362,7 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
         return operations.search(
             query,
             getModelClass(),
-            IndexCoordinates.of(getIndexName())
+            operations.getIndexCoordinatesFor(getModelClass())
         );
     }
 
@@ -558,10 +542,5 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
             return Optional.empty();
         }
     }
-
-
-
-
-
 
 }

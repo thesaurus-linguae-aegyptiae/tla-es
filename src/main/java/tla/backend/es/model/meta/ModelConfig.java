@@ -255,6 +255,8 @@ public class ModelConfig {
         modelMapper.createTypeMap(EditorInfo.class, tla.domain.model.EditorInfo.class)
             .addMapping(
                 EditorInfo::getUpdated, tla.domain.model.EditorInfo::setDateOfLatestUpdate
+            ).addMapping(
+                EditorInfo::getCreated, tla.domain.model.EditorInfo::setCreationDate
             );
         modelMapper.createTypeMap(LemmaEntity.class, LemmaDto.class)
             .addMappings(
@@ -273,21 +275,12 @@ public class ModelConfig {
             ).addMapping(
                 ThsEntryEntity::getRevisionState, ThsEntryDto::setReviewState
             );
-        TextEntity.ListToPathsConverter listToPathsConverter = new TextEntity.ListToPathsConverter();
         modelMapper.createTypeMap(TextEntity.class, TextDto.class)
-            .addMappings(
-                m -> m.using(listToPathsConverter).map(
-                    TextEntity::getPaths, TextDto::setPaths
-                )
-            ).addMapping(
+            .addMapping(
                 TextEntity::getRevisionState, TextDto::setReviewState
             );
         modelMapper.createTypeMap(CorpusObjectEntity.class, CorpusObjectDto.class)
-            .addMappings(
-                m -> m.using(listToPathsConverter).map(
-                    CorpusObjectEntity::getPaths, CorpusObjectDto::setPaths
-                )
-            ).addMapping(
+            .addMapping(
                 CorpusObjectEntity::getRevisionState, CorpusObjectDto::setReviewState
             );
         modelMapper.createTypeMap(AnnotationEntity.class, AnnotationDto.class).addMapping(
@@ -340,7 +333,7 @@ public class ModelConfig {
             );
             return dtoClass.cast(dto);
         }
-        throw new NullPointerException();
+        throw new NullPointerException("can't convert null object!");
     }
 
     /**

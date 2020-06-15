@@ -15,7 +15,9 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -33,7 +35,7 @@ import tla.domain.model.meta.TLADTO;
 @ToString(callSuper = true)
 @JsonInclude(Include.NON_EMPTY)
 @EqualsAndHashCode(callSuper = true)
-@Document(indexName = "lemma", type = "lemma")
+@Document(indexName = "lemma")
 @Setting(settingPath = "/elasticsearch/settings/indices/lemma.json")
 public class LemmaEntity extends TLAEntity {
 
@@ -59,7 +61,9 @@ public class LemmaEntity extends TLAEntity {
         this.words = Collections.emptyList();
     }
 
-    @Data
+    @Getter
+    @Setter
+    @EqualsAndHashCode
     @NoArgsConstructor
     @AllArgsConstructor
     @JsonInclude(Include.NON_NULL)

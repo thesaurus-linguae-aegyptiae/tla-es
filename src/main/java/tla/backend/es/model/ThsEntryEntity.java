@@ -21,8 +21,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.model.parts.ObjectPath;
 import tla.backend.es.model.parts.Translations;
-import tla.backend.es.model.parts.ObjectReference;
 import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.Passport;
 import tla.domain.model.extern.AttestedTimespan;
@@ -37,7 +37,7 @@ import tla.domain.model.meta.UserFriendly;
 @BTSeClass("BTSThsEntry")
 @TLADTO(ThsEntryDto.class)
 @EqualsAndHashCode(callSuper = true)
-@Document(indexName = "ths", type = "ths")
+@Document(indexName = "ths")
 @Setting(settingPath = "/elasticsearch/settings/indices/ths.json")
 public class ThsEntryEntity extends TLAEntity implements UserFriendly {
 
@@ -58,14 +58,14 @@ public class ThsEntryEntity extends TLAEntity implements UserFriendly {
     @JsonAlias({"sortkey", "sort_key", "sort_string", "sortString"})
     private String sortKey;
 
-    @Field(type = FieldType.Keyword)
-    private String sUID;
+    @Field(type = FieldType.Keyword, name = "hash")
+    private String SUID;
 
     @Field(type = FieldType.Object)
     private Translations translations;
 
     @Field(type = FieldType.Object)
-    private List<List<ObjectReference>> paths;
+    private ObjectPath[] paths;
 
     /**
      * Returns translations of a thesaurus entry's label. If no explicit translations exist, this method
@@ -152,7 +152,7 @@ public class ThsEntryEntity extends TLAEntity implements UserFriendly {
         return AttestedTimespan.Period.builder()
             .begin(years.get(0))
             .end(years.get(1))
-            .ths(this.toObjectReference())
+            .ths(this.toDTOReference())
             .build();
     }
 }

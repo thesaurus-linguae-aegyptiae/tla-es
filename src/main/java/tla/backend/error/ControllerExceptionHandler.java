@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import tla.error.ObjectNotFoundException;
 
@@ -33,4 +34,15 @@ public class ControllerExceptionHandler {
             e.getContentType()
         );
     }
+
+    @ExceptionHandler(Exception.class)
+    public void anyException(Exception e) {
+        log.error("exception happened.", e);
+        throw new ResponseStatusException(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "something went wrong while doing something.",
+            e
+        );
+    }
+
 }

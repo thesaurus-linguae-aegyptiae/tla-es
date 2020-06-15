@@ -1,15 +1,15 @@
 package tla.backend.api;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.TreeSet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,11 +19,10 @@ import org.springframework.http.MediaType;
 
 import tla.backend.AbstractMockMvcTest;
 import tla.backend.es.model.ThsEntryEntity;
+import tla.backend.es.model.meta.BaseEntity;
+import tla.backend.es.model.parts.ObjectReference;
 import tla.backend.es.repo.ThesaurusRepo;
 import tla.backend.service.ThesaurusService;
-import tla.domain.model.ObjectReference;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 public class ThsControllerTest extends AbstractMockMvcTest {
 
@@ -42,10 +41,10 @@ public class ThsControllerTest extends AbstractMockMvcTest {
         .eclass("BTSThsEntry")
         .name("wadi")
         .type("findSpot")
-        .relation("partOf", new TreeSet<>(Arrays.asList(
+        .relation("partOf", BaseEntity.Relations.of(
             ObjectReference.builder().id("2").name("region1").type("findSpot").eclass("BTSThsEntry").build(),
             ObjectReference.builder().id("3").name("region2").type("findSpot").eclass("BTSThsEntry").build()
-        )))
+        ))
         .build();
     }
 

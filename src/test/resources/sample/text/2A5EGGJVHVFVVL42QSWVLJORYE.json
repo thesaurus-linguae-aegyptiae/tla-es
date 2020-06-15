@@ -1,202 +1,233 @@
 {
-  "corpus": "bbawarchive",
-  "eclass": "BTSText",
-  "editors": {
-    "author": "S. Grunert",
-    "contributors": [
-      "Altägyptisches Wörterbuch"
-    ],
-    "type": "user",
-    "updated": "2015-06-26 17:01:54"
+ "hash": "UBTFKGMT",
+ "corpus": "bbawarchive",
+ "paths": [
+  [
+   {
+    "id": "4IR3BDQT5JFI7GBJTORLC37YMU",
+    "eclass": "BTSTCObject",
+    "name": "Archive, Urkunden, Vermerke (Altes Reich)",
+    "type": "Caption"
+   },
+   {
+    "id": "2SJSXGUZUNDRDJ5DKSDHIAMVYM",
+    "eclass": "BTSTCObject",
+    "name": "Abusir\u2329-Archiv\u232a",
+    "type": "Caption"
+   },
+   {
+    "id": "QQ4QUH43PFCTHFQB3A3LC5TR7E",
+    "eclass": "BTSTCObject",
+    "name": "Tafel 39",
+    "type": "Caption"
+   },
+   {
+    "id": "R6TRHRNLMNE5ZEZYFPR6LIPXZA",
+    "eclass": "BTSTCObject",
+    "name": "pCairo 58063 frame 10 recto (39 A)",
+    "type": "TCObject"
+   },
+   {
+    "id": "DNASZ4SCK5DWBH67DH4IICW2RI",
+    "eclass": "BTSText",
+    "name": "pCairo 58063 frame 10 recto (39 A)",
+    "type": "Text"
+   }
+  ]
+ ],
+ "translations": [
+  {
+   "de": [
+    "(Lieferungen nach) Insel des Schedef-wi (Dom\u00e4ne):"
+   ]
   },
-  "externalReferences": null,
-  "id": "2A5EGGJVHVFVVL42QSWVLJORYE",
-  "name": "[2. Spalte]",
-  "passport": {
-    "bibliography": [
-      {
-        "bibliographical_text_field": [
-          "Posener-Kriéger, Paule: Hieratic Papyri in the British Museum. Fifth Series. The Abu Sir Papyri., London 1968, plate 39 (Fragment A)"
-        ]
-      }
-    ],
+  {
+   "de": [
+    "Des-Krug - [\u2e2eTag x?] 1 (Einheit) --Zerst\u00f6rung--"
+   ]
+  },
+  {
+   "de": [
+    "Ta-Brot - [\u2e2eTag x?] 1 (Einheit) --Zerst\u00f6rung--"
+   ]
+  },
+  {
+   "de": [
+    "Schenes-Geb\u00e4ck - [\u2e2eTag x?] 1 (Einheit) --Zerst\u00f6rung--"
+   ]
+  },
+  {
+   "de": [
+    "Beset-Brot - [\u2e2eTag x?] 1 (Einheit) --Zerst\u00f6rung--"
+   ]
+  },
+  {
+   "de": [
+    "Nemest-Krug - [\u2e2eTag x?] 1 (Einheit) --Zerst\u00f6rung--"
+   ]
+  },
+  {
+   "de": [
+    "[Name des] Opfertr\u00e4gers - [\u2e2eTag x?] Meri --Zerst\u00f6rung--"
+   ]
+  }
+ ],
+ "wordCount": 14,
+ "passport": {
+  "date": [
+   {
     "date": [
-      {
-        "date": [
-          {
-            "comment": [
-              "Asosi (Djedkare I.)"
-            ],
-            "date": [
-              {
-                "eclass": "BTSThsEntry",
-                "id": "KQY2F5SJVBBN7GRO5WUXKG5M6M",
-                "name": "Asosi Djedkare",
-                "type": "date"
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "definition": [
-      {
-        "main_group": [
-          {
-            "definition": [
-              "pCairo 58063 frame 10 recto (39 A)"
-            ],
-            "protocol": [
-              "erfaßt 1995; überarbeitet 12.07.2011"
-            ]
-          }
-        ]
-      }
-    ],
+     {
+      "date": [
+       {
+        "eclass": "BTSThsEntry",
+        "id": "KQY2F5SJVBBN7GRO5WUXKG5M6M",
+        "name": "Asosi Djedkare",
+        "type": "date"
+       }
+      ],
+      "comment": [
+       "Asosi (Djedkare I.)"
+      ]
+     }
+    ]
+   }
+  ],
+  "present_location": [
+   {
+    "location": [
+     {
+      "inventory_number": [
+       "58063 frame 10 recto"
+      ],
+      "location": [
+       {
+        "eclass": "BTSThsEntry",
+        "id": "RJR6FHP26FBPVMGXDXHLLZIG2Y",
+        "name": "Egyptian Museum",
+        "type": "location"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "bibliography": [
+   {
+    "bibliographical_text_field": [
+     "Posener-Kri\u00e9ger, Paule: Hieratic Papyri in the British Museum. Fifth Series. The Abu Sir Papyri., London 1968, plate 39 (Fragment A)"
+    ]
+   }
+  ],
+  "definition": [
+   {
+    "main_group": [
+     {
+      "protocol": [
+       "erfa\u00dft 1995; \u00fcberarbeitet 12.07.2011"
+      ],
+      "definition": [
+       "pCairo 58063 frame 10 recto (39 A)"
+      ]
+     }
+    ]
+   }
+  ],
+  "find_spot": [
+   {
     "find_spot": [
-      {
-        "find_spot": [
-          {
-            "place": [
-              {
-                "place": [
-                  {
-                    "eclass": "BTSThsEntry",
-                    "id": "O5AYJCUXENDODEGUIMCH2YWXWM",
-                    "name": "Abusir",
-                    "type": "findSpot"
-                  }
-                ]
-              }
-            ]
-          }
+     {
+      "place": [
+       {
+        "place": [
+         {
+          "eclass": "BTSThsEntry",
+          "id": "O5AYJCUXENDODEGUIMCH2YWXWM",
+          "name": "Abusir",
+          "type": "findSpot"
+         }
         ]
-      }
-    ],
-    "object": [
-      {
-        "description_of_object": [
-          {
-            "type": [
-              {
-                "eclass": "BTSThsEntry",
-                "id": "5QIW3ZRHQFGINHBP4GI2GI4LFA",
-                "name": "Schriftrolle",
-                "type": "objecttype"
-              }
-            ]
-          }
-        ],
-        "technical_details": [
-          {
-            "material": [
-              {
-                "eclass": "BTSThsEntry",
-                "id": "6HRN4262MRB7ZJCTZKSQ33LLE4",
-                "name": "Papyrus",
-                "type": "material"
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "present_location": [
-      {
-        "location": [
-          {
-            "inventory_number": [
-              "58063 frame 10 recto"
-            ],
-            "location": [
-              {
-                "eclass": "BTSThsEntry",
-                "id": "RJR6FHP26FBPVMGXDXHLLZIG2Y",
-                "name": "Egyptian Museum",
-                "type": "location"
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "text": [
-      {
-        "textual_metadata": [
-          {
-            "comment_on_texttype": [
-              "Wirtschaftstext eines Tempelarchivs"
-            ],
-            "egytextname": [
-              "Tafel 39, pCairo 58063 frame 10 recto (39 A), pCairo 58063 frame 10 recto (39 A)"
-            ],
-            "script": [
-              {
-                "eclass": "BTSThsEntry",
-                "id": "SRFM7BGQJBFRJL5GJ2P7WGZWBA",
-                "name": "Althieratisch",
-                "type": "script"
-              }
-            ]
-          }
-        ]
-      }
+       }
+      ]
+     }
     ]
-  },
-  "paths": [
-    [
-      {
-        "eclass": "BTSTCObject",
-        "id": "4IR3BDQT5JFI7GBJTORLC37YMU",
-        "name": "Archive, Urkunden, Vermerke (Altes Reich)",
-        "type": "Caption"
-      },
-      {
-        "eclass": "BTSTCObject",
-        "id": "2SJSXGUZUNDRDJ5DKSDHIAMVYM",
-        "name": "Abusir〈-Archiv〉",
-        "type": "Caption"
-      },
-      {
-        "eclass": "BTSTCObject",
-        "id": "QQ4QUH43PFCTHFQB3A3LC5TR7E",
-        "name": "Tafel 39",
-        "type": "Caption"
-      },
-      {
-        "eclass": "BTSTCObject",
-        "id": "R6TRHRNLMNE5ZEZYFPR6LIPXZA",
-        "name": "pCairo 58063 frame 10 recto (39 A)",
-        "type": "TCObject"
-      },
-      {
-        "eclass": "BTSText",
-        "id": "DNASZ4SCK5DWBH67DH4IICW2RI",
-        "name": "pCairo 58063 frame 10 recto (39 A)",
-        "type": "Text"
-      },
-      {
-        "eclass": "BTSText",
-        "id": "2A5EGGJVHVFVVL42QSWVLJORYE",
-        "name": "[2. Spalte]",
-        "type": "subtext"
-      }
-    ]
+   }
   ],
-  "relations": {
-    "partOf": [
-      {
-        "eclass": "BTSText",
-        "id": "DNASZ4SCK5DWBH67DH4IICW2RI",
-        "name": "pCairo 58063 frame 10 recto (39 A)",
-        "type": "Text"
-      }
+  "text": [
+   {
+    "textual_metadata": [
+     {
+      "comment_on_texttype": [
+       "Wirtschaftstext eines Tempelarchivs"
+      ],
+      "egytextname": [
+       "Tafel 39, pCairo 58063 frame 10 recto (39 A), pCairo 58063 frame 10 recto (39 A)"
+      ],
+      "script": [
+       {
+        "eclass": "BTSThsEntry",
+        "id": "SRFM7BGQJBFRJL5GJ2P7WGZWBA",
+        "name": "Althieratisch",
+        "type": "script"
+       }
+      ]
+     }
     ]
-  },
-  "revisionState": "published",
-  "translations": [
+   }
+  ],
+  "object": [
+   {
+    "description_of_object": [
+     {
+      "type": [
+       {
+        "eclass": "BTSThsEntry",
+        "id": "5QIW3ZRHQFGINHBP4GI2GI4LFA",
+        "name": "Schriftrolle",
+        "type": "objecttype"
+       }
+      ]
+     }
+    ],
+    "technical_details": [
+     {
+      "material": [
+       {
+        "eclass": "BTSThsEntry",
+        "id": "6HRN4262MRB7ZJCTZKSQ33LLE4",
+        "name": "Papyrus",
+        "type": "material"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "revisionState": "published",
+ "translations": [
     {"de": ["blubb"]}
-  ],
-  "subtype": null,
-  "type": "subtext"
+ ],
+ "id": "2A5EGGJVHVFVVL42QSWVLJORYE",
+ "type": "subtext",
+ "name": "[2. Spalte]",
+ "editors": {
+  "author": "***",
+  "updated": "2015-06-26",
+  "created": "2015-06-26",
+  "type": "user",
+  "contributors": [
+   "Alt\u00e4gyptisches W\u00f6rterbuch"
+  ]
+ },
+ "relations": {
+  "partOf": [
+   {
+    "id": "DNASZ4SCK5DWBH67DH4IICW2RI",
+    "eclass": "BTSText",
+    "name": "pCairo 58063 frame 10 recto (39 A)",
+    "type": "Text"
+   }
+  ]
+ }
 }
