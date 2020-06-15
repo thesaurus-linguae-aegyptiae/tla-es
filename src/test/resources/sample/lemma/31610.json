@@ -107,7 +107,7 @@
     ]
   },
   "revisionState": "published",
-  "sortString": "ATM",
+  "sortKey": "ATM",
   "subtype": "substantive_masc",
   "time_span": {
     "begin": -1992,

@@ -41,7 +41,7 @@ import tla.domain.model.meta.UserFriendly;
 @Setting(settingPath = "/elasticsearch/settings/indices/ths.json")
 public class ThsEntryEntity extends TLAEntity implements UserFriendly {
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper = tla.domain.util.IO.getMapper();
 
     private static final String SYNONYMS_PASSPORT_PATH = "synonyms.synonym_group";
     private static final String SYNONYM_VALUE_PATH = "synonym";

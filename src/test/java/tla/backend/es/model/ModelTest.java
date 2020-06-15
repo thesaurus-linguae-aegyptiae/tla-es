@@ -26,6 +26,7 @@ import tla.backend.es.model.parts.Token.Flexion;
 import tla.backend.es.model.parts.Token.Lemmatization;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
+import tla.domain.dto.meta.AbstractDto;
 import tla.domain.dto.meta.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.SentenceDto;
@@ -185,16 +186,22 @@ public class ModelTest {
             ThsEntryEntity.class
         );
         assertAll("synonyms should be extracted from passport and converted into translations",
+            () -> assertNotNull(t.getSUID(), "short ID"),
             () -> assertNotNull(t.getTranslations()),
             () -> assertNotNull(t.getTranslations().getFr()),
             () -> assertEquals(1, t.getTranslations().getFr().size()),
-            () -> assertEquals("21e dynastie", t.getTranslations().getFr().get(0))
+            () -> assertEquals("21e dynastie", t.getTranslations().getFr().get(0)),
+            () -> assertNotNull(t.getPaths(), "object paths"),
+            () -> assertTrue(!t.getPaths().isEmpty(), "path not empty")
         );
-        DocumentDto dto = (DocumentDto) t.toDTO();
+        AbstractDto dto = ModelConfig.toDTO(t);
         assertAll("test thesaurus entity to DTO mapping",
             () -> assertTrue(dto instanceof ThsEntryDto),
-            () -> assertNotNull(dto.getReviewState(), "review status must not be null"),
-            () -> assertNotNull(((ThsEntryDto) dto).getTranslations(), "translations must not be null")
+            () -> assertNotNull(((ThsEntryDto) dto).getReviewState(), "review status must not be null"),
+            () -> assertNotNull(((ThsEntryDto) dto).getTranslations(), "translations must not be null"),
+            () -> assertTrue(!((ThsEntryDto) dto).getTranslations().isEmpty(), "translations not empty"),
+            () -> assertNotNull(((ThsEntryDto) dto).getPaths(), "object paths"),
+            () -> assertTrue(!((ThsEntryDto) dto).getPaths().isEmpty(), "paths not empty")
         );
     }
 
@@ -359,7 +366,9 @@ public class ModelTest {
         assertAll("test text to DTO mapping",
             () -> assertNotNull(d),
             () -> assertTrue(d instanceof TextDto),
-            () -> assertEquals(t.getRevisionState(), d.getReviewState())
+            () -> assertEquals(t.getRevisionState(), d.getReviewState()),
+            () -> assertNotNull(((TextDto) d).getPaths(), "object paths"),
+            () -> assertTrue(((TextDto) d).getPaths().size() > 0, "indeed paths")
         );
         TextDto dto = (TextDto) d;
         assertAll("test mapped text DTO properties",

@@ -83,6 +83,12 @@ public class SentenceEntity extends AbstractBTSBaseClass implements Indexable {
         private String textId;
 
         /**
+         * text document type
+         */
+        @Field(type = FieldType.Keyword)
+        private String type;
+
+        /**
          * Label of whichever "new line" marker token found in the preceding sentences
          * is closest to the beginning of this sentence.
          */

@@ -119,6 +119,9 @@ public class SimpleLemmaEntityQueryBuilder extends AbstractEntityQueryBuilder<Le
         return aggs;
     }
 
+    /**
+     * language phase query fragment
+     */
     private BoolQueryBuilder scriptFilter() {
         BoolQueryBuilder scriptFilter = boolQuery();
         List<Script> scripts = Arrays.asList(getCommand().getScript());
@@ -134,6 +137,9 @@ public class SimpleLemmaEntityQueryBuilder extends AbstractEntityQueryBuilder<Le
         return scriptFilter;
     }
 
+    /**
+     * translation query fragment
+     */
     private BoolQueryBuilder translationQuery() {
         BoolQueryBuilder translationsQuery = boolQuery();
         if (getCommand().getTranslation().getLang() != null && getCommand().getTranslation().getLang().length > 0) {
@@ -149,6 +155,9 @@ public class SimpleLemmaEntityQueryBuilder extends AbstractEntityQueryBuilder<Le
         return translationsQuery;
     }
 
+    /**
+     * part of speech query fragment
+     */
     private BoolQueryBuilder wordClassQuery() {
         BoolQueryBuilder query = boolQuery();
         TypeSpec wordClass = getCommand().getWordClass();
@@ -181,7 +190,5 @@ public class SimpleLemmaEntityQueryBuilder extends AbstractEntityQueryBuilder<Le
         }
         return q;
     }
-
-
     
 }
