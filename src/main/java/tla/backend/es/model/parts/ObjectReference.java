@@ -1,8 +1,8 @@
 package tla.backend.es.model.parts;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -52,22 +52,25 @@ public class ObjectReference implements Resolvable, Comparable<Resolvable> {
      * the reference's subject refers to specifically. Only be used by
      * annotations, comments, and some subtexts ("glosses").
      */
-    @Singular
     @JsonPropertyOrder(alphabetic = true)
     @Field(type = FieldType.Object, index = false)
     private List<Resolvable.Range> ranges;
-
-    public ObjectReference() {
-        this.ranges = Collections.emptyList();
-    }
 
     @Override
     public int compareTo(Resolvable arg0) {
         return this.id.compareTo(arg0.getId());
     }
 
+    /**
+     * overrides a reference's token range register with the <b>distinct values</b>
+     * in the list passed.
+     */
     public void setRanges(List<Resolvable.Range> ranges) {
-        this.ranges = (ranges != null) ? new ArrayList<>(Set.copyOf(ranges)) : null;
+        if (ranges != null) {
+            this.ranges = ranges.stream().distinct().collect(Collectors.toList());
+        } else {
+            this.ranges = null;
+        }
     }
 
     @EqualsAndHashCode.Include

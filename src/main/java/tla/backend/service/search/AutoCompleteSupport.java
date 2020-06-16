@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 
@@ -37,6 +38,7 @@ public class AutoCompleteSupport {
                 field -> { return Float.valueOf(1); }
             )
         );
+        this.responseFields = FETCH_FIELDS;
     }
 
     public AutoCompleteSupport(Map<String, Float> queryFields, String[] responseFields) {
@@ -52,11 +54,18 @@ public class AutoCompleteSupport {
                 }
             );
         }
-        this.responseFields = Arrays.stream(
-            responseFields
-        ).distinct().toArray(
-            String[]::new
-        );
+        if (responseFields != null) {
+            this.responseFields = Stream.concat(
+                Arrays.stream(
+                    responseFields
+                ),
+                Arrays.stream(
+                    this.responseFields
+                )
+            ).distinct().toArray(
+                String[]::new
+            );
+        }
     }
 
     public MultiMatchQueryBuilder autocompleteQuery(String term) {
@@ -70,6 +79,5 @@ public class AutoCompleteSupport {
         }
         return query;
     }
-
  
 }

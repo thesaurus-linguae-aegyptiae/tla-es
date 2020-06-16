@@ -3,17 +3,32 @@ package tla.backend.service.search;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Map;
 
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.junit.jupiter.api.Test;
 
 public class AutoCompleteSupportTest {
 
     @Test
+    void testDefaultAutocompleteConfig() {
+        AutoCompleteSupport ac = AutoCompleteSupport.DEFAULT;
+        MultiMatchQueryBuilder query = ac.autocompleteQuery("thut");
+        assertAll("make sure assumptions about default autocomplete config are correct",
+            () -> assertEquals(4, ac.getQueryFields().size(), "match 4 fields"),
+            () -> assertEquals(5, ac.getResponseFields().length, "return 5 result fields"),
+            () -> assertEquals(4, query.fields().size(), "multi match query matches as many fields as config")
+        );
+    }
+
+    @Test
     void testBoostCalculation() {
         AutoCompleteSupport ac = AutoCompleteSupport.builder()
+            .queryField("name", 1F)
             .queryField("name", 1F)
             .responseFields(new String[]{"name"})
             .build();
@@ -27,13 +42,76 @@ public class AutoCompleteSupportTest {
                     "id", 1F
                 ),
                 ac.getQueryFields(),
-                "field boost settings"
+                "field boost settings counted only once"
             ),
             () -> assertFalse(
                 Arrays.stream(ac.getResponseFields()).distinct().count()
                 < Arrays.stream(ac.getResponseFields()).count(),
                 "expect no duplicate of search request source field `name`"
+            ),
+            () -> assertEquals(
+                AutoCompleteSupport.FETCH_FIELDS.length,
+                ac.getResponseFields().length,
+                "custom autocomplete config contains default response fields"
+            ),
+            () -> assertTrue(
+                Arrays.stream(ac.getResponseFields()).anyMatch(field -> field.equals("type")),
+                "`type` field part of responsefields"
             )
+        );
+    }
+
+    @Test
+    void testQueryGeneration() {
+        AutoCompleteSupport ac = AutoCompleteSupport.builder()
+            .queryFields(
+                Map.of("hash", 2F)
+            ).responseFields(new String[]{"hash"})
+            .build();
+        MultiMatchQueryBuilder query = ac.autocompleteQuery("thut");
+        assertAll("test multimatch query generation based on autocomplete config",
+            () -> assertEquals(
+                AutoCompleteSupport.QUERY_FIELDS.length + 1,
+                query.fields().size(),
+                "1 custom query field"
+            ),
+            () -> assertEquals(
+                ac.getQueryFields(),
+                query.fields(),
+                "query contains all configured fields and boost values"
+            ),
+            () -> assertEquals(
+                AutoCompleteSupport.FETCH_FIELDS.length + 1,
+                ac.getResponseFields().length,
+                "autocomplete config contains 1 extra response field"
+            )
+        );
+    }
+
+    @Test
+    void testEmptyInput() {
+        MultiMatchQueryBuilder q = AutoCompleteSupport.DEFAULT.autocompleteQuery("");
+        assertAll("check out query with empty input string",
+            () -> assertNotNull(q, "returned instance nonetheless"),
+            () -> assertTrue(q.prefixLength() < 1, "has no requirements for prefix length")
+        );
+    }
+
+    @Test
+    void emptyQueryFields() {
+        AutoCompleteSupport ac = AutoCompleteSupport.builder().queryField(
+            "translations.*", 1F
+        ).clearQueryFields()
+        .responseFields(null)
+        .build();
+        MultiMatchQueryBuilder q = ac.autocompleteQuery("thut");
+        assertAll("config and query built based on empty config inputs",
+            () -> assertNotNull(ac, "construction successful"),
+            () -> assertTrue(ac.getQueryFields().size() > 1, "default query field config intact"),
+            () -> assertNotNull(ac.getResponseFields(), "successfully handled null input"),
+            () -> assertTrue(ac.getResponseFields().length > 1, "default response field config intact"),
+            () -> assertNotNull(q, "did build query"),
+            () -> assertNotNull(q.fields(), "query contains match fields")
         );
     }
 

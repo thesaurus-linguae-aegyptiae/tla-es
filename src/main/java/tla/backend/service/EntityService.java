@@ -164,7 +164,6 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
         return AutoCompleteSupport.DEFAULT;
     }
 
-
     /**
      * Retrieve a single document from the Elasticsearch index managed by the service's
      * {@link ElasticsearchRepository}, or return null if none can be found for the given ID.

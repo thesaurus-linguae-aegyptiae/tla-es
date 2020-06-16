@@ -5,9 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -93,6 +96,18 @@ public class ObjectReferenceTest {
     }
 
     @Test
+    void serialize() throws Exception {
+        BaseEntity.Relations rel = BaseEntity.Relations.of(
+            ObjectReference.builder().id("ID").eclass("eclass").build()
+        );
+        String s = tla.domain.util.IO.json(rel);
+        assertAll("make sure serialization contains no noise",
+            () -> assertFalse(s.contains("\"ranges\":"), "empty token ranges not included"),
+            () -> assertNull(rel.get(0).getRanges(), "ranges indeed empty")
+        );
+    }
+
+    @Test
     void equality() throws Exception {
         String refjson = "{\"id\":\"ID\",\"eclass\":\"BTSText\",\"type\":\"Text\",\"name\":\"Stele\"}";
         ObjectReference ref1 = mapper.readValue(refjson, ObjectReference.class);
@@ -112,8 +127,7 @@ public class ObjectReferenceTest {
         );
         assertAll("object reference instances should be equal regardless of range order",
             () -> assertEquals(ref1, ref2, "instance"),
-            () -> assertEquals(ref1.hashCode(), ref2.hashCode(), "hashcode"),
-            () -> assertEquals(tla.domain.util.IO.json(ref1), tla.domain.util.IO.json(ref2), "serialization")
+            () -> assertEquals(ref1.hashCode(), ref2.hashCode(), "hashcode")
         );
         ref2.getRanges().add(Resolvable.Range.of("Token12", "Token99"));
         assertAll("duplicate range should not affect objectref equality",
@@ -132,6 +146,18 @@ public class ObjectReferenceTest {
         ref3.setRanges(null);
         ObjectReference ref4 = mapper.readValue("{\"id\":\"ID\",\"eclass\":\"BTSText\"}", ObjectReference.class);
         assertEquals(ref3, ref4, "minimal object references equality");
+    }
+
+    @Test
+    void sort() throws Exception {
+        BaseEntity.Relations rel = BaseEntity.Relations.of(
+            ObjectReference.builder().id("2").eclass("BTSText").build(),
+            ObjectReference.builder().id("1").eclass("BTSAnnotations").build()
+        );
+        SortedSet<Resolvable> refs = new TreeSet<>(rel);
+        assertAll("object ref comparison test",
+            () -> assertEquals("1", refs.first().getId(), "sorted items start at lowest ID value")
+        );
     }
 
     @Test
