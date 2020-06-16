@@ -2,6 +2,7 @@ package tla.backend.api;
 
 import java.util.List;
 
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public abstract class EntityController<T extends Indexable> {
     /**
      * Must return a presumably autowired entity service of appropriate type.
      */
-    public abstract EntityService<T, ? extends AbstractDto> getService();
+    public abstract EntityService<T, ? extends ElasticsearchRepository<?, ?>, ? extends AbstractDto> getService();
 
     /**
      * Returns a document wrapper containing a single document and all documents it references.

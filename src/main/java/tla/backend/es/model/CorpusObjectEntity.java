@@ -8,12 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.model.meta.UserFriendlyEntity;
 import tla.backend.es.model.parts.ObjectPath;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
-import tla.domain.model.meta.UserFriendly;
 
 @Getter
 @Setter
@@ -22,7 +21,7 @@ import tla.domain.model.meta.UserFriendly;
 @BTSeClass("BTSTCObject")
 @TLADTO(CorpusObjectDto.class)
 @Document(indexName = "object")
-public class CorpusObjectEntity extends TLAEntity implements UserFriendly {
+public class CorpusObjectEntity extends UserFriendlyEntity {
 
     @Field(type = FieldType.Keyword, name = "hash")
     private String SUID;

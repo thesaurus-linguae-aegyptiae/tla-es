@@ -16,7 +16,7 @@ public class ThesaurusController extends EntityController<ThsEntryEntity> {
     private ThesaurusService thsService;
 
     @Override
-    public EntityService<ThsEntryEntity, ?> getService() {
+    public EntityService<ThsEntryEntity, ?, ?> getService() {
         return thsService;
     }
 

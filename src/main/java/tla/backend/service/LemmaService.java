@@ -38,7 +38,7 @@ import tla.domain.model.extern.AttestedTimespan;
 @Slf4j
 @Service
 @ModelClass(value = LemmaEntity.class, path = "lemma")
-public class LemmaService extends EntityService<LemmaEntity, LemmaDto> {
+public class LemmaService extends EntityService<LemmaEntity, ElasticsearchRepository<LemmaEntity, String>, LemmaDto> {
 
     @Autowired
     private LemmaRepo repo;

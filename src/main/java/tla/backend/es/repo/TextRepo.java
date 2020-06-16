@@ -1,7 +1,6 @@
 package tla.backend.es.repo;
 
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-
 import tla.backend.es.model.TextEntity;
+import tla.backend.es.repo.custom.UserFriendlyEntityRepo;
 
-public interface TextRepo extends ElasticsearchRepository<TextEntity, String> {}
+public interface TextRepo extends UserFriendlyEntityRepo<TextEntity, String> {}

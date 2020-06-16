@@ -4,12 +4,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.backend.es.repo.ThesaurusRepo;
+import tla.backend.es.repo.custom.UserFriendlyEntityRepo;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.ObjectReference;
@@ -17,13 +17,13 @@ import tla.domain.model.Passport;
 
 @Service
 @ModelClass(value = ThsEntryEntity.class, path = "ths")
-public class ThesaurusService extends EntityService<ThsEntryEntity, ThsEntryDto> {
+public class ThesaurusService extends UserFriendlyEntityService<ThsEntryEntity, UserFriendlyEntityRepo<ThsEntryEntity, String>, ThsEntryDto> {
 
     @Autowired
     private ThesaurusRepo thsRepo;
 
     @Override
-    public ElasticsearchRepository<ThsEntryEntity, String> getRepo() {
+    public UserFriendlyEntityRepo<ThsEntryEntity, String> getRepo() {
         return thsRepo;
     }
 

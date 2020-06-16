@@ -20,7 +20,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
-import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.model.meta.UserFriendlyEntity;
 import tla.backend.es.model.parts.ObjectPath;
 import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.ThsEntryDto;
@@ -28,7 +28,6 @@ import tla.domain.model.Passport;
 import tla.domain.model.extern.AttestedTimespan;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
-import tla.domain.model.meta.UserFriendly;
 
 @Data
 @Slf4j
@@ -39,7 +38,7 @@ import tla.domain.model.meta.UserFriendly;
 @EqualsAndHashCode(callSuper = true)
 @Document(indexName = "ths")
 @Setting(settingPath = "/elasticsearch/settings/indices/ths.json")
-public class ThsEntryEntity extends TLAEntity implements UserFriendly {
+public class ThsEntryEntity extends UserFriendlyEntity {
 
     private static ObjectMapper objectMapper = tla.domain.util.IO.getMapper();
 
@@ -58,7 +57,7 @@ public class ThsEntryEntity extends TLAEntity implements UserFriendly {
     @JsonAlias({"sortkey", "sort_key", "sort_string", "sortString"})
     private String sortKey;
 
-    @Field(type = FieldType.Keyword, name = "hash")
+    @Field(type = FieldType.Search_As_You_Type, name = "hash")
     private String SUID;
 
     @Field(type = FieldType.Object)

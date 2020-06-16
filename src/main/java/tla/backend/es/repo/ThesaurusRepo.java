@@ -1,9 +1,6 @@
 package tla.backend.es.repo;
 
 import tla.backend.es.model.ThsEntryEntity;
+import tla.backend.es.repo.custom.UserFriendlyEntityRepo;
 
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-
-public interface ThesaurusRepo extends ElasticsearchRepository<ThsEntryEntity, String> {
-
-}
+public interface ThesaurusRepo extends UserFriendlyEntityRepo<ThsEntryEntity, String> {}

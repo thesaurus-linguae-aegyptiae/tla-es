@@ -61,7 +61,7 @@ import tla.error.ObjectNotFoundException;
  * They should also be annotated with {@link Service} for component scanning / dependency injection.
  */
 @Slf4j
-public abstract class EntityService<T extends Indexable, D extends AbstractDto> {
+public abstract class EntityService<T extends Indexable, R extends ElasticsearchRepository<T, String>, D extends AbstractDto> {
 
     /**
      * How many search results fit in 1 page.
@@ -79,7 +79,7 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
 
     private Class<T> modelClass = null;
     private Class<D> dtoClass = null;
-    protected static Map<Class<? extends Indexable>, EntityService<? extends Indexable, ? extends AbstractDto>> modelClassServices = new HashMap<>();
+    protected static Map<Class<? extends Indexable>, EntityService<? extends Indexable, ? extends ElasticsearchRepository<?,?>, ? extends AbstractDto>> modelClassServices = new HashMap<>();
     protected static Map<Class<? extends Indexable>, AbstractDto> modelClassDtos = new HashMap<>();
 
     /**
@@ -110,7 +110,7 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
      * registered.
      * Registration takes place at construction time of any service with a {@link ModelClass} annotation.
      */
-    public static EntityService<? extends Indexable, ? extends AbstractDto> getService(Class<? extends Indexable> modelClass) {
+    public static EntityService<? extends Indexable, ? extends ElasticsearchRepository<?, ?>, ? extends AbstractDto> getService(Class<? extends Indexable> modelClass) {
         if (modelClassServices.containsKey(modelClass)) {
             return modelClassServices.get(modelClass);
         } else {
@@ -153,7 +153,7 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
      * Elasticsearch index where documents of the model class with which the service has been
      * typed are stored in.
      */
-    public abstract ElasticsearchRepository<T, String> getRepo();
+    public abstract R getRepo();
 
     /**
      * Retrieve a single document from the Elasticsearch index managed by the service's
@@ -323,7 +323,7 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
      */
     public BaseEntity retrieveSingleBTSDoc(String eclass, String id) {
         Class<? extends BaseEntity> modelClass = ModelConfig.getModelClass(eclass);
-        EntityService<?, ?> service = modelClassServices.getOrDefault(modelClass, null);
+        EntityService<?, ?, ?> service = modelClassServices.getOrDefault(modelClass, null);
         if (service == null) {
             log.error("Could not find entity service for eclass {}!", eclass);
             return null;
@@ -487,7 +487,6 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
         );
     }
 
-
     /**
      * take a search command and based on the type figure out which
      * {@link AbstractEntityQueryBuilder entitiy query builder} or {@link
@@ -501,7 +500,7 @@ public abstract class EntityService<T extends Indexable, D extends AbstractDto> 
     public Optional<AbstractEntityQueryBuilder<?, ?>> findMatchingEntityQueryBuilder(
         SearchCommand<?> search, Class<? extends Indexable> target
     ) {
-        EntityService<?,?> targetService = EntityService.getService(target);
+        EntityService<?, ?, ?> targetService = EntityService.getService(target);
         if (target != null) {
             return Optional.of(
                 targetService.getEntityQueryBuilder(search)

@@ -1,7 +1,6 @@
 package tla.backend.es.model.parts;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -15,9 +14,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.Singular;
 import lombok.ToString;
 import tla.domain.model.meta.Resolvable;
 
@@ -25,6 +24,7 @@ import tla.domain.model.meta.Resolvable;
 @Setter
 @Builder
 @ToString
+@NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -67,7 +67,7 @@ public class ObjectReference implements Resolvable, Comparable<Resolvable> {
     }
 
     public void setRanges(List<Resolvable.Range> ranges) {
-        this.ranges = (ranges != null) ? new ArrayList<>(Set.copyOf(ranges)) : Collections.emptyList();
+        this.ranges = (ranges != null) ? new ArrayList<>(Set.copyOf(ranges)) : null;
     }
 
     @EqualsAndHashCode.Include

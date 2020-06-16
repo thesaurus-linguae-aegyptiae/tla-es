@@ -12,13 +12,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.model.meta.UserFriendlyEntity;
 import tla.backend.es.model.parts.ObjectPath;
 import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.TextDto;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
-import tla.domain.model.meta.UserFriendly;
 
 /**
  * Text and Subtext model
@@ -30,9 +29,9 @@ import tla.domain.model.meta.UserFriendly;
 @BTSeClass("BTSText")
 @TLADTO(TextDto.class)
 @Document(indexName = "text")
-public class TextEntity extends TLAEntity implements UserFriendly {
+public class TextEntity extends UserFriendlyEntity {
 
-    @Field(type = FieldType.Keyword, name = "hash")
+    @Field(type = FieldType.Search_As_You_Type, name = "hash")
     private String SUID;
 
     @Field(type = FieldType.Keyword)

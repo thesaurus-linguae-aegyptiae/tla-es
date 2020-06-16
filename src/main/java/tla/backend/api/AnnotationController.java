@@ -16,7 +16,7 @@ public class AnnotationController extends EntityController<AnnotationEntity> {
     private AnnotationService queryService;
 
     @Override
-    public EntityService<AnnotationEntity, ?> getService() {
+    public EntityService<AnnotationEntity, ?, ?> getService() {
         return queryService;
     }
 

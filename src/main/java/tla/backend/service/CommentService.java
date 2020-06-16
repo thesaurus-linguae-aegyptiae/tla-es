@@ -12,7 +12,7 @@ import tla.domain.dto.CommentDto;
 
 @Service
 @ModelClass(value = CommentEntity.class, path = "comment")
-public class CommentService extends EntityService<CommentEntity, CommentDto> {
+public class CommentService extends EntityService<CommentEntity, ElasticsearchRepository<CommentEntity, String>, CommentDto> {
 
     @Autowired
     private CommentRepo repo;

@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @ModelClass(value = SentenceEntity.class, path = "sentence")
-public class SentenceService extends EntityService<SentenceEntity, SentenceDto> {
+public class SentenceService extends EntityService<SentenceEntity, ElasticsearchRepository<SentenceEntity, String>, SentenceDto> {
 
     private final static String LEMMA_FREQ_AGG_NAME = "aggr_around_text_id";
 

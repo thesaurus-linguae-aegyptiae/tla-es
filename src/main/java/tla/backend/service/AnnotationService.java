@@ -12,7 +12,7 @@ import tla.domain.dto.AnnotationDto;
 
 @Service
 @ModelClass(value = AnnotationEntity.class, path = "annotation")
-public class AnnotationService extends EntityService<AnnotationEntity, AnnotationDto> {
+public class AnnotationService extends EntityService<AnnotationEntity, ElasticsearchRepository<AnnotationEntity, String>, AnnotationDto> {
 
     @Autowired
     private AnnotationRepo repo;
