@@ -16,7 +16,6 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.Aggregation;
@@ -43,6 +42,7 @@ import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
 import tla.backend.es.query.AbstractEntityIDsQueryBuilder;
 import tla.backend.es.query.AbstractEntityQueryBuilder;
+import tla.backend.service.search.AutoCompleteSupport;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.extern.PageInfo;
 import tla.domain.dto.extern.SearchResultsWrapper;
@@ -154,6 +154,16 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * typed are stored in.
      */
     public abstract R getRepo();
+
+    /**
+     * get a service's {@link AutoCompleteSupport} instance for performing
+     * quick lookup searches against its entity type. Can and should be overridden by
+     * subclasses so that autocompletion for specific entity types can be customized.
+     */
+    public AutoCompleteSupport getAutoCompleteSupport() {
+        return AutoCompleteSupport.DEFAULT;
+    }
+
 
     /**
      * Retrieve a single document from the Elasticsearch index managed by the service's
@@ -465,20 +475,14 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
             return Collections.emptyList();
         }
         NativeSearchQuery query = new NativeSearchQueryBuilder()
-            .withFields("name", "id", "type", "subtype", "eclass", "translations.*")
+            .withFields(
+                getAutoCompleteSupport().getResponseFields()
+            )
             .withFilter(
                 (type != null && !type.isBlank()) ? QueryBuilders.termQuery("type", type) :
                     QueryBuilders.boolQuery()
             ).withQuery(
-                new MultiMatchQueryBuilder(term)
-                    .type(MultiMatchQueryBuilder.Type.BOOL_PREFIX)
-                    .field("id")
-                    .field("name", 2)
-                    .field("name._2gram")
-                    .field("name._3gram")
-                    .field("translations.de")
-                    .field("translations.en")
-                    .field("translations.fr")
+                getAutoCompleteSupport().autocompleteQuery(term)
             ).withPageable(
                 PageRequest.of(0, 60)
             ).build();
