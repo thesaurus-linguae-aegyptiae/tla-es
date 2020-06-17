@@ -77,40 +77,8 @@ public class ModelConfig {
     private static Map<String, BTSeClassConfig> eclassConfigs = new HashMap<>();
 
     public ModelConfig() {
-        setModelClasses(
-            List.of(
-                LemmaEntity.class,
-                ThsEntryEntity.class,
-                TextEntity.class,
-                AnnotationEntity.class,
-                CorpusObjectEntity.class
-            )
-        );
         initModelMapper();
     }
-
-    /**
-     * Extract eclass configurations from all registered model classes.
-     */
-    private static void initModelConfig() {
-        eclassConfigs = new HashMap<>();
-        modelClasses.forEach(
-            clazz -> {
-                try {
-                    registerModelClass(clazz);
-                } catch (Exception e) {
-                    log.error(
-                        String.format(
-                            "config initialization for model class %s failed.",
-                            clazz.getName()
-                        ),
-                        e
-                    );
-                }
-            }
-        );
-    }
-
 
     /**
      * Register eClass configuration extracted from the following annotations on the given model class:

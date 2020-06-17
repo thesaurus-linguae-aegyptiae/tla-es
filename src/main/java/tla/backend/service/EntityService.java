@@ -94,6 +94,18 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
                 this.modelClass,
                 this
             );
+            if (AbstractBTSBaseClass.class.isAssignableFrom(this.modelClass)) {
+                try {
+                    ModelConfig.registerModelClass(
+                        this.modelClass.asSubclass(AbstractBTSBaseClass.class)
+                    );
+                } catch (Exception e) {
+                    log.error(
+                        String.format("failed to register model class %s", this.modelClass),
+                        e
+                    );
+                }
+            }
         }
     }
 
