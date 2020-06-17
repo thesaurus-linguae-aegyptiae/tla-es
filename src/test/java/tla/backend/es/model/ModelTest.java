@@ -27,7 +27,7 @@ import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
-import tla.backend.es.model.meta.BaseEntity.Relations;
+import tla.backend.es.model.meta.LinkedEntity.Relations;
 import tla.backend.es.model.parts.EditDate;
 import tla.backend.es.model.parts.EditorInfo;
 import tla.backend.es.model.parts.LemmaWord;
@@ -49,6 +49,7 @@ import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.Language;
 import tla.domain.model.Passport;
 import tla.domain.model.SentenceToken;
+import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.BTSeClass;
 
 @SpringBootTest(classes = {App.class})
@@ -58,7 +59,7 @@ public class ModelTest {
 
     @Test
     void modelConfigInitialized() {
-        List<Class<? extends BaseEntity>> modelClasses = ModelConfig.getModelClasses();
+        List<Class<? extends AbstractBTSBaseClass>> modelClasses = ModelConfig.getModelClasses();
         assertAll("make sure model config class has been initialized",
             () -> assertTrue(ModelConfig.isInitialized(), "flag should be set"),
             () -> assertNotNull(modelClasses, "model class list should not be null"),

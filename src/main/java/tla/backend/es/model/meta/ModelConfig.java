@@ -59,7 +59,7 @@ public class ModelConfig {
     @Builder
     public static class BTSeClassConfig {
         private String index;
-        private Class<? extends BaseEntity> modelClass;
+        private Class<? extends AbstractBTSBaseClass> modelClass;
     }
 
     public static SimpleDateFormat DATE_FORMAT;
@@ -71,10 +71,10 @@ public class ModelConfig {
     private static ModelMapper modelMapper;
 
     @Getter
-    private static List<Class<? extends BaseEntity>> modelClasses = new LinkedList<>();
+    private static List<Class<? extends AbstractBTSBaseClass>> modelClasses = new LinkedList<>();
 
     @Getter
-    private static Map<String, BTSeClassConfig> eclassConfigs;
+    private static Map<String, BTSeClassConfig> eclassConfigs = new HashMap<>();
 
     public ModelConfig() {
         setModelClasses(
@@ -123,7 +123,7 @@ public class ModelConfig {
      * @return map with the extracted eclass as its only key,
      *         or <code>null</code> if any config value could not be extracted
      */
-    private static Map<String, BTSeClassConfig> mapModelClassConfigToEclass(Class<? extends BaseEntity> clazz) {
+    private static Map<String, BTSeClassConfig> mapModelClassConfigToEclass(Class<? extends AbstractBTSBaseClass> clazz) {
         String eclass = null;
         String index = null;
         for (Annotation annotation : clazz.getAnnotations()) {
@@ -182,7 +182,7 @@ public class ModelConfig {
      * TODO what does this enable?
      */
     public static Map<String, BTSeClassConfig> registerModelClass(
-        Class<? extends BaseEntity> modelClass
+        Class<? extends AbstractBTSBaseClass> modelClass
     ) throws Exception {
         Map<String, BTSeClassConfig> conf = mapModelClassConfigToEclass(modelClass);
         if (conf != null) {
@@ -202,35 +202,21 @@ public class ModelConfig {
     }
 
     /**
-     * Clear eclass/model class configuration registry and load configurations for
-     * classes passed.
-     */
-    public static void setModelClasses(List<Class<? extends BaseEntity>> classes) {
-        if (eclassConfigs != null) {
-            eclassConfigs.clear();
-            log.info(
-                "erase model class registry containing eclasses: {}",
-                String.join(", ", eclassConfigs.keySet())
-            );
-        } else {
-            log.info(
-                "initial computation of known model class configurations"
-            );
-        }
-        modelClasses.clear();
-        modelClasses.addAll(classes);
-        initModelConfig();
-        log.info(
-            "configured eclass class registry updated: {}",
-            String.join(", ", eclassConfigs.keySet())
-        );
-    }
-
-    /**
      * Look up the model class registered for a given eclass.
      */
-    public static Class<? extends BaseEntity> getModelClass(String eclass) {
-        return eclassConfigs.get(eclass).getModelClass();
+    public static Class<? extends AbstractBTSBaseClass> getModelClass(String eclass) {
+        try {
+            return eclassConfigs.get(eclass).getModelClass();
+        } catch (Exception e) {
+            log.error(
+                String.format(
+                    "can't find entity model class corresponding to eclass %s. Known eclasses are: %s",
+                    eclass,
+                    eclassConfigs.keySet()
+                )
+            );
+            throw e;
+        }
     }
 
     /**

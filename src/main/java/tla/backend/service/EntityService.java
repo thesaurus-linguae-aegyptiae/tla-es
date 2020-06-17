@@ -1,7 +1,6 @@
 package tla.backend.service;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,8 +35,8 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.model.meta.Indexable;
+import tla.backend.es.model.meta.LinkedEntity;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
 import tla.backend.es.query.AbstractEntityIDsQueryBuilder;
@@ -50,6 +49,7 @@ import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.dto.meta.AbstractDto;
 import tla.domain.dto.meta.DocumentDto;
 import tla.domain.model.ObjectReference;
+import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.Resolvable;
 import tla.domain.model.meta.TLADTO;
@@ -195,7 +195,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
             container = new SingleDocumentWrapper<AbstractDto>(
                 ModelConfig.toDTO(document)
             );
-            Collection<BaseEntity> relatedObjects = new HashSet<>();
+            Collection<Indexable> relatedObjects = new HashSet<>();
             relatedObjects.addAll(this.retrieveRelatedDocs(document));
             relatedObjects.addAll(this.retrieveReferencedThesaurusEntries(document));
             try {
@@ -223,10 +223,10 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * @return A List of TLA documents
      * @see {@link #retrieveSingleBTSDoc(String, String)}
      */
-    protected Collection<BaseEntity> retrieveReferencedObjects(Collection<Resolvable> references) {
+    protected Collection<Indexable> retrieveReferencedObjects(Collection<Resolvable> references) {
         return references.stream().map(
             ref -> {
-                BaseEntity referencedEntity = this.retrieveSingleBTSDoc(
+                Indexable referencedEntity = this.retrieveSingleBTSDoc(
                     ref.getEclass(),
                     ref.getId()
                 );
@@ -247,25 +247,25 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     }
 
     /**
-     * If a document if an instance of {@link BaseEntity}, go through its
-     * {@link BaseEntity#getRelations()} data structure and
+     * If a document if an instance of {@link LinkedEntity}, go through its
+     * {@link LinkedEntity#getRelations()} data structure and
      * try to look up all objects referenced in their respective Elasticsearch indices based on
      * their <code>eclass</code> value.
      *
      * @param document An instance of the model class this service is for
      * @return A list of the document instances referenced. Returns an empty list if the document
-     * passed is not a {@link BaseEntity} instance.
+     * passed is not a {@link LinkedEntity} instance.
      */
-    protected Collection<BaseEntity> retrieveRelatedDocs(T document) {
-        if (document instanceof BaseEntity) {
+    protected Collection<Indexable> retrieveRelatedDocs(T document) {
+        if (document instanceof LinkedEntity) { // TODO or even better linkedentity
             Set<Resolvable> previews = new HashSet<>();
-            BaseEntity entity = (BaseEntity) document;
+            LinkedEntity entity = (LinkedEntity) document;
             entity.getRelations().entrySet().forEach(
                 e -> {previews.addAll(e.getValue());}
             );
             return retrieveReferencedObjects(previews);
         }
-        return new ArrayList<BaseEntity>();
+        return Collections.emptyList();
     }
 
     /**
@@ -275,7 +275,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * should be thesaurus terms, and thus be located in the Elasticsearch index corresponding
      * to the eclass <code>"BTSThsEntry"</code>.
      */
-    protected Collection<BaseEntity> retrieveReferencedThesaurusEntries(T document) {
+    protected Collection<Indexable> retrieveReferencedThesaurusEntries(T document) {
         if (document instanceof TLAEntity) {
             Set<Resolvable> previews = new HashSet<>();
             TLAEntity entity = (TLAEntity) document;
@@ -284,7 +284,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
             }
             return retrieveReferencedObjects(previews);
         }
-        return new ArrayList<BaseEntity>();
+        return Collections.emptyList();
     }
 
     /**
@@ -330,28 +330,27 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     /**
      * Tries to find the ES document identified by eclass and ID.
      */
-    public BaseEntity retrieveSingleBTSDoc(String eclass, String id) {
-        Class<? extends BaseEntity> modelClass = ModelConfig.getModelClass(eclass);
+    public Indexable retrieveSingleBTSDoc(String eclass, String id) {
+        Class<? extends AbstractBTSBaseClass> modelClass = ModelConfig.getModelClass(eclass);
         EntityService<?, ?, ?> service = modelClassServices.getOrDefault(modelClass, null);
         if (service == null) {
             log.error("Could not find entity service for eclass {}!", eclass);
-            return null;
+            throw new ObjectNotFoundException(id, eclass);
         }
         ElasticsearchRepository<? extends Indexable, String> repo = service.getRepo();
         Optional<? extends Indexable> result = repo.findById(id);
-        if (result.isPresent()) {
-            if (result.get() instanceof BaseEntity) {
-                return (BaseEntity) result.get();
+        return result.orElseThrow(
+            () -> {
+                log.error(
+                    String.format(
+                        "Could not retrieve %s document with ID %s",
+                        eclass,
+                        id
+                    )
+                );
+                return new ObjectNotFoundException(id, eclass);
             }
-        }
-        log.error(
-            String.format(
-                "Could not retrieve %s document with ID %s",
-                eclass,
-                id
-            )
         );
-        return null;
     }
 
     /**

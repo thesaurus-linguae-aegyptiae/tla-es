@@ -58,7 +58,7 @@ public class ObjectReferenceTest {
         String s = mapper.writeValueAsString(t);
         assertTrue(s.contains("\"paths\":[[{"), "paths serialized");
         assertEquals(
-            "{\"id\":\"ID\",\"relations\":{},\"externalReferences\":{},\"paths\":[[{\"id\":\"ID2\",\"eclass\":\"BTSThsEntry\",\"type\":\"date\",\"name\":\"Thut\"}]]}",
+            "{\"id\":\"ID\",\"paths\":[[{\"id\":\"ID2\",\"eclass\":\"BTSThsEntry\",\"type\":\"date\",\"name\":\"Thut\"}]]}",
             s,
             "serialization of ths entry with paths"
         );

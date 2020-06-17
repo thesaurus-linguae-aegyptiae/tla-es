@@ -48,7 +48,6 @@ public abstract class EntityController<T extends Indexable> {
     public ResponseEntity<SingleDocumentWrapper<? extends AbstractDto>> get(@PathVariable String id) throws ObjectNotFoundException {
         SingleDocumentWrapper<? extends AbstractDto> result = getService().getDetails(id);
         if (result != null) {
-            log.info("check relations {}", result.getDoc().getRelations());
             return new ResponseEntity<SingleDocumentWrapper<? extends AbstractDto>>(
                 result,
                 HttpStatus.OK
@@ -72,7 +71,6 @@ public abstract class EntityController<T extends Indexable> {
                 HttpStatus.OK
             );
         } catch (Exception e) {
-            log.error("FUCK", e);
             throw new ResponseStatusException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "search failed",

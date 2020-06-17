@@ -1,7 +1,6 @@
 package tla.backend.es.model;
 
 import java.util.Collection;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,14 +18,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.Singular;
-import tla.backend.es.model.meta.BaseEntity;
+import lombok.experimental.SuperBuilder;
 import tla.backend.es.model.meta.Indexable;
+import tla.backend.es.model.meta.LinkedEntity;
 import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Transcription;
 import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.SentenceDto;
-import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
 
@@ -35,7 +33,7 @@ import tla.domain.model.meta.TLADTO;
  */
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @BTSeClass("BTSSentence")
@@ -44,7 +42,7 @@ import tla.domain.model.meta.TLADTO;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Document(indexName = "sentence")
 @Setting(settingPath = "/elasticsearch/settings/indices/sentence.json")
-public class SentenceEntity extends AbstractBTSBaseClass implements Indexable {
+public class SentenceEntity extends LinkedEntity implements Indexable {
 
     @Id
     @NonNull
@@ -65,13 +63,6 @@ public class SentenceEntity extends AbstractBTSBaseClass implements Indexable {
 
     @Field(type = FieldType.Nested)
     private Collection<Token> tokens;
-    /**
-     * References to related objects grouped by relationship name (<code>partOf</code>,
-     * <code>predecessor</code>, ...).
-     */
-    @Singular
-    @Field(type = FieldType.Object)
-    private Map<String, BaseEntity.Relations> relations;
 
     /**
      * Tells you to which text document this sentence belongs and its position

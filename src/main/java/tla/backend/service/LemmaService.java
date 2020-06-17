@@ -95,7 +95,7 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
             );
             if (dateTerms.size() > 0) {
                 if (dateTerms.size() != 1) {
-                    log.error("text {} has not exactly 1 date term assigned to it", e.getKey());
+                    log.error("text {} has not exactly 1 date term assigned to it (rather {})", e.getKey(), dateTerms.size());
                 } else {
                     ThsEntryEntity term = dateTerms.get(0);
                     if (periodCounts.containsKey(term.getId())) {
