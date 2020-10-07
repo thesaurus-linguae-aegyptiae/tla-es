@@ -11,7 +11,7 @@ The TLA backend server is a Spring Boot application using an Elasticsearch insta
 
 ## Installation
 
-> **TL;DR:** run `ES_PORT=9200 SAMPLE_URL=http://aaew64.bbaw.de/resources/sample/sample200526-5000t.tar.gz docker-compose up -d --build --force-recreate`
+> **TL;DR:** run `ES_PORT=9200 SAMPLE_URL=http://aaew64.bbaw.de/resources/sample/sample200526-5000t.tar.gz docker-compose up -d`
 
 There are two methods for getting this thing up and running.
 
