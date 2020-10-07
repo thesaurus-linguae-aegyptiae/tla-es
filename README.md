@@ -73,7 +73,7 @@ Requirements:
    accessing [its REST interface](http://localhost:9200) in a browser (change `9200` in case that you
    set a different port via the `ES_PORT` environment variable).
 
-2. Nicely done! Now follow the instructions above to make sure you have set the environment variables `ES_HOST`, `ES_PORT` and `SAMPLE_URL`.
+2. Nicely done! Now follow [the instructions above](#11-prerequesites) to make sure you have set the environment variables `ES_HOST`, `ES_PORT` and `SAMPLE_URL`.
 
 3. Once Elasticsearch is up and running, TLA corpus data needs to be loaded into it. In order to do so,
 you must set the `SAMPLE_URL` environment variable to a URL pointing to a tar-compressed TLA corpus data
