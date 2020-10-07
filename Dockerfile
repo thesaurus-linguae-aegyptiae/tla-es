@@ -3,18 +3,15 @@ FROM gradle:6.3-jdk11 AS build
 COPY --chown=gradle:gradle . /home/gradle/tla
 WORKDIR /home/gradle/tla
 
-RUN gradle bootJar --no-daemon
+RUN gradle bootJar --no-daemon && \
+    mv build/libs/*.jar bin/run/tla-backend.jar
 
 
-FROM openjdk:11-jre-slim
+FROM openjdk:16-jdk-alpine3.12
 
 RUN mkdir /app
 WORKDIR /app/
-COPY --from=build /home/gradle/tla/build/libs/*.jar /app/tla-web-backend.jar
+COPY --from=build /home/gradle/tla/bin/run/ /app/
 
-ARG es_port
-ARG es_host
-ENV ES_PORT ${es_port}
-ENV ES_HOST ${es_host}
 EXPOSE 8090
-ENTRYPOINT ["java", "-jar", "/app/tla-web-backend.jar"]
+ENTRYPOINT ["sh", "/app/entrypoint.sh"]

@@ -3,7 +3,8 @@ version: '3.7'
 
 services:
 
-    elasticsearch:
+    es:
+        container_name: tla-es
         image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
         environment:
             ES_JAVA_OPTS: -Xms512m -Xmx512m
@@ -12,21 +13,34 @@ services:
             - ${ES_PORT}:9200
         stdin_open: true
         tty: true
+        restart: unless-stopped
 
-    backend:
+    populate:
+        container_name: tla-ingest
         depends_on:
-            - elasticsearch
+            - es
         build:
             context: .
-            args:
-                - es_port=${ES_PORT}
-                - es_host=localhost
+        environment:
+            ES_HOST: es
+            ES_PORT: 9200
+            SAMPLE_URL: ${SAMPLE_URL}
+        tty: true
+        command: "ingest"
+
+    backend:
+        container_name: tla-backend
+        depends_on:
+            - populate
+        build:
+            context: .
+        environment:
+            ES_HOST: ${ES_HOST}
+            ES_PORT: ${ES_PORT}
         ports:
             - 8090:8090
         tty: true
         network_mode: host
-        volumes:
-            - ${PWD}/sample.tar.gz:/app/sample.tar.gz
-        command: "--data-file=sample.tar.gz"
+        restart: unless-stopped
 
-
+...
