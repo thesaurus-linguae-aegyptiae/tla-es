@@ -26,15 +26,16 @@ Requirements:
 #### Prerequesites
 
 1. Create an environment variable template file `.env` based on the template coming with this repo:
-
-    cp .env.template .env
-
+   ```
+   cp .env.template .env
+   ```
 2. Choose values for the environment variables `ES_HOST` and `ES_PORT` to your liking, e.g. as `localhost` and `9200`
    respectively (or wherever you desire to be able to connect to your Elasticsearch container).
 
 3. Specify the location where a TLA corpus data archive can be downloaded using the `SAMPLE_URL` environment variable, e.g.:
-
-    SAMPLE_URL=http://example.org/sample.tar.gz
+   ```
+   SAMPLE_URL=http://example.org/sample.tar.gz
+   ```
 
 #### Run Setup
 
@@ -64,13 +65,13 @@ Requirements:
 #### Prerequesites
 
 1. This method requires you to provide a running Elasticsearch instance. If you have Docker Compose, you can simply start one in a
-container by using the configuration coming with this repository:
-
-    docker-compose up -d es
-
-Before continuing, make sure Elasticsearch is running by checking the output of `docker ps --all` or
-accessing [its REST interface](http://localhost:9200) in a browser (change `9200` in case that you
-set a different port via the `ES_PORT` environment variable).
+   container by using the configuration coming with this repository:
+   ```
+   docker-compose up -d es
+   ```
+   Before continuing, make sure Elasticsearch is running by checking the output of `docker ps --all` or
+   accessing [its REST interface](http://localhost:9200) in a browser (change `9200` in case that you
+   set a different port via the `ES_PORT` environment variable).
 
 2. Nicely done! Now follow the instructions above to make sure you have set the environment variables `ES_HOST`, `ES_PORT` and `SAMPLE_URL`.
 
@@ -78,15 +79,15 @@ set a different port via the `ES_PORT` environment variable).
 you must set the `SAMPLE_URL` environment variable to a URL pointing to a tar-compressed TLA corpus data
 file. One way to do this is to create a `.env` file in the directory containing this README, and setting
 the variable `SAMPLE_URL` in there:
+   ```
+   SAMPLE_URL=http://example.org/sample.tar.gz
+   ```
 
-    SAMPLE_URL=http://example.org/sample.tar.gz
-
-Finally, download and store TLA corpus data from the specified source by running the `populate` gradle task:
-
-    gradle populate
-
-(If you are on a Windows machine, you probably need to execute the `gradlew.bat` wrapper shipped with this
-project explicitly.)
+4. Finally, download and store TLA corpus data from the specified source by running the `populate` gradle task:
+   ```
+   ./gradlew populate
+   ```
+> If you are on a Windows machine, you have to use the `gradlew.bat` wrapper instead.)
 
 #### Run application
 
