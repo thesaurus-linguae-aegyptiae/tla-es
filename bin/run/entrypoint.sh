@@ -1,5 +1,6 @@
 #!/bin/bash
 
+ES_HOST="${ES_HOST:-localhost}"
 ES_URL="${ES_HOST}:${ES_PORT}"
 CMD=runserver
 

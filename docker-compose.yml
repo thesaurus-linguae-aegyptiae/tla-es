@@ -23,7 +23,7 @@ services:
             context: .
         environment:
             ES_HOST: es
-            ES_PORT: ${ES_PORT}
+            ES_PORT: 9200
             SAMPLE_URL: ${SAMPLE_URL}
         tty: true
         command: "ingest"
