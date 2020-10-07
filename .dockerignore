@@ -1,4 +1,5 @@
-bin
+bin/main
+bin/test
 build
 docker-compose.yml
 .dockerignore

@@ -6,7 +6,8 @@
 .settings
 app.log
 app.log.*
-bin
+bin/main/
+bin/test/
 build
 sample.tar.gz
 settings.gradle
