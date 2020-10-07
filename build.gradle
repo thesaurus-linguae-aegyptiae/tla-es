@@ -76,7 +76,7 @@ application {
 
 test {
     useJUnitPlatform()
-    environment "ES_PORT", env.ES_PORT.orElse("9200")
+    environment "ES_PORT", env.fetch("ES_PORT", "9200")
     finalizedBy 'jacocoTestReport'
 }
 
@@ -92,14 +92,14 @@ bootRun {
     if (project.hasProperty('args')) {
         args project.args.split(',')
     }
-    environment "ES_PORT", env.ES_PORT.orElse("9200")
-    environment "ES_HOST", env.ES_HOST.orElse("localhost")
+    environment "ES_PORT", env.fetch("ES_PORT", "9200")
+    environment "ES_HOST", env.fetch("ES_HOST", "localhost")
 }
 
 task downloadSample(type: Download) {
     group = 'Init'
     description = 'Download corpus sample file'
-    src env.SAMPLE_URL.orElse("http://")
+    src env.fetch("SAMPLE_URL", "http://")
     dest new File('sample.tar.gz')
     onlyIfModified true
 }

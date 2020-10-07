@@ -6,7 +6,11 @@ CMD=runserver
 if [ $# -ge 1 ]; then
     if [[ "$1" = "ingest" ]]; then
         echo "download corpus data from ${SAMPLE_URL}..."
-        wget "${SAMPLE_URL}" -O sample.tar.gz || $(echo "could not retrieve corpus data!"; exit 1)
+        wget "${SAMPLE_URL}" -O sample.tar.gz
+        if [ ! $? -eq 0 ]; then
+            echo "could not retrieve corpus data!"
+            exit 1
+        fi
         CMD=populate
     fi
 fi
