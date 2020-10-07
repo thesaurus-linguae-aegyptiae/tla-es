@@ -13,8 +13,8 @@ The TLA backend server is a Spring Boot application using an Elasticsearch insta
 
 There are two methods for getting this thing up and running.
 
-1. As a Docker container setup
-2. Run or build with Gradle
+1. [As a Docker container setup](#1-using-docker)
+2. [Run or build with Gradle](#2-using-gradle)
 
 
 ### 1. Using Docker
@@ -23,7 +23,7 @@ Requirements:
 
 - Docker Compose
 
-#### Prerequesites
+#### 1.1. Prerequesites
 
 1. Create an environment variable template file `.env` based on the template coming with this repo:
    ```
@@ -37,7 +37,7 @@ Requirements:
    SAMPLE_URL=http://example.org/sample.tar.gz
    ```
 
-#### Run Setup
+#### 1.2. Run Setup
 
 Start the docker container setup configured in `docker-compose.yml`:
 
@@ -60,9 +60,9 @@ You can check its progress by taking a look into its log output:
 Requirements:
 
 - Java 11
-- Elasticsearch 7.6.2 or Docker Compose
+- Elasticsearch 7.6.2 *or* Docker Compose
 
-#### Prerequesites
+#### 2.1. Prerequesites
 
 1. This method requires you to provide a running Elasticsearch instance. If you have Docker Compose, you can simply start one in a
    container by using the configuration coming with this repository:
@@ -89,7 +89,7 @@ the variable `SAMPLE_URL` in there:
    ```
 > If you are on a Windows machine, you have to use the `gradlew.bat` wrapper instead.)
 
-#### Run application
+#### 2.2. Run application
 
 Run the app using the `bootRun` task:
 
