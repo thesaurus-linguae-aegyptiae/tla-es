@@ -15,7 +15,7 @@ jobs:
         java-version: 11
 
     - name: Set up Elasticsearch container
-      run: docker-compose up -d elasticsearch
+      run: docker-compose up -d es
       env:
         ES_PORT: 9200
 
