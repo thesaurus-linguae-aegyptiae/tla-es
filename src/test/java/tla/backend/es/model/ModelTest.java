@@ -25,12 +25,11 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import tla.backend.App;
 import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.model.meta.Indexable;
+import tla.backend.es.model.meta.LinkedEntity.Relations;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
-import tla.backend.es.model.meta.LinkedEntity.Relations;
 import tla.backend.es.model.parts.EditDate;
 import tla.backend.es.model.parts.EditorInfo;
-import tla.backend.es.model.parts.LemmaWord;
 import tla.backend.es.model.parts.ObjectReference;
 import tla.backend.es.model.parts.PartOfSpeech;
 import tla.backend.es.model.parts.Token;
@@ -38,14 +37,14 @@ import tla.backend.es.model.parts.Token.Flexion;
 import tla.backend.es.model.parts.Token.Lemmatization;
 import tla.backend.es.model.parts.Transcription;
 import tla.backend.es.model.parts.Translations;
-import tla.domain.dto.meta.AbstractDto;
-import tla.domain.dto.meta.DocumentDto;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.SentenceDto;
 import tla.domain.dto.TextDto;
 import tla.domain.dto.ThsEntryDto;
+import tla.domain.dto.meta.AbstractDto;
+import tla.domain.dto.meta.DocumentDto;
 import tla.domain.model.Language;
 import tla.domain.model.Passport;
 import tla.domain.model.SentenceToken;
@@ -273,7 +272,7 @@ public class ModelTest {
             .passport(p)
             .translations(Translations.builder().de(List.of("übersetzung")).build())
             .word(
-                new LemmaWord(
+                new Token(
                     "N35:G47",
                     new Transcription("nfr", "nfr")
                 )
@@ -436,7 +435,8 @@ public class ModelTest {
             () -> assertNotNull(c.getRelations().get("partOf").get(0), "first relation"),
             () -> assertNotNull(c.getRelations().get("partOf").get(0).getRanges(), "text range"),
             () -> assertTrue(!c.getRelations().get("partOf").get(0).getRanges().isEmpty(), "text range"),
-            () -> assertNotNull(c.getRelations().get("partOf").get(0).getRanges().get(0).getFrom(), "text range boundary")
+            () -> assertNotNull(c.getRelations().get("partOf").get(0).getRanges().get(0).getStart(), "text range boundary left"),
+            () -> assertNotNull(c.getRelations().get("partOf").get(0).getRanges().get(0).getEnd(), "text range boundary right")
         );
         CommentEntity c2 = CommentEntity.builder()
             .id(c.getId())
@@ -465,19 +465,31 @@ public class ModelTest {
         );
         SentenceEntity s2 = SentenceEntity.builder()
             .relations(
-                Map.of("partOf", Relations.of(
-                    ObjectReference.builder().id("REED47N2PNGD5HULYWF4VHCJPA").eclass("BTSText").build()
-                ))
+                Map.of(
+                    "partOf", Relations.of(
+                        ObjectReference.builder().id(
+                            "REED47N2PNGD5HULYWF4VHCJPA"
+                        ).eclass("BTSText").name(
+                            "55,20-64,5 = Eb 336-431: \"Sammelhandschrift f\u00fcr die Augen\" (Das Augenbuch)"
+                        ).type("Text").build()
+                    ),
+                    "contains", Relations.of(
+                        ObjectReference.builder().id(
+                            "PCMAZFOU7BCZ7EZ6XKPESL56ZI"
+                        ).eclass("BTSText").name(
+                            "Paginierung: Seite 59"
+                        ).type("subtext").build()
+                    )
+                )
             ).id("IBYCcRHLQNYWZE3htMe7qAXwMmY").context(s.getContext())
             .tokens(s.getTokens()).translations(s.getTranslations()).transcription(s.getTranscription())
             .build();
         assertAll("sentence component equality",
-            () -> assertEquals(s.getRelations(), s2.getRelations(), "relations"),
-            () -> assertEquals(
-                tla.domain.util.IO.json(s.getRelations()),
-                tla.domain.util.IO.json(s2.getRelations()),
-                "relations"
-            ),
+            () -> {
+                List.of("contains", "partOf").forEach(
+                    key -> assertEquals(s2.getRelations().get(key), s.getRelations().get(key), key)
+                );
+            },
             () -> assertEquals(s.getContext(), s2.getContext(), "context"),
             () -> assertEquals(s.toString(), s2.toString(), "tostring")
         );
@@ -485,11 +497,11 @@ public class ModelTest {
 
     @Test
     void mapSentenceToDTO() throws Exception {
-        Flexion f = new Flexion();
         Lemmatization l = new Lemmatization();
         SentenceEntity.Context c = SentenceEntity.Context.builder()
             .textId("textId").line("[1]").pos(0).build();
-        l.setPos(new PartOfSpeech("substantive", "masc"));
+        l.setPartOfSpeech(new PartOfSpeech("substantive", "masc"));
+        Flexion f = new Flexion();
         f.setNumeric(3L);
         Token t = new Token();
         t.setFlexion(f);

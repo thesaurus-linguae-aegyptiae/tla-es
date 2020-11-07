@@ -4,19 +4,21 @@
   "editors": {
     "author": "S. Seidlmayer",
     "contributors": [
-      "Altägyptisches Wörterbuch"
+      "Alt\u00e4gyptisches W\u00f6rterbuch"
     ],
+    "created": "2015-06-26 16:52:59",
     "type": "user",
-    "updated": "2019-11-14"
+    "updated": "2019-11-14 22:10:09"
   },
   "externalReferences": null,
+  "hash": "w3an2d",
   "id": "2ABHCXHF5BCG3PDW7VSPA77K7U",
-  "name": "Gefäß Jéquier, Pyramide d'Oudjebten, 19, Fig. 20",
+  "name": "Gef\u00e4\u00df J\u00e9quier, Pyramide d'Oudjebten, 19, Fig. 20",
   "passport": {
     "bibliography": [
       {
         "bibliographical_text_field": [
-          "E. Edel, Die Felsengräber der Qubbet el-Hawa bei Assuan, II. Abteilung, Die althieratischen Topfaufschriften, 1. Band, Die Topfaufschriften aus den Grabungsjahren 1960, 1961, 1962, 1963 und 1965, 2. Teil, Text, Wiesbaden 1970, 125, 134-135 [F, T, U, K]\nJéquier, Pyramide d'Oudjebten, 19 Abb. 20"
+          "E. Edel, Die Felsengr\u00e4ber der Qubbet el-Hawa bei Assuan, II. Abteilung, Die althieratischen Topfaufschriften, 1. Band, Die Topfaufschriften aus den Grabungsjahren 1960, 1961, 1962, 1963 und 1965, 2. Teil, Text, Wiesbaden 1970, 125, 134-135 [F, T, U, K]\nJ\u00e9quier, Pyramide d'Oudjebten, 19 Abb. 20"
         ]
       }
     ],
@@ -75,7 +77,7 @@
               {
                 "eclass": "BTSThsEntry",
                 "id": "BZQQMFDB4VBZJH3R66Y3XK64XI",
-                "name": "Gefäß",
+                "name": "Gef\u00e4\u00df",
                 "type": "objecttype"
               }
             ],
@@ -131,13 +133,13 @@
       {
         "eclass": "BTSTCObject",
         "id": "MSWCIXBOXVBDDGHPEHCSXKMPBM",
-        "name": "〈Votivvermerke〉",
+        "name": "\u2329Votivvermerke\u232a",
         "type": "Caption"
       },
       {
         "eclass": "BTSTCObject",
         "id": "YQFK2QGLFJGQTFGKUGJ5J5HG5I",
-        "name": "〈andere Plätze〉",
+        "name": "\u2329andere Pl\u00e4tze\u232a",
         "type": "Caption"
       },
       {
@@ -151,12 +153,6 @@
         "id": "YLIAMMCYKVCQRLE2A3QJJTSTIY",
         "name": "Pyramide der Udjebten",
         "type": "Caption"
-      },
-      {
-        "eclass": "BTSTCObject",
-        "id": "2ABHCXHF5BCG3PDW7VSPA77K7U",
-        "name": "Gefäß Jéquier, Pyramide d'Oudjebten, 19, Fig. 20",
-        "type": "TCObject"
       }
     ]
   ],
@@ -165,7 +161,7 @@
       {
         "eclass": "BTSText",
         "id": "MQFALVBRNVFUNP35ZBJBBD6M4A",
-        "name": "〈TEXT〉",
+        "name": "\u2329TEXT\u232a",
         "type": "Text"
       }
     ],

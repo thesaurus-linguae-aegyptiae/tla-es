@@ -245,6 +245,9 @@ public class ModelConfig {
                 SentenceEntity::getTranslations, SentenceDto::setTranslations
             )
         );
+        modelMapper.createTypeMap(Token.Lemmatization.class, SentenceToken.Lemmatization.class).addMapping(
+            Token.Lemmatization::getPartOfSpeech, SentenceToken.Lemmatization::setPartOfSpeech
+        );
         modelMapper.createTypeMap(Token.class, SentenceToken.class).addMappings(
             m -> m.using(translationsToMapConverter).map(
                 Token::getTranslations, SentenceToken::setTranslations

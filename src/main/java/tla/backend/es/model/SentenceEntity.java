@@ -87,7 +87,6 @@ public class SentenceEntity extends LinkedEntity implements Indexable {
          */
         @Field(type = FieldType.Keyword)
         private String type;
-
         /**
          * Label of whichever "new line" marker token found in the preceding sentences
          * is closest to the beginning of this sentence.
@@ -107,6 +106,11 @@ public class SentenceEntity extends LinkedEntity implements Indexable {
          */
         @Field(type = FieldType.Integer)
         private int pos;
+        /**
+         * How many variants of a single sentences exist (due to ambivalences).
+         */
+        @Field(type = FieldType.Integer)
+        private int variants;
     }
 
 }

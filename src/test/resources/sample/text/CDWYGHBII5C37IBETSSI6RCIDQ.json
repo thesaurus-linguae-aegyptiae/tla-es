@@ -1,47 +1,30 @@
 {
- "hash": "XKT6JB44",
  "corpus": "digitalheka",
- "paths": [
-  [
-   {
-    "id": "KTJGG73X6NHKJL7ROW4TIZMXLI",
-    "eclass": "BTSTCObject",
-    "name": "\u2329Projekt \"Digital Heka\", Universit\u00e4t Leipzig\u232a",
-    "type": "Caption"
-   },
-   {
-    "id": "DWEBOGEJKNGOZPDYCZEYD5ZMTU",
-    "eclass": "BTSTCObject",
-    "name": "Magische Ostraka Neues Reich",
-    "type": "Caption"
-   },
-   {
-    "id": "25MDFLSLLBF3VAVYKCJ5M6BUKY",
-    "eclass": "BTSTCObject",
-    "name": "oBruxelles E 3209",
-    "type": "TCObject"
-   }
-  ]
- ],
- "translations": [
-  {
-   "de": [
-    "Weiter: Blut der ersten Geburt der Kobra!"
-   ]
-  },
-  {
-   "de": [
-    "Komm zu mir, Bitjet, Horusfrau!"
-   ]
-  },
-  {
-   "de": [
-    "Komm, ich bin Horus!"
-   ]
-  }
- ],
- "wordCount": 17,
+ "eclass": "BTSText",
+ "editors": {
+  "author": "K. Stegbauer",
+  "contributors": [
+   "Alt\u00e4gyptisches W\u00f6rterbuch",
+   "P. Dils",
+   "Billy B\u00f6hm",
+   "L. Popko"
+  ],
+  "created": "2015-06-26 16:52:59",
+  "type": "user",
+  "updated": "2019-11-14 22:41:34"
+ },
+ "externalReferences": null,
+ "hash": "lvh3ci",
+ "id": "CDWYGHBII5C37IBETSSI6RCIDQ",
+ "name": "\u2329oBruxelles E 3209, \u232aSpruch 2",
  "passport": {
+  "bibliography": [
+   {
+    "bibliographical_text_field": [
+     "[1] Robert K. Ritner. The Wives of Horus and the Philinna Papyrus (PGM XX), OLA 2.  Leuven, 1998. [\u00dc]\n\n[2] B. van de Walle: L'ostracon E 3209 des Mus\u00e9es Royaux d'Art et d'Histoire mentionnant la\nd\u00e9esse scorpion Ta-Bithet, in: CdE 42 (1967), 13-29. [H, \u00dc, K]"
+    ]
+   }
+  ],
   "date": [
    {
     "date": [
@@ -55,32 +38,6 @@
        }
       ]
      }
-    ]
-   }
-  ],
-  "present_location": [
-   {
-    "location": [
-     {
-      "inventory_number": [
-       "E 3209"
-      ],
-      "location": [
-       {
-        "eclass": "BTSThsEntry",
-        "id": "SG7YXFWZHVG75GTHDEME3KTCSM",
-        "name": "Mus\u00e9es Royaux d'Art et d'Histoire",
-        "type": "location"
-       }
-      ]
-     }
-    ]
-   }
-  ],
-  "bibliography": [
-   {
-    "bibliographical_text_field": [
-     "[1] Robert K. Ritner. The Wives of Horus and the Philinna Papyrus (PGM XX), OLA 2.  Leuven, 1998. [\u00dc]\n\n[2] B. van de Walle: L'ostracon E 3209 des Mus\u00e9es Royaux d'Art et d'Histoire mentionnant la\nd\u00e9esse scorpion Ta-Bithet, in: CdE 42 (1967), 13-29. [H, \u00dc, K]"
     ]
    }
   ],
@@ -109,25 +66,6 @@
           "type": "findSpot"
          }
         ]
-       }
-      ]
-     }
-    ]
-   }
-  ],
-  "text": [
-   {
-    "textual_metadata": [
-     {
-      "egytextname": [
-       "Magische Ostraka Neues Reich, oBruxelles E 3209, Spruch 2"
-      ],
-      "script": [
-       {
-        "eclass": "BTSThsEntry",
-        "id": "LKARVWCGJFB5DL4L7OLRU66NJY",
-        "name": "Neuhieratisch",
-        "type": "script"
        }
       ]
      }
@@ -169,30 +107,81 @@
      }
     ]
    }
-  ]
- },
- "id": "CDWYGHBII5C37IBETSSI6RCIDQ",
- "type": "text",
- "revisionState": "published",
- "name": "\u2329oBruxelles E 3209, \u232aSpruch 2",
- "editors": {
-  "author": "K. Stegbauer",
-  "updated": "2019-11-14",  "type": "user",
-  "contributors": [
-   "Alt\u00e4gyptisches W\u00f6rterbuch",
-   "P. Dils",
-   "Billy B\u00f6hm",
-   "L. Popko"
-  ]
- },
- "relations": {
-  "partOf": [
+  ],
+  "present_location": [
    {
-    "id": "25MDFLSLLBF3VAVYKCJ5M6BUKY",
+    "location": [
+     {
+      "inventory_number": [
+       "E 3209"
+      ],
+      "location": [
+       {
+        "eclass": "BTSThsEntry",
+        "id": "SG7YXFWZHVG75GTHDEME3KTCSM",
+        "name": "Mus\u00e9es Royaux d'Art et d'Histoire",
+        "type": "location"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "text": [
+   {
+    "textual_metadata": [
+     {
+      "egytextname": [
+       "Magische Ostraka Neues Reich, oBruxelles E 3209, Spruch 2"
+      ],
+      "script": [
+       {
+        "eclass": "BTSThsEntry",
+        "id": "LKARVWCGJFB5DL4L7OLRU66NJY",
+        "name": "Neuhieratisch",
+        "type": "script"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "paths": [
+  [
+   {
     "eclass": "BTSTCObject",
+    "id": "KTJGG73X6NHKJL7ROW4TIZMXLI",
+    "name": "\u2329Projekt \"Digital Heka\", Universit\u00e4t Leipzig\u232a",
+    "type": "Caption"
+   },
+   {
+    "eclass": "BTSTCObject",
+    "id": "DWEBOGEJKNGOZPDYCZEYD5ZMTU",
+    "name": "Magische Ostraka Neues Reich",
+    "type": "Caption"
+   },
+   {
+    "eclass": "BTSTCObject",
+    "id": "25MDFLSLLBF3VAVYKCJ5M6BUKY",
     "name": "oBruxelles E 3209",
     "type": "TCObject"
    }
   ]
- }
+ ],
+ "relations": {
+  "contains": [],
+  "partOf": [
+   {
+    "eclass": "BTSTCObject",
+    "id": "25MDFLSLLBF3VAVYKCJ5M6BUKY",
+    "name": "oBruxelles E 3209",
+    "type": "TCObject"
+   }
+  ]
+ },
+ "revisionState": "published",
+ "subtype": null,
+ "type": "text",
+ "wordCount": 17
 }

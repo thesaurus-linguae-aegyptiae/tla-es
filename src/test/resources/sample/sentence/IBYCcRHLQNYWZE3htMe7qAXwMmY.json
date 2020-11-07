@@ -1,1 +1,171 @@
-{"context": {"line": "[59,1]", "paragraph": "Eb 365", "pos": 151, "textId": "REED47N2PNGD5HULYWF4VHCJPA"}, "eclass": "BTSSentence", "id": "IBYCcRHLQNYWZE3htMe7qAXwMmY", "relations": {"partOf": [{"id": "REED47N2PNGD5HULYWF4VHCJPA", "eclass": "BTSText"}]}, "tokens": [{"glyphs": null, "id": "IBYCcRdNrwYMVkgxkQ4w4iWHnv0", "label": "[59,2]", "type": "lc"}, {"flags": ["rubrum"], "flexion": {"glossing": null, "numeric": 10910, "verbal": "SC.pass.ngem.impers"}, "glyphs": "D21:D36", "id": "IBYCcff11CHvf0hwlw17Fbn9qTo", "label": "r\u1e0fi\u032f", "lemma": {"id": "96700", "pos": {"subtype": "verb_irr", "type": "verb"}}, "transcription": {"mdc": "rDi", "unicode": "r\u1e0fi\u032f"}, "translations": {"de": ["geben"]}, "type": "word"}, {"flags": ["rubrum"], "flexion": {"glossing": null, "numeric": 3, "verbal": "(not specified)"}, "glyphs": "G17", "id": "IBYCcsQp0dQ5OEDsvu7mTukwWuo", "label": "m", "lemma": {"id": "400007", "pos": {"type": "preposition"}}, "transcription": {"mdc": "m", "unicode": "m"}, "translations": {"de": ["in"]}, "type": "word"}, {"flags": ["rubrum"], "flexion": {"glossing": null, "numeric": 70060, "verbal": "Noun.sg.stc"}, "glyphs": "F26:N35-W24-Z7-O1", "id": "IBYCcjl5TU6iukz3uFjouwGVgx0", "label": "\u1e96nw", "lemma": {"id": "123270", "pos": {"subtype": "substantive_masc", "type": "substantive"}}, "transcription": {"mdc": "Xnw", "unicode": "\u1e96nw"}, "translations": {"de": ["Inneres"]}, "type": "word"}, {"flags": ["rubrum"], "flexion": {"glossing": null, "numeric": 3, "verbal": "(not specified)"}, "glyphs": "D4:X1*Z1", "id": "IBYCcRtX3EYndEzkmbnQQTQd5AY", "label": "jr,t", "lemma": {"id": "28250", "pos": {"subtype": "substantive_fem", "type": "substantive"}}, "transcription": {"mdc": "jr,t", "unicode": "jr,t"}, "translations": {"de": ["Auge"]}, "type": "word"}], "transcription": {"mdc": "_ rDi m Xnw jr,t", "unicode": "_ r\u1e0fi\u032f m \u1e96nw jr,t"}, "translations": {"de": ["Werde ins Innere des Auges gegeben."]}, "type": null}
+{
+  "context": {
+    "line": "[59,1]",
+    "paragraph": "Eb 365",
+    "pos": 151,
+    "textId": "REED47N2PNGD5HULYWF4VHCJPA",
+    "variants": 1
+  },
+  "eclass": "BTSSentence",
+  "glyphs": " D21:D36 G17 F26:N35-W24-Z7-O1 D4:X1*Z1",
+  "id": "IBYCcRHLQNYWZE3htMe7qAXwMmY",
+  "relations": {
+    "contains": [
+      {
+        "eclass": "BTSText",
+        "id": "PCMAZFOU7BCZ7EZ6XKPESL56ZI",
+        "name": "Paginierung: Seite 59",
+        "type": "subtext"
+      }
+    ],
+    "partOf": [
+      {
+        "eclass": "BTSText",
+        "id": "REED47N2PNGD5HULYWF4VHCJPA",
+        "name": "55,20-64,5 = Eb 336-431: \"Sammelhandschrift f\u00fcr die Augen\" (Das Augenbuch)",
+        "type": "Text"
+      }
+    ]
+  },
+  "tokens": [
+    {
+      "annoTypes": [
+        "subtext"
+      ],
+      "glyphs": null,
+      "id": "IBYCcRdNrwYMVkgxkQ4w4iWHnv0",
+      "label": "[59,2]",
+      "type": "lc"
+    },
+    {
+      "annoTypes": [
+        "subtext"
+      ],
+      "flexion": {
+        "btsGloss": "SC.pass.ngem.impers",
+        "lingGloss": "V\\tam.pass",
+        "numeric": 10910
+      },
+      "glyphs": "D21:D36",
+      "id": "IBYCcff11CHvf0hwlw17Fbn9qTo",
+      "label": "r\u1e0fi\u032f",
+      "lemma": {
+        "POS": {
+          "subtype": "verb_irr",
+          "type": "verb"
+        },
+        "id": "96700"
+      },
+      "transcription": {
+        "mdc": "rDi",
+        "unicode": "r\u1e0fi\u032f"
+      },
+      "translations": {
+        "de": [
+          "geben"
+        ]
+      },
+      "type": "word"
+    },
+    {
+      "annoTypes": [
+        "subtext"
+      ],
+      "flexion": {
+        "btsGloss": "n/a",
+        "lingGloss": "PREP",
+        "numeric": 3
+      },
+      "glyphs": "G17",
+      "id": "IBYCcsQp0dQ5OEDsvu7mTukwWuo",
+      "label": "m",
+      "lemma": {
+        "POS": {
+          "type": "preposition"
+        },
+        "id": "400007"
+      },
+      "transcription": {
+        "mdc": "m",
+        "unicode": "m"
+      },
+      "translations": {
+        "de": [
+          "in"
+        ]
+      },
+      "type": "word"
+    },
+    {
+      "annoTypes": [
+        "subtext"
+      ],
+      "flexion": {
+        "btsGloss": "Noun.sg.stc",
+        "lingGloss": "N.m:sg:stc",
+        "numeric": 70060
+      },
+      "glyphs": "F26:N35-W24-Z7-O1",
+      "id": "IBYCcjl5TU6iukz3uFjouwGVgx0",
+      "label": "\u1e96nw",
+      "lemma": {
+        "POS": {
+          "subtype": "substantive_masc",
+          "type": "substantive"
+        },
+        "id": "123270"
+      },
+      "transcription": {
+        "mdc": "Xnw",
+        "unicode": "\u1e96nw"
+      },
+      "translations": {
+        "de": [
+          "Inneres"
+        ]
+      },
+      "type": "word"
+    },
+    {
+      "annoTypes": [
+        "subtext"
+      ],
+      "flexion": {
+        "btsGloss": "n/a",
+        "lingGloss": "N.f:sg",
+        "numeric": 3
+      },
+      "glyphs": "D4:X1*Z1",
+      "id": "IBYCcRtX3EYndEzkmbnQQTQd5AY",
+      "label": "jr,t",
+      "lemma": {
+        "POS": {
+          "subtype": "substantive_fem",
+          "type": "substantive"
+        },
+        "id": "28250"
+      },
+      "transcription": {
+        "mdc": "jr,t",
+        "unicode": "jr,t"
+      },
+      "translations": {
+        "de": [
+          "Auge"
+        ]
+      },
+      "type": "word"
+    }
+  ],
+  "transcription": {
+    "mdc": " rDi m Xnw jr,t",
+    "unicode": " r\u1e0fi\u032f m \u1e96nw jr,t"
+  },
+  "translations": {
+    "de": [
+      "Werde ins Innere des Auges gegeben."
+    ]
+  },
+  "type": null,
+  "wordCount": 4
+}

@@ -22,7 +22,7 @@ import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import tla.backend.es.model.meta.TLAEntity;
-import tla.backend.es.model.parts.LemmaWord;
+import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.LemmaDto;
 import tla.domain.model.meta.BTSeClass;
@@ -55,7 +55,7 @@ public class LemmaEntity extends TLAEntity {
 
     @Singular
     @Field(type = FieldType.Object)
-    private List<LemmaWord> words;
+    private List<Token> words;
 
     public LemmaEntity() {
         this.words = Collections.emptyList();

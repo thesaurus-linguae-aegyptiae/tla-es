@@ -4,8 +4,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import tla.backend.AbstractMockMvcTest;
+import tla.backend.Util;
+import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.TextEntity;
+import tla.backend.es.repo.AnnotationRepo;
 import tla.backend.es.repo.SentenceRepo;
 import tla.backend.es.repo.TextRepo;
 
@@ -30,24 +33,13 @@ public class SentenceControllerTest extends AbstractMockMvcTest {
     @MockBean
     private TextRepo textRepo;
 
-    private TextEntity loadTextFromFile(String textId) throws Exception {
-        return tla.domain.util.IO.loadFromFile(
-            String.format("src/test/resources/sample/text/%s.json", textId),
-            TextEntity.class
-        );
-    }
-
-    private SentenceEntity loadSentenceFromFile(String sentenceId) throws Exception {
-        return tla.domain.util.IO.loadFromFile(
-            String.format("src/test/resources/sample/sentence/%s.json", sentenceId),
-            SentenceEntity.class
-        );
-    }
+    @MockBean
+    private AnnotationRepo annoRepo;
 
     @ParameterizedTest
     @ValueSource(strings = {"CDWYGHBII5C37IBETSSI6RCIDQ"})
     void deserializeTextEntity(String textId) throws Exception {
-        TextEntity t = loadTextFromFile(textId);
+        TextEntity t = Util.loadSampleFile(TextEntity.class, textId);
         assertAll("text deserialized",
             () -> assertNotNull(t, "not null"),
             () -> assertNotNull(t.getPaths(), "object paths instantiated")
@@ -57,7 +49,7 @@ public class SentenceControllerTest extends AbstractMockMvcTest {
     @ParameterizedTest
     @ValueSource(strings = {"IBUBd3QvPWhrgk50h3u3Wv5PmdA"})
     void deserializeSentenceFromFile(String sentenceId) throws Exception {
-        SentenceEntity s = loadSentenceFromFile(sentenceId);
+        SentenceEntity s = Util.loadSampleFile(SentenceEntity.class, sentenceId);
         assertAll("check deserialized sentence entity",
             () -> assertNotNull(s, "not null"),
             () -> assertNotNull(s.getTokens(), "has tokens")
@@ -68,18 +60,26 @@ public class SentenceControllerTest extends AbstractMockMvcTest {
     void getDetails() throws Exception {
         String sentenceId = "IBUBd3QvPWhrgk50h3u3Wv5PmdA";
         String textId = "CDWYGHBII5C37IBETSSI6RCIDQ";
+        String annoId = "IBUBd0kXx8hvzU9vuxAKWNHnf6s";
         when(
             sentenceRepo.findById(sentenceId)
         ).thenReturn(
             Optional.of(
-                loadSentenceFromFile(sentenceId)
+                Util.loadSampleFile(SentenceEntity.class, sentenceId)
             )
         );
         when(
             textRepo.findById(textId)
         ).thenReturn(
             Optional.of(
-                loadTextFromFile(textId)
+                Util.loadSampleFile(TextEntity.class, textId)
+            )
+        );
+        when(
+            annoRepo.findById(annoId)
+        ).thenReturn(
+            Optional.of(
+                Util.loadSampleFile(AnnotationEntity.class, annoId)
             )
         );
         mockMvc.perform(
