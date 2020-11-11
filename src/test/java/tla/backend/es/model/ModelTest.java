@@ -463,6 +463,14 @@ public class ModelTest {
             () -> assertTrue(!s.getTokens().isEmpty(), "tokens not empty"),
             () -> assertNull(s.getType(), "type")
         );
+        var c = s.getContext();
+        assertAll("sentence context should deserialize correctly",
+            () -> assertEquals(151, c.getPos(), "sentence position within text"),
+            () -> assertEquals(1, c.getVariants(), "variant count"),
+            () -> assertEquals("Text", c.getTextType(), "text type"),
+            () -> assertEquals("[59,1]", c.getLine(), "line count info"),
+            () -> assertEquals("Eb 365", c.getParagraph(), "paragraph info")
+        );
         SentenceEntity s2 = SentenceEntity.builder()
             .relations(
                 Map.of(
@@ -499,7 +507,7 @@ public class ModelTest {
     void mapSentenceToDTO() throws Exception {
         Lemmatization l = new Lemmatization();
         SentenceEntity.Context c = SentenceEntity.Context.builder()
-            .textId("textId").line("[1]").pos(0).build();
+            .textId("textId").line("[1]").pos(90).build();
         l.setPartOfSpeech(new PartOfSpeech("substantive", "masc"));
         Flexion f = new Flexion();
         f.setNumeric(3L);
@@ -507,6 +515,7 @@ public class ModelTest {
         t.setFlexion(f);
         t.setLemma(l);
         t.setTranslations(Translations.builder().de(List.of("bedeutung")).build());
+        t.setAnnoTypes(List.of("rubrum"));
         SentenceEntity s = SentenceEntity.builder()
             .id("ID")
             .relation(
@@ -532,6 +541,7 @@ public class ModelTest {
             () -> assertEquals(1, dto.getTokens().size(), "1 token"),
             () -> assertNotNull(dto.getContext(), "sentence context in DTO"),
             () -> assertEquals(s.getContext().getLine(), dto.getContext().getLine(), "lc"),
+            () -> assertEquals(s.getContext().getPos(), dto.getContext().getPosition(), "sentence position"),
             () -> assertEquals("HS", dto.getType(), "type")
         );
         SentenceToken tdto = dto.getTokens().get(0);
@@ -539,7 +549,10 @@ public class ModelTest {
             () -> assertNotNull(tdto, "token"),
             () -> assertNotNull(tdto.getFlexion(), "flexion"),
             () -> assertEquals(3L, tdto.getFlexion().getNumeric(), "flexcode"),
-            () -> assertNotNull(tdto.getLemma(), "lemmatization")
+            () -> assertNotNull(tdto.getLemma(), "lemmatization"),
+            () -> assertNotNull(tdto.getLemma().getPartOfSpeech(), "lemma POS"),
+            () -> assertNotNull(tdto.getLemma().getPartOfSpeech().getType(), "lemma POS type"),
+            () -> assertTrue(tdto.getAnnoTypes().contains("rubrum"), "token is rubrum")
         );
     }
 
