@@ -2,7 +2,6 @@ package tla.backend.es.repo;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -12,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.IndexOperations;
-import org.springframework.data.elasticsearch.core.convert.ConversionException;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchDateConverter;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 
@@ -64,10 +62,10 @@ public class RepoTest {
             () -> assertNotNull(localDate),
             () -> assertEquals("2019-12-18", localDate.toString())
         );
-        assertThrows(DateTimeException.class,
+        assertDoesNotThrow(
             () -> converter.parse("2019-12-18")
         );
-        assertThrows(ConversionException.class,
+        assertDoesNotThrow(
             () -> converter.parse("2019-12-18", LocalDate.class)
         );
     }

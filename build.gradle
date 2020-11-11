@@ -12,7 +12,7 @@ plugins {
 }
 
 group = 'org.bbaw.aaew.tla'
-version = '0.0.810-SNAPSHOT'
+version = '0.0.820-SNAPSHOT'
 sourceCompatibility = '11'
 
 publishing {
@@ -41,7 +41,6 @@ configurations {
     implementation.exclude group: 'org.xmlunit'
     implementation.exclude group: 'org.skyscreamer'
     implementation.exclude module: 'jackson-dataformat-smile'
-    implementation.exclude module: 'jackson-dataformat-cbor'
     // ES transport client stuff
     implementation.exclude module: 'transport'
     implementation.exclude module: 'transport-netty4-client'
@@ -59,7 +58,7 @@ dependencies {
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.35'
     implementation 'org.yaml:snakeyaml:1.27'
 
-    implementation 'org.springframework.data:spring-data-elasticsearch:4.0.1.RELEASE'
+    implementation 'org.springframework.data:spring-data-elasticsearch:4.1.0'
     implementation 'org.springframework.boot:spring-boot:2.4.0-RC1'
     implementation 'org.springframework.boot:spring-boot-autoconfigure:2.4.0-RC1'
     implementation 'org.springframework:spring-web:5.3.0'
