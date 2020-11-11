@@ -1,6 +1,7 @@
 package tla.backend.error;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,12 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(ObjectNotFoundException.class)
     @ResponseBody
-    public String objectNotFound(ObjectNotFoundException e) {
+    public ResponseEntity<?> objectNotFound(ObjectNotFoundException e) {
         log.error("object not found: {}", e.getMessage());
-        return "sry, object not found.";
+        return new ResponseEntity<>(e, HttpStatus.NOT_FOUND);
     }
 
     @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
