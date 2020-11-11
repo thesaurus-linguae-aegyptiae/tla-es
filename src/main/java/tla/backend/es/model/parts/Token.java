@@ -67,14 +67,16 @@ public class Token {
         /**
          * BTS glossing
          */
+        @JsonAlias({"bGloss", "bgloss"})
         @Field(type = FieldType.Text)
-        private String bGloss;
+        private String btsGloss;
 
         /**
          * Leipzig glossing
          */
+        @JsonAlias({"lGloss", "lgloss"})
         @Field(type = FieldType.Text)
-        private String lGloss;
+        private String lingGloss;
 
         /**
          * BTS flexcode

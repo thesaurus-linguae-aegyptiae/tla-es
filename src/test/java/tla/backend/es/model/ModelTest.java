@@ -252,7 +252,9 @@ public class ModelTest {
         );
         assertAll("deserialize lemma entity from JSON file",
             () -> assertNotNull(l),
-            () -> assertNotNull(l.getPassport())
+            () -> assertNotNull(l.getPassport()),
+            () -> assertNotNull(l.getWords()),
+            () -> assertNotNull(l.getWords().get(0).getFlexion().getBtsGloss(), "lemma word flexion bts glossing")
         );
     }
 
@@ -511,6 +513,7 @@ public class ModelTest {
         l.setPartOfSpeech(new PartOfSpeech("substantive", "masc"));
         Flexion f = new Flexion();
         f.setNumeric(3L);
+        f.setBtsGloss("n/a");
         Token t = new Token();
         t.setFlexion(f);
         t.setLemma(l);
@@ -549,6 +552,7 @@ public class ModelTest {
             () -> assertNotNull(tdto, "token"),
             () -> assertNotNull(tdto.getFlexion(), "flexion"),
             () -> assertEquals(3L, tdto.getFlexion().getNumeric(), "flexcode"),
+            () -> assertEquals("n/a", tdto.getFlexion().getBtsGloss(), "bts glossing"),
             () -> assertNotNull(tdto.getLemma(), "lemmatization"),
             () -> assertNotNull(tdto.getLemma().getPartOfSpeech(), "lemma POS"),
             () -> assertNotNull(tdto.getLemma().getPartOfSpeech().getType(), "lemma POS type"),
