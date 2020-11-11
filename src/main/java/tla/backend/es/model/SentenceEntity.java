@@ -97,15 +97,16 @@ public class SentenceEntity extends LinkedEntity implements Indexable {
          * Label of whichever "new paragraph" marker token found in the preceding sentences
          * is closest to the beginning of this sentence.
          */
-        @Field(type = FieldType.Text)
         @JsonAlias("para")
+        @Field(type = FieldType.Text)
         private String paragraph;
         /**
          * This sentence's positon in the containing text's array of sentences, starting
          * with <code>0</code>.
          */
+        @JsonAlias("pos")
         @Field(type = FieldType.Integer)
-        private int pos;
+        private int position;
         /**
          * How many variants of a single sentences exist (due to ambivalences).
          */

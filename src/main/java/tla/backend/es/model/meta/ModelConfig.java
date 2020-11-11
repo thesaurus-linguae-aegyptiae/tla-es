@@ -31,7 +31,6 @@ import tla.domain.dto.LemmaDto;
 import tla.domain.dto.SentenceDto;
 import tla.domain.dto.TextDto;
 import tla.domain.dto.ThsEntryDto;
-import tla.domain.dto.SentenceDto.SentenceContext;
 import tla.domain.dto.meta.AbstractDto;
 import tla.domain.model.SentenceToken;
 import tla.domain.model.extern.AttestedTimespan;
@@ -240,10 +239,6 @@ public class ModelConfig {
             );
         modelMapper.createTypeMap(AnnotationEntity.class, AnnotationDto.class).addMapping(
             AnnotationEntity::getRevisionState, AnnotationDto::setReviewState
-        );
-        // note: addMapping on component (context) must be done before addMappings on container class (sentence)!
-        modelMapper.createTypeMap(SentenceEntity.Context.class, SentenceContext.class).addMapping(
-            SentenceEntity.Context::getPos, SentenceContext::setPosition
         );
         modelMapper.createTypeMap(SentenceEntity.class, SentenceDto.class).addMappings(
             m -> m.using(translationsToMapConverter).map(

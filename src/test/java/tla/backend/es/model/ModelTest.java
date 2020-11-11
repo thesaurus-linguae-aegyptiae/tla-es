@@ -465,7 +465,7 @@ public class ModelTest {
         );
         var c = s.getContext();
         assertAll("sentence context should deserialize correctly",
-            () -> assertEquals(151, c.getPos(), "sentence position within text"),
+            () -> assertEquals(151, c.getPosition(), "sentence position within text"),
             () -> assertEquals(1, c.getVariants(), "variant count"),
             () -> assertEquals("Text", c.getTextType(), "text type"),
             () -> assertEquals("[59,1]", c.getLine(), "line count info"),
@@ -507,7 +507,7 @@ public class ModelTest {
     void mapSentenceToDTO() throws Exception {
         Lemmatization l = new Lemmatization();
         SentenceEntity.Context c = SentenceEntity.Context.builder()
-            .textId("textId").line("[1]").pos(90).build();
+            .textId("textId").line("[1]").position(90).build();
         l.setPartOfSpeech(new PartOfSpeech("substantive", "masc"));
         Flexion f = new Flexion();
         f.setNumeric(3L);
@@ -541,7 +541,7 @@ public class ModelTest {
             () -> assertEquals(1, dto.getTokens().size(), "1 token"),
             () -> assertNotNull(dto.getContext(), "sentence context in DTO"),
             () -> assertEquals(s.getContext().getLine(), dto.getContext().getLine(), "lc"),
-            () -> assertEquals(s.getContext().getPos(), dto.getContext().getPosition(), "sentence position"),
+            () -> assertEquals(s.getContext().getPosition(), dto.getContext().getPosition(), "sentence position"),
             () -> assertEquals("HS", dto.getType(), "type")
         );
         SentenceToken tdto = dto.getTokens().get(0);
