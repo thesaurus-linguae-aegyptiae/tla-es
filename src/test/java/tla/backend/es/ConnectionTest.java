@@ -1,12 +1,16 @@
 package tla.backend.es;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import tla.backend.App;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+@SpringBootTest(classes = {App.class})
 public class ConnectionTest {
 
     @Test
