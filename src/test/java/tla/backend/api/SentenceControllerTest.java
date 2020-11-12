@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -68,12 +69,18 @@ public class SentenceControllerTest extends AbstractMockMvcTest {
                 Util.loadSampleFile(SentenceEntity.class, sentenceId)
             )
         );
+        var text = Util.loadSampleFile(TextEntity.class, textId);
         when(
             textRepo.findById(textId)
         ).thenReturn(
             Optional.of(
-                Util.loadSampleFile(TextEntity.class, textId)
+                text
             )
+        );
+        when(
+            textRepo.findAllById(anyCollection())
+        ).thenReturn(
+            List.of(text)
         );
         when(
             annoRepo.findById(annoId)

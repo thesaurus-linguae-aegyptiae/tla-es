@@ -3,8 +3,10 @@ package tla.backend.service;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -23,7 +25,7 @@ import tla.domain.dto.extern.SingleDocumentWrapper;
 
 @SpringBootTest(classes = {App.class})
 public class SentenceServiceTest {
-    
+
     @MockBean
     private SentenceRepo sentenceRepo;
 
@@ -62,6 +64,11 @@ public class SentenceServiceTest {
             textRepo.findById(textId)
         ).thenReturn(
             Optional.of(t)
+        );
+        when(
+            textRepo.findAllById(anyCollection())
+        ).thenReturn(
+            List.of(t)
         );
         when(
             annoRepo.findById(annoId)

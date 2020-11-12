@@ -41,6 +41,7 @@ import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
 import tla.backend.es.query.AbstractEntityIDsQueryBuilder;
 import tla.backend.es.query.AbstractEntityQueryBuilder;
+import tla.backend.service.component.EntityRetrieval;
 import tla.backend.service.search.AutoCompleteSupport;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.extern.PageInfo;
@@ -192,7 +193,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     }
 
     /**
-     * Retrieves the docuement specified by its ID from the Elasticsearch index, converts it into
+     * Retrieves the document specified by its ID from the Elasticsearch index, converts it into
      * an instance of its class's corresponding DTO type, wraps a {@link SingleDocumentWrapper}
      * around it, and then attempts to instantiate all documents that are referenced by it,
      * be it via <code>passport</code> or <code>relations</code>.
@@ -233,31 +234,13 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * Retrieves the documents represented by a collection of {@link ObjectReference} instances
      * from their respective Elasticsearch indices.
      *
+     * @deprecated operation has moved to entityretrieval service component
      * @param references The object references to be lookup up and instantiated
      * @return A List of TLA documents
      * @see {@link #retrieveSingleBTSDoc(String, String)}
      */
     protected Collection<Indexable> retrieveReferencedObjects(Collection<Resolvable> references) {
-        return references.stream().map(
-            ref -> {
-                Indexable referencedEntity = this.retrieveSingleBTSDoc( //XXX
-                    ref.getEclass(),
-                    ref.getId()
-                );
-                if (referencedEntity == null) {
-                    log.warn(
-                        "Could not retrieve referenced object {}",
-                        tla.domain.util.IO.json(ref)
-                    );
-                }
-                return referencedEntity;
-            }
-        ).filter(
-            entity -> entity != null
-        )
-        .collect(
-            Collectors.toList()
-        );
+        return EntityRetrieval.BulkEntityResolver.of(references).resolve();
     }
 
     /**
@@ -271,15 +254,9 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * passed is not a {@link LinkedEntity} instance.
      */
     protected Collection<Indexable> retrieveRelatedDocs(T document) {
-        if (document instanceof LinkedEntity) { // TODO or even better linkedentity
-            Set<Resolvable> previews = new HashSet<>();
-            LinkedEntity entity = (LinkedEntity) document;
-            entity.getRelations().entrySet().forEach(
-                e -> {previews.addAll(e.getValue());}
-            );
-            return retrieveReferencedObjects(previews);
-        }
-        return Collections.emptyList();
+        return (document instanceof LinkedEntity) ? EntityRetrieval.BulkEntityResolver.from(
+            (LinkedEntity) document
+        ).resolve() : Collections.emptyList();
     }
 
     /**
@@ -291,12 +268,12 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      */
     protected Collection<Indexable> retrieveReferencedThesaurusEntries(Indexable document) {
         if (document instanceof TLAEntity) {
-            Set<Resolvable> previews = new HashSet<>();
+            Set<Resolvable> previews = new HashSet<>(); // XXX why tho
             TLAEntity entity = (TLAEntity) document;
             if (entity.getPassport() != null) {
                 previews.addAll(entity.getPassport().extractObjectReferences());
             }
-            return retrieveReferencedObjects(previews);
+            return retrieveReferencedObjects(previews); // XXX kinda pointlesz now as the actual stuff happens in entity retrieval
         }
         return Collections.emptyList();
     }

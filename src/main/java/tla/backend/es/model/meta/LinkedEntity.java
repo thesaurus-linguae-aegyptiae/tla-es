@@ -44,7 +44,7 @@ public abstract class LinkedEntity extends AbstractBTSBaseClass {
         this.relations = Collections.emptyMap();
     }
 
-       /**
+    /**
      * A collection of references to other entity objects.
      */
     @Getter

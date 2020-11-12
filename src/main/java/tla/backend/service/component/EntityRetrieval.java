@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import tla.backend.es.model.meta.Indexable;
+import tla.backend.es.model.meta.LinkedEntity;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.service.EntityService;
 import tla.domain.model.meta.Resolvable;
@@ -31,6 +33,20 @@ public class EntityRetrieval {
             return new BulkEntityResolver().addAll(references);
         }
 
+        /**
+         * Take all objectreferences in an entity's <code>relations</code> map and feeds them into
+         * a new {@link BulkEntityResolver} instance.
+         */
+        public static BulkEntityResolver from(LinkedEntity entity) {
+            return BulkEntityResolver.of(
+                entity.getRelations().values().stream().flatMap(
+                    refs -> refs.stream()
+                ).collect(
+                    Collectors.toList()
+                )
+            );
+        }
+
         public BulkEntityResolver addAll(Collection<? extends Resolvable> references) {
             references.forEach(
                 ref -> this.add(ref)
@@ -49,7 +65,7 @@ public class EntityRetrieval {
             );
         }
 
-        public List<?> resolve() {
+        public Collection<Indexable> resolve() {
             return this.refs.entrySet().stream().flatMap(
                 e -> this.resolve(e.getKey(), e.getValue())
             ).collect(
@@ -57,7 +73,7 @@ public class EntityRetrieval {
             );
         }
 
-        protected Stream<?> resolve(String eclass, Collection<String> ids) {
+        protected Stream<? extends Indexable> resolve(String eclass, Collection<String> ids) {
             EntityService<?,?,?> service = EntityService.getService(
                 ModelConfig.getModelClass(eclass)
             );
