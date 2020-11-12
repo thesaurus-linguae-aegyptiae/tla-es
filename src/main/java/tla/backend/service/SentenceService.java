@@ -4,7 +4,6 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -23,7 +22,6 @@ import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.backend.es.repo.SentenceRepo;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.SentenceDto;
-import tla.domain.model.ObjectReference;
 
 @Service
 @ModelClass(value = SentenceEntity.class, path = "sentence")
@@ -45,18 +43,11 @@ public class SentenceService extends EntityService<SentenceEntity, Elasticsearch
     @Override
     protected Collection<Indexable> retrieveRelatedDocs(SentenceEntity document) {
         Collection<Indexable> relatedDocuments = super.retrieveRelatedDocs(document);
+        var text = this.retrieveSingleBTSDoc(
+            "BTSText", document.getContext().getTextId()
+        );
         relatedDocuments.addAll(
-            this.retrieveReferencedObjects(
-                List.of(
-                    ObjectReference.builder()
-                        .id(
-                            document.getContext().getTextId()
-                        )
-                        .eclass(
-                            "BTSText"
-                        ).build()
-                )
-            )
+            super.retrieveReferencedThesaurusEntries(text)
         );
         return relatedDocuments;
     }
