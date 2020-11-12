@@ -122,7 +122,9 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * registered.
      * Registration takes place at construction time of any service with a {@link ModelClass} annotation.
      */
-    public static EntityService<? extends Indexable, ? extends ElasticsearchRepository<?, ?>, ? extends AbstractDto> getService(Class<? extends Indexable> modelClass) {
+    public static EntityService<? extends Indexable, ? extends ElasticsearchRepository<?, ?>, ? extends AbstractDto> getService(
+        Class<? extends AbstractBTSBaseClass> modelClass
+    ) {
         if (modelClassServices.containsKey(modelClass)) {
             return modelClassServices.get(modelClass);
         } else {
@@ -238,7 +240,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     protected Collection<Indexable> retrieveReferencedObjects(Collection<Resolvable> references) {
         return references.stream().map(
             ref -> {
-                Indexable referencedEntity = this.retrieveSingleBTSDoc(
+                Indexable referencedEntity = this.retrieveSingleBTSDoc( //XXX
                     ref.getEclass(),
                     ref.getId()
                 );
@@ -287,7 +289,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * should be thesaurus terms, and thus be located in the Elasticsearch index corresponding
      * to the eclass <code>"BTSThsEntry"</code>.
      */
-    protected Collection<Indexable> retrieveReferencedThesaurusEntries(T document) {
+    protected Collection<Indexable> retrieveReferencedThesaurusEntries(Indexable document) {
         if (document instanceof TLAEntity) {
             Set<Resolvable> previews = new HashSet<>();
             TLAEntity entity = (TLAEntity) document;
@@ -344,7 +346,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      */
     public Indexable retrieveSingleBTSDoc(String eclass, String id) {
         Class<? extends AbstractBTSBaseClass> modelClass = ModelConfig.getModelClass(eclass);
-        EntityService<?, ?, ?> service = modelClassServices.getOrDefault(modelClass, null);
+        EntityService<?, ?, ?> service = EntityService.getService(modelClass);
         if (service == null) {
             log.error("Could not find entity service for eclass {}!", eclass);
             throw new ObjectNotFoundException(id, eclass);
@@ -512,7 +514,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     );
 
     public Optional<AbstractEntityQueryBuilder<?, ?>> findMatchingEntityQueryBuilder(
-        SearchCommand<?> search, Class<? extends Indexable> target
+        SearchCommand<?> search, Class<? extends AbstractBTSBaseClass> target
     ) {
         EntityService<?, ?, ?> targetService = EntityService.getService(target);
         if (target != null) {
@@ -532,7 +534,11 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     }
 
     @SuppressWarnings("unchecked")
-    public Optional<SearchResultsWrapper<D>> search(SearchCommand<? extends AbstractDto> command, Class<? extends Indexable> entityType, Pageable page) {
+    public Optional<SearchResultsWrapper<D>> search(
+        SearchCommand<? extends AbstractDto> command,
+        Class<? extends AbstractBTSBaseClass> entityType,
+        Pageable page
+    ) {
         AbstractEntityQueryBuilder<?, ?> entityQueryBuilder = findMatchingEntityQueryBuilder(
             command,
             entityType

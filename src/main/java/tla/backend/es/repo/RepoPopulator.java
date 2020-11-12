@@ -19,6 +19,7 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.service.ModelClass;
+import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.backend.service.EntityService;
 
 /**
@@ -73,7 +74,9 @@ public class RepoPopulator {
         public RepoBatchIngestor(Class<S> modelClass) {
             this.modelClass = modelClass;
             this.path = getModelClassServicePath(
-                EntityService.getService(modelClass)
+                EntityService.getService(
+                    modelClass.asSubclass(AbstractBTSBaseClass.class)
+                )
             );
             this.batch = new ArrayList<>();
             this.count = 0;
@@ -119,7 +122,9 @@ public class RepoPopulator {
         @SuppressWarnings("unchecked")
         public void ingest() {
             try {
-                ((ElasticsearchRepository<S, String>) EntityService.getService(modelClass).getRepo()).saveAll(this.batch);
+                ((ElasticsearchRepository<S, String>) EntityService.getService(
+                    modelClass.asSubclass(AbstractBTSBaseClass.class)
+                ).getRepo()).saveAll(this.batch);
                 this.count += this.batch.size();
                 this.batch.clear();
             } catch (Exception e) {
@@ -149,7 +154,9 @@ public class RepoPopulator {
     /**
      * Return the <code>path</code> value of a entity service's {@link ModelClass} annotation
      */
-    private static String getModelClassServicePath(EntityService<? extends Indexable, ? extends ElasticsearchRepository<?, ?>, ?> service) {
+    private static String getModelClassServicePath(
+        EntityService<? extends Indexable, ? extends ElasticsearchRepository<?, ?>, ?> service
+    ) {
         for (Annotation a : service.getClass().getAnnotations()) {
             if (a instanceof ModelClass) {
                 return ((ModelClass) a).path();
@@ -164,14 +171,18 @@ public class RepoPopulator {
      */
     private void registerRepoIngestors() {
         for (Class<? extends Indexable> modelClass : EntityService.getRegisteredModelClasses()) {
-            String modelPath = getModelClassServicePath(
-                EntityService.getService(modelClass)
-            );
-            if (modelPath != null && !modelPath.isEmpty()) {
-                this.repoIngestors.put(
-                    modelPath,
-                    new RepoBatchIngestor<>(modelClass)
+            if (modelClass.isAssignableFrom(AbstractBTSBaseClass.class)) {
+                String modelPath = getModelClassServicePath(
+                    EntityService.getService(
+                        modelClass.asSubclass(AbstractBTSBaseClass.class)
+                    )
                 );
+                if (modelPath != null && !modelPath.isEmpty()) {
+                    this.repoIngestors.put(
+                        modelPath,
+                        new RepoBatchIngestor<>(modelClass)
+                    );
+                }
             }
         }
     }
