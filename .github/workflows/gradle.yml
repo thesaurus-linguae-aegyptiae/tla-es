@@ -19,9 +19,6 @@ jobs:
       env:
         ES_PORT: 9200
 
-    - name: List running Docker containers
-      run: docker ps --all
-
     - name: Wait for ES to respond
       uses: cygnetdigital/wait_for_response@v2.0.0
       with:
@@ -33,7 +30,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build with Gradle
-      run: ./gradlew build --info
+      run: ./gradlew build
 
     - uses: ashley-taylor/junit-report-annotations-action@master
       with:
