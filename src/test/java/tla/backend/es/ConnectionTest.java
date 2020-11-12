@@ -1,16 +1,12 @@
 package tla.backend.es;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import tla.backend.App;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-@SpringBootTest(classes = {App.class})
 public class ConnectionTest {
 
     @Test
@@ -31,31 +27,12 @@ public class ConnectionTest {
 
     @Test
     void doesESrespond() throws Exception {
-        HttpURLConnection connection = (HttpURLConnection) getElasticsearchURL(
-            ""
-        ).openConnection();
-        int responseStatus = connection.getResponseCode();
+        var responseStatus = (
+            (HttpURLConnection) getElasticsearchURL(
+                ""
+            ).openConnection()
+        ).getResponseCode();
         assertEquals(200, responseStatus, "ES should return HTTP code 200");
-    }
-
-    @Test
-    void doesLemmaIndexExist() throws Exception {
-        assertAll("GET requests to indices should respond as expected",
-            () -> assertEquals(
-                200,
-                ((HttpURLConnection) getElasticsearchURL(
-                    "_cat/indices/lemma"
-                ).openConnection()).getResponseCode(),
-                "_cat call for lemma index should return HTTP 200"
-            ),
-            () -> assertEquals(
-                404,
-                ((HttpURLConnection) getElasticsearchURL(
-                    "_cat/indices/xxx"
-                ).openConnection()).getResponseCode(),
-                "_cat call for non-existent index should return HTTP 404"
-            )
-        );
     }
 
 }
