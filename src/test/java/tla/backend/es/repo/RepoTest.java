@@ -16,6 +16,7 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 
 import tla.backend.App;
 import tla.backend.es.model.CorpusObjectEntity;
+import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.parts.EditDate;
 
 @SpringBootTest(classes = {App.class})
@@ -23,6 +24,9 @@ public class RepoTest {
 
     @Autowired
     private LemmaRepo repo;
+
+    @Autowired
+    private RepoPopulator repoPopulator;
 
     @Autowired
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
@@ -38,6 +42,18 @@ public class RepoTest {
     @Test
     void esRestTemplateAvailable() {
         assertTrue(elasticsearchRestTemplate != null, "elasticsearch rest template should not be null");
+    }
+
+    @Test
+    void repoPopulatorHasRegistry() {
+        assertTrue(ModelConfig.isInitialized(), "entity model registered");
+        repoPopulator.init();
+        assertAll(
+            () -> assertFalse(repoPopulator.repoIngestors.isEmpty(), "repo populator has registry"),
+            () -> assertEquals(ModelConfig.getModelClasses().size(), repoPopulator.repoIngestors.size()),
+            () -> assertNotNull(repoPopulator.selectBatchIngestor("lemma"), "lemma batch ingestor registered"),
+            () -> assertNull(repoPopulator.selectBatchIngestor("xxx"), "bogus batch ingestor not registered")
+        );
     }
 
     @Test

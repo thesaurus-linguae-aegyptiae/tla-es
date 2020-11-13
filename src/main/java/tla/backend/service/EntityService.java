@@ -155,6 +155,8 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
 
     /**
      * Returns all model classes for which there are services registered.
+     *
+     * @see {@link ModelClass} annotation
      */
     public static Collection<Class<? extends Indexable>> getRegisteredModelClasses() {
         return modelClassServices.keySet();

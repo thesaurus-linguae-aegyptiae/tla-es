@@ -6,15 +6,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import tla.backend.es.model.meta.Indexable;
-import tla.backend.es.repo.RepoPopulator;
 
 /**
- * Put this on top of services. It is being used for index population so put it on {@link RepoPopulator} as well.
+ * Put this on top of services. It is being used for index population from tar file.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ModelClass {
 
+    /**
+     * An entity model class with an associated {@link EntityService}
+     */
     public Class<? extends Indexable> value();
 
     /**

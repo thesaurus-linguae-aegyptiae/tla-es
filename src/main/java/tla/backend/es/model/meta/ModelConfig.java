@@ -25,6 +25,8 @@ import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.model.parts.EditorInfo;
 import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Translations;
+import tla.backend.service.EntityService;
+import tla.backend.service.component.EntityRetrieval;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.LemmaDto;
@@ -145,9 +147,14 @@ public class ModelConfig {
      * Register a model class annotated with {@link BTSeClass} and <code>@Document(index="...")</code>
      * and the corresponding configuration extracted from these annotations.
      *
-     * <p>Throws an exception if any of the annotations above are missing</p>
+     * <p>Registration of a model
+     * class is required in order to be able to look up TLA documents based on their ID and eClass, as it
+     * allow to look up a model class's dedicated {@link EntityService} and hence the corresponding
+     * Elasticsearch repository required for operations with entities of that model class.</p>
      *
-     * TODO what does this enable?
+     * @throws Exception if <code>@BTSeClass</code> or <code>@Document</code> are missing on given class
+     * @see {@link EntityService#getService(Class)}
+     * @see {@link EntityRetrieval.BulkEntityResolver#from(LinkedEntity)}
      */
     public static Map<String, BTSeClassConfig> registerModelClass(
         Class<? extends AbstractBTSBaseClass> modelClass
