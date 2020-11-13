@@ -122,9 +122,11 @@ public class RepoPopulator {
         @SuppressWarnings("unchecked")
         public void ingest() {
             try {
-                ((ElasticsearchRepository<S, String>) EntityService.getService(
-                    modelClass.asSubclass(AbstractBTSBaseClass.class)
-                ).getRepo()).saveAll(this.batch);
+                (
+                    (ElasticsearchRepository<S, String>) EntityService.getService(
+                        modelClass.asSubclass(AbstractBTSBaseClass.class)
+                    ).getRepo()
+                ).saveAll(this.batch);
                 this.count += this.batch.size();
                 this.batch.clear();
             } catch (Exception e) {
@@ -171,7 +173,7 @@ public class RepoPopulator {
      */
     private void registerRepoIngestors() {
         for (Class<? extends Indexable> modelClass : EntityService.getRegisteredModelClasses()) {
-            if (modelClass.isAssignableFrom(AbstractBTSBaseClass.class)) {
+            if (AbstractBTSBaseClass.class.isAssignableFrom(modelClass)) {
                 String modelPath = getModelClassServicePath(
                     EntityService.getService(
                         modelClass.asSubclass(AbstractBTSBaseClass.class)
@@ -261,11 +263,13 @@ public class RepoPopulator {
      */
     private void processTarArchive(TarArchiveInputStream input) throws IOException {
         TarArchiveEntry archiveEntry;
+        long filecount = 0;
         while ((archiveEntry = input.getNextTarEntry()) != null) {
             String typeId = this.extractDocTypeFromPath(archiveEntry);
             this.selectBatchIngestor(typeId);
             if (!archiveEntry.isDirectory()) {
                 if (input.canReadEntryData(archiveEntry)) {
+                    filecount++;
                     this.selectBatchIngestor(typeId);
                     if (this.batchIngestor != null) {
                         this.batchIngestor.add(
@@ -277,6 +281,7 @@ public class RepoPopulator {
                 }
             }
         }
+        log.info("JSON documents extracted from archive: {}", filecount);
         flushIngestors();
     }
 
