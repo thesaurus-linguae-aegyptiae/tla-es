@@ -38,13 +38,13 @@ public class EntityRetrieval {
          * a new {@link BulkEntityResolver} instance.
          */
         public static BulkEntityResolver from(LinkedEntity entity) {
-            return BulkEntityResolver.of(
-                entity.getRelations().values().stream().flatMap(
-                    refs -> refs.stream()
-                ).collect(
-                    Collectors.toList()
-                )
-            );
+            var bulk = new BulkEntityResolver();
+            if (entity.getRelations() != null) {
+                entity.getRelations().entrySet().forEach(
+                    e -> bulk.addAll(e.getValue())
+                );
+            }
+            return bulk;
         }
 
         public BulkEntityResolver addAll(Collection<? extends Resolvable> references) {
