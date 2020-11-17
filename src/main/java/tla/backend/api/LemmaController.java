@@ -93,7 +93,7 @@ public class LemmaController extends EntityController<LemmaEntity> {
                     command,
                     LemmaEntity.class,
                     pageable
-                ),
+                ).get(),
                 HttpStatus.OK
             );
         } catch (Exception e) {

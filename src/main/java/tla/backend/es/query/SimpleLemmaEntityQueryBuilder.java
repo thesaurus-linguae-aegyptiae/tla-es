@@ -88,7 +88,7 @@ public class SimpleLemmaEntityQueryBuilder extends AbstractEntityQueryBuilder<Le
             }
         } else {
             aggs.add(
-                AggregationBuilders.terms("worClass.type").field("type")
+                AggregationBuilders.terms("wordClass.type").field("type")
             );
         }
         if (getCommand().getScript() == null || getCommand().getScript().length < 1) {

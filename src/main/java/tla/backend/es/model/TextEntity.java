@@ -2,8 +2,6 @@ package tla.backend.es.model;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
