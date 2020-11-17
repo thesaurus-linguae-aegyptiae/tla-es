@@ -64,6 +64,9 @@ public class SentenceEntity extends LinkedEntity implements Indexable {
     @Field(type = FieldType.Nested)
     private Collection<Token> tokens;
 
+    @Field(type = FieldType.Integer)
+    private int wordCount;
+
     /**
      * Tells you to which text document this sentence belongs and its position
      * within the text's content.

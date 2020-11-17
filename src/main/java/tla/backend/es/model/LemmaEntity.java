@@ -33,7 +33,7 @@ import tla.domain.model.meta.TLADTO;
 @TLADTO(LemmaDto.class)
 @BTSeClass("BTSLemmaEntry")
 @ToString(callSuper = true)
-@JsonInclude(Include.NON_EMPTY)
+@JsonInclude(Include.NON_NULL)
 @EqualsAndHashCode(callSuper = true)
 @Document(indexName = "lemma")
 @Setting(settingPath = "/elasticsearch/settings/indices/lemma.json")

@@ -50,6 +50,7 @@ import tla.domain.model.Passport;
 import tla.domain.model.SentenceToken;
 import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.BTSeClass;
+import tla.domain.util.IO;
 
 @SpringBootTest(classes = {App.class})
 public class ModelTest {
@@ -239,6 +240,7 @@ public class ModelTest {
         );
         assertAll("lemma entry instances should be equal regardless of creation method",
             () -> assertEquals("BTSLemmaEntry", l_built.getEclass(), "superclass getEclass() method should return registered eClass value"),
+            () -> assertEquals(IO.json(l_built), IO.json(l_round)),
             () -> assertEquals(l_built, l_read, "deserialized lemma instance should be equal to built instance with the same properties"),
             () -> assertEquals(l_built, l_round, "lemma instance serialized and then deserialized should equal itself")
         );
@@ -386,7 +388,8 @@ public class ModelTest {
             () -> assertFalse(
                 d.getEditors().getUpdated().after(d.getEditors().getCreated()),
                 "update same day as creation"
-            )
+            ),
+            () -> assertEquals(14, ((TextDto) d).getWordCount().getMax(), "word count")
         );
         TextDto dto = (TextDto) d;
         assertAll("test mapped text DTO properties",

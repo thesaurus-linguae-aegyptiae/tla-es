@@ -60,6 +60,7 @@ public class Token {
     @Getter
     @Setter
     @NoArgsConstructor
+    @EqualsAndHashCode
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Flexion {
@@ -87,6 +88,7 @@ public class Token {
 
     @Getter
     @Setter
+    @EqualsAndHashCode
     @NoArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Lemmatization {

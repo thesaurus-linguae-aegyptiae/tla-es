@@ -1,6 +1,6 @@
 ![build](https://github.com/JKatzwinkel/tla-es/workflows/build/badge.svg)
 ![LINE](https://img.shields.io/badge/line--coverage-59%25-orange.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-73%25-yellow.svg)
+![METHOD](https://img.shields.io/badge/method--coverage-72%25-yellow.svg)
 
 Thesaurus Linguae Aegyptiae (TLA) backend.
 

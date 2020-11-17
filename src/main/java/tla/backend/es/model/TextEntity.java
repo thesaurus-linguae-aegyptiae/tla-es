@@ -43,8 +43,24 @@ public class TextEntity extends UserFriendlyEntity {
     @Field(type = FieldType.Object)
     private List<Translations> translations;
 
-    @Field(type = FieldType.Integer)
-    @JsonAlias("word_count")
-    private int wordCount;
+    @Field(type = FieldType.Object)
+    private WordCount wordCount;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class WordCount {
+        @Field(type = FieldType.Integer)
+        int min = 0;
+        @Field(type = FieldType.Integer)
+        int max = 0;
+        /**
+         * for compatibility
+         */
+        public WordCount(int count) {
+            this.min = count;
+            this.max = count;
+        }
+    }
 
 }
