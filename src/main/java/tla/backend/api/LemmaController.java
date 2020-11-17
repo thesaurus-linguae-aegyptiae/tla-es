@@ -3,13 +3,11 @@ package tla.backend.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.repo.LemmaRepo;
-import tla.backend.service.LemmaService;
 import tla.backend.service.EntityService;
+import tla.backend.service.LemmaService;
 import tla.domain.command.LemmaSearch;
 import tla.domain.dto.LemmaDto;
-import tla.domain.dto.extern.PageInfo;
-import tla.domain.dto.extern.SearchResultsWrapper;
+import tla.domain.dto.meta.AbstractDto;
 
 
 @Slf4j
@@ -45,7 +42,7 @@ public class LemmaController extends EntityController<LemmaEntity> {
     private ModelMapper modelMapper;
 
     @Override
-    public EntityService<LemmaEntity> getService() {
+    public EntityService<LemmaEntity, ?, ? extends AbstractDto> getService() {
         return queryService;
     }
 
@@ -88,36 +85,23 @@ public class LemmaController extends EntityController<LemmaEntity> {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<SearchResultsWrapper<LemmaDto>> search(@RequestBody LemmaSearch command, Pageable pageable) throws Exception {
-        log.info("page: {}", pageable);
-        SearchHits<LemmaEntity> hits = queryService.search(
-            queryService.createLemmaSearchQuery(command, pageable)
-        );
-        PageInfo page = PageInfo.builder()
-            .number(pageable.getPageNumber())
-            .totalElements(hits.getTotalHits())
-            .size(EntityService.SEARCH_RESULT_PAGE_SIZE)
-            .numberOfElements(
-                Math.min(
-                    EntityService.SEARCH_RESULT_PAGE_SIZE,
-                    hits.getSearchHits().size()
-                )
-            ).totalPages(
-                (int) hits.getTotalHits() / EntityService.SEARCH_RESULT_PAGE_SIZE + 1 // TODO
-            ).build();
-        return new ResponseEntity<>(
-            new SearchResultsWrapper<>(
-                hits.getSearchHits().stream().map(
-                    hit -> modelMapper.map(
-                        hit.getContent(),
-                        LemmaDto.class
-                    )
-                ).collect(Collectors.toList()),
-                command,
-                page
-            ),
-            HttpStatus.OK
-        );
+    public ResponseEntity<?> search(@RequestBody LemmaSearch command, Pageable pageable) {
+        log.info("page: {}", tla.domain.util.IO.json(pageable));
+        try {
+            return new ResponseEntity<>(
+                queryService.search(
+                    command,
+                    LemmaEntity.class,
+                    pageable
+                ),
+                HttpStatus.OK
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                e,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
 }

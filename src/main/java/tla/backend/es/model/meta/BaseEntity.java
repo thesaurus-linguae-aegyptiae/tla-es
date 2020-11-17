@@ -1,9 +1,5 @@
 package tla.backend.es.model.meta;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import org.springframework.data.annotation.Id;
@@ -13,12 +9,11 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 import tla.backend.es.model.parts.EditorInfo;
 import tla.domain.dto.meta.AbstractDto;
-import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.AbstractBTSBaseClass;
+import tla.domain.model.meta.TLADTO;
 
 /**
  * Entity model base class. Represents an identifiable stand-alone BTS/TLA document with
@@ -36,9 +31,9 @@ import tla.domain.model.meta.AbstractBTSBaseClass;
  */
 @Data
 @SuperBuilder
-@EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexable {
+@EqualsAndHashCode(callSuper = true)
+public abstract class BaseEntity extends LinkedEntity implements Indexable {
 
     @Id
     @NonNull
@@ -54,7 +49,7 @@ public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexab
     @Field(type = FieldType.Keyword)
     private String revisionState;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Search_As_You_Type)
     private String name;
 
     /**
@@ -65,18 +60,10 @@ public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexab
     private EditorInfo editors;
 
     /**
-     * References to related objects grouped by relationship name (<code>partOf</code>,
-     * <code>predecessor</code>, ...).
-     */
-    @Singular
-    @Field(type = FieldType.Object)
-    private Map<String, List<ObjectReference>> relations;
-
-    /**
      * Default constructor initializing the relations map as an empty object.
      */
     public BaseEntity() {
-        this.relations = Collections.emptyMap();
+
     }
 
     /**
@@ -86,16 +73,17 @@ public abstract class BaseEntity extends AbstractBTSBaseClass implements Indexab
         return ModelConfig.toDTO(this);
     }
 
-        /**
-     * Creates an objectreference object identifying this instance.
+    /**
+     * Creates an {@link tla.domain.model.ObjectReference} (DTO model) object identifying this instance.
      */
-    public ObjectReference toObjectReference() {
-        return ObjectReference.builder()
+    public tla.domain.model.ObjectReference toDTOReference() {
+        return tla.domain.model.ObjectReference.builder()
             .id(this.getId())
             .eclass(this.getEclass())
             .type(this.getType())
             .name(this.getName())
             .build();
     }
+
 
 }

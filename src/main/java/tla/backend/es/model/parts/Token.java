@@ -10,12 +10,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Token {
@@ -25,7 +27,7 @@ public class Token {
     private String id;
 
     @Field(type = FieldType.Keyword)
-    private String type;
+    private String type = "word";
 
     @Field(type = FieldType.Text)
     @JsonAlias("name")
@@ -47,31 +49,58 @@ public class Token {
     private Translations translations;
 
     @Field(type = FieldType.Keyword)
-    private List<String> flags;
+    private List<String> annoTypes;
+
+    public Token(String glyphs, Transcription transcription) {
+        super();
+        this.glyphs = glyphs;
+        this.transcription = transcription;
+    }
 
     @Getter
     @Setter
     @NoArgsConstructor
+    @EqualsAndHashCode
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Flexion {
 
+        /**
+         * BTS glossing
+         */
+        @JsonAlias({"bGloss", "bgloss"})
         @Field(type = FieldType.Text)
-        private String verbal;
+        private String btsGloss;
 
+        /**
+         * Leipzig glossing
+         */
+        @JsonAlias({"lGloss", "lgloss"})
+        @Field(type = FieldType.Text)
+        private String lingGloss;
+
+        /**
+         * BTS flexcode
+         */
         @Field(type = FieldType.Long)
         private Long numeric;
     }
 
     @Getter
     @Setter
+    @EqualsAndHashCode
     @NoArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Lemmatization {
-
-        @Field(type = FieldType.Object)
-        private PartOfSpeech pos;
-
+        /**
+         * lemma part of speech
+         */
+        @JsonAlias({"POS"})
+        @Field(name = "POS", type = FieldType.Object)
+        private PartOfSpeech partOfSpeech;
+        /**
+         * lemma ID
+         */
         @Field(type = FieldType.Keyword)
         private String id;
     }

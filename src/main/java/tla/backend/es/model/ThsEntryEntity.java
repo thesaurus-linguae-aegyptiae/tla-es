@@ -13,13 +13,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
-import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.model.meta.UserFriendlyEntity;
+import tla.backend.es.model.parts.ObjectPath;
 import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.Passport;
@@ -34,10 +36,11 @@ import tla.domain.model.meta.TLADTO;
 @BTSeClass("BTSThsEntry")
 @TLADTO(ThsEntryDto.class)
 @EqualsAndHashCode(callSuper = true)
-@Document(indexName = "ths", type = "ths")
-public class ThsEntryEntity extends TLAEntity {
+@Document(indexName = "ths")
+@Setting(settingPath = "/elasticsearch/settings/indices/ths.json")
+public class ThsEntryEntity extends UserFriendlyEntity {
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper = tla.domain.util.IO.getMapper();
 
     private static final String SYNONYMS_PASSPORT_PATH = "synonyms.synonym_group";
     private static final String SYNONYM_VALUE_PATH = "synonym";
@@ -45,7 +48,7 @@ public class ThsEntryEntity extends TLAEntity {
     private static final String DATE_START_PASSPORT_PATH = "thesaurus_date.main_group.beginning";
     private static final String DATE_END_PASSPORT_PATH = "thesaurus_date.main_group.end";
 
-    private static final List<String> timespanPropertyPaths = List.of(
+    private static final List<String> TIMESPAN_DATES_PASSPORT_PATHS = List.of(
         DATE_START_PASSPORT_PATH,
         DATE_END_PASSPORT_PATH
     );
@@ -54,8 +57,14 @@ public class ThsEntryEntity extends TLAEntity {
     @JsonAlias({"sortkey", "sort_key", "sort_string", "sortString"})
     private String sortKey;
 
+    @Field(type = FieldType.Search_As_You_Type, name = "hash")
+    private String SUID;
+
     @Field(type = FieldType.Object)
     private Translations translations;
+
+    @Field(type = FieldType.Object)
+    private ObjectPath[] paths;
 
     /**
      * Returns translations of a thesaurus entry's label. If no explicit translations exist, this method
@@ -119,7 +128,7 @@ public class ThsEntryEntity extends TLAEntity {
      */
     public List<Integer> extractTimespan() {
         List<Integer> years = new ArrayList<>();
-        timespanPropertyPaths.stream().forEach(
+        TIMESPAN_DATES_PASSPORT_PATHS.stream().forEach(
             path -> {
                 this.getPassport().extractProperty(path).stream().forEach(
                     node -> {
@@ -142,7 +151,7 @@ public class ThsEntryEntity extends TLAEntity {
         return AttestedTimespan.Period.builder()
             .begin(years.get(0))
             .end(years.get(1))
-            .ths(this.toObjectReference())
+            .ths(this.toDTOReference())
             .build();
     }
 }

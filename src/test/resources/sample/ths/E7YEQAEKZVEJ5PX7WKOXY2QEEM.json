@@ -1,17 +1,115 @@
 {
-    "id": "E7YEQAEKZVEJ5PX7WKOXY2QEEM",
     "eclass": "BTSThsEntry",
-    "type": "date",
-    "revisionState": "published",
-    "name": "21. Dynastie",
     "editors": {
         "author": "Alt\u00e4gyptisches W\u00f6rterbuch",
-        "updated": "2019-12-19",
-        "type": "user",
         "contributors": [
             "L. Popko"
+        ],
+        "created": "2015-06-26 16:10:39",
+        "type": "user",
+        "updated": "2019-12-19 10:48:38"
+    },
+    "externalReferences": {
+        "aaew": [
+            {
+                "id": "9/110"
+            }
+        ],
+        "thot": [
+            {
+                "id": "thot-404"
+            }
         ]
     },
+    "hash": "lohodm",
+    "id": "E7YEQAEKZVEJ5PX7WKOXY2QEEM",
+    "name": "21. Dynastie",
+    "passport": {
+        "synonyms": [
+            {
+                "synonym_group": [
+                    {
+                        "language": [
+                            "en"
+                        ],
+                        "synonym": [
+                            "21st Dynasty"
+                        ]
+                    },
+                    {
+                        "language": [
+                            "fr"
+                        ],
+                        "synonym": [
+                            "21e dynastie"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thesaurus": [
+            {
+                "main_group": [
+                    {
+                        "old_id": [
+                            "110"
+                        ],
+                        "old_thesaurus_number": [
+                            "9"
+                        ],
+                        "termsort": [
+                            "21. dyn."
+                        ]
+                    }
+                ]
+            }
+        ],
+        "thesaurus_date": [
+            {
+                "main_group": [
+                    {
+                        "beginning": [
+                            "-1076"
+                        ],
+                        "end": [
+                            "-944"
+                        ],
+                        "reference": [
+                            "Hornung, E./Krauss, R./Warburton, D. A. (Hgg.), Ancient Egyptian Chronology (HdO I.83), Leiden/Boston 2006, 493"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "paths": [
+        [
+            {
+                "eclass": "BTSThsEntry",
+                "id": "MXWX4WG43ZHI7D4RLTGK3IBGXY",
+                "name": "9 = Datierungen",
+                "type": "date"
+            },
+            {
+                "eclass": "BTSThsEntry",
+                "id": "DUVGWT7GSRCKDM5LFTGU6MZ3GY",
+                "name": "(Epochen und Dynastien)",
+                "type": "date"
+            },
+            {
+                "eclass": "BTSThsEntry",
+                "id": "N673TBXEGJDDBO6B6DZXKT64YQ",
+                "name": "Pharaonische Zeit",
+                "type": "date"
+            },
+            {
+                "eclass": "BTSThsEntry",
+                "id": "JS32JKX2CNG25GZ3B6MGYMDU4I",
+                "name": "Dritte Zwischenzeit",
+                "type": "date"
+            }
+        ]
+    ],
     "relations": {
         "contains": [
             {
@@ -66,74 +164,8 @@
             }
         ]
     },
-    "externalReferences": {
-        "aaew": [
-            {
-                "id": "9/110"
-            }
-        ],
-        "thot": [
-            {
-                "id": "thot-404"
-            }
-        ]
-    },
-    "passport": {
-        "synonyms": [
-            {
-                "synonym_group": [
-                    {
-                        "synonym": [
-                            "21st Dynasty"
-                        ],
-                        "language": [
-                            "en"
-                        ]
-                    },
-                    {
-                        "synonym": [
-                            "21e dynastie"
-                        ],
-                        "language": [
-                            "fr"
-                        ]
-                    }
-                ]
-            }
-        ],
-        "thesaurus": [
-            {
-                "main_group": [
-                    {
-                        "termsort": [
-                            "21. dyn."
-                        ],
-                        "old_id": [
-                            "110"
-                        ],
-                        "old_thesaurus_number": [
-                            "9"
-                        ]
-                    }
-                ]
-            }
-        ],
-        "thesaurus_date": [
-            {
-                "main_group": [
-                    {
-                        "reference": [
-                            "Hornung, E./Krauss, R./Warburton, D. A. (Hgg.), Ancient Egyptian Chronology (HdO I.83), Leiden/Boston 2006, 493"
-                        ],
-                        "beginning": [
-                            "-1076"
-                        ],
-                        "end": [
-                            "-944"
-                        ]
-                    }
-                ]
-            }
-        ]
-    }
+    "revisionState": "published",
+    "sortkey": null,
+    "subtype": null,
+    "type": "date"
 }

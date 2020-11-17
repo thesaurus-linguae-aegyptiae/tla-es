@@ -1,11 +1,11 @@
 package tla.backend.es.model.meta;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.lang.annotation.Annotation;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.modelmapper.ModelMapper;
@@ -16,7 +16,6 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
 import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.model.CorpusObjectEntity;
 import tla.backend.es.model.LemmaEntity;
@@ -24,9 +23,10 @@ import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.model.parts.EditorInfo;
-import tla.backend.es.model.parts.Translations;
 import tla.backend.es.model.parts.Token;
-
+import tla.backend.es.model.parts.Translations;
+import tla.backend.service.EntityService;
+import tla.backend.service.component.EntityRetrieval;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.LemmaDto;
@@ -61,7 +61,7 @@ public class ModelConfig {
     @Builder
     public static class BTSeClassConfig {
         private String index;
-        private Class<? extends BaseEntity> modelClass;
+        private Class<? extends AbstractBTSBaseClass> modelClass;
     }
 
     public static SimpleDateFormat DATE_FORMAT;
@@ -73,46 +73,14 @@ public class ModelConfig {
     private static ModelMapper modelMapper;
 
     @Getter
-    private static List<Class<? extends BaseEntity>> modelClasses = new LinkedList<>();
+    private static List<Class<? extends AbstractBTSBaseClass>> modelClasses = new LinkedList<>();
 
     @Getter
-    private static Map<String, BTSeClassConfig> modelClassConfigs;
+    private static Map<String, BTSeClassConfig> eclassConfigs = new HashMap<>();
 
     public ModelConfig() {
-        setModelClasses(
-            List.of(
-                LemmaEntity.class,
-                ThsEntryEntity.class,
-                TextEntity.class,
-                AnnotationEntity.class,
-                CorpusObjectEntity.class
-            )
-        );
         initModelMapper();
     }
-
-    /**
-     * Extract eclass configurations from all registered model classes.
-     */
-    private static void initModelConfig() {
-        modelClassConfigs = new HashMap<>();
-        modelClasses.forEach(
-            clazz -> {
-                try {
-                    registerModelClass(clazz);
-                } catch (Exception e) {
-                    log.error(
-                        String.format(
-                            "config initialization for model class %s failed.",
-                            clazz.getName()
-                        ),
-                        e
-                    );
-                }
-            }
-        );
-    }
-
 
     /**
      * Register eClass configuration extracted from the following annotations on the given model class:
@@ -125,7 +93,7 @@ public class ModelConfig {
      * @return map with the extracted eclass as its only key,
      *         or <code>null</code> if any config value could not be extracted
      */
-    private static Map<String, BTSeClassConfig> mapModelClassConfigToEclass(Class<? extends BaseEntity> clazz) {
+    private static Map<String, BTSeClassConfig> mapModelClassConfigToEclass(Class<? extends AbstractBTSBaseClass> clazz) {
         String eclass = null;
         String index = null;
         for (Annotation annotation : clazz.getAnnotations()) {
@@ -179,19 +147,24 @@ public class ModelConfig {
      * Register a model class annotated with {@link BTSeClass} and <code>@Document(index="...")</code>
      * and the corresponding configuration extracted from these annotations.
      *
-     * <p>Throws an exception if any of the annotations above are missing</p>
+     * <p>Registration of a model
+     * class is required in order to be able to look up TLA documents based on their ID and eClass, as it
+     * allow to look up a model class's dedicated {@link EntityService} and hence the corresponding
+     * Elasticsearch repository required for operations with entities of that model class.</p>
      *
-     * TODO what does this enable?
+     * @throws Exception if <code>@BTSeClass</code> or <code>@Document</code> are missing on given class
+     * @see {@link EntityService#getService(Class)}
+     * @see {@link EntityRetrieval.BulkEntityResolver#from(LinkedEntity)}
      */
     public static Map<String, BTSeClassConfig> registerModelClass(
-        Class<? extends BaseEntity> modelClass
+        Class<? extends AbstractBTSBaseClass> modelClass
     ) throws Exception {
         Map<String, BTSeClassConfig> conf = mapModelClassConfigToEclass(modelClass);
         if (conf != null) {
             if (!modelClasses.contains(modelClass)) {
                 modelClasses.add(modelClass);
             }
-            modelClassConfigs.putAll(conf);
+            eclassConfigs.putAll(conf);
             return conf;
         } else {
             throw new Exception(
@@ -204,42 +177,28 @@ public class ModelConfig {
     }
 
     /**
-     * Clear eclass/model class configuration registry and load configurations for
-     * classes passed.
-     */
-    public static void setModelClasses(List<Class<? extends BaseEntity>> classes) {
-        if (modelClassConfigs != null) {
-            modelClassConfigs.clear();
-            log.info(
-                "erase model class registry containing eclasses: {}",
-                String.join(", ", modelClassConfigs.keySet())
-            );
-        } else {
-            log.info(
-                "initial computation of known model class configurations"
-            );
-        }
-        modelClasses.clear();
-        modelClasses.addAll(classes);
-        initModelConfig();
-        log.info(
-            "configured eclass class registry updated: {}",
-            String.join(", ", modelClassConfigs.keySet())
-        );
-    }
-
-    /**
      * Look up the model class registered for a given eclass.
      */
-    public static Class<? extends BaseEntity> getModelClass(String eclass) {
-        return modelClassConfigs.get(eclass).getModelClass();
+    public static Class<? extends AbstractBTSBaseClass> getModelClass(String eclass) {
+        try {
+            return eclassConfigs.get(eclass).getModelClass();
+        } catch (Exception e) {
+            log.error(
+                String.format(
+                    "can't find entity model class corresponding to eclass %s. Known eclasses are: %s",
+                    eclass,
+                    eclassConfigs.keySet()
+                )
+            );
+            throw e;
+        }
     }
 
     /**
      * Tells whether the {@link ModelConfig} class has been instantiated (presumably by spring DI).
      */
     public static boolean isInitialized() {
-        return getModelClassConfigs() != null && modelMapper != null;
+        return getEclassConfigs() != null && modelMapper != null;
     }
 
     @Bean
@@ -257,6 +216,8 @@ public class ModelConfig {
         modelMapper.createTypeMap(EditorInfo.class, tla.domain.model.EditorInfo.class)
             .addMapping(
                 EditorInfo::getUpdated, tla.domain.model.EditorInfo::setDateOfLatestUpdate
+            ).addMapping(
+                EditorInfo::getCreated, tla.domain.model.EditorInfo::setCreationDate
             );
         modelMapper.createTypeMap(LemmaEntity.class, LemmaDto.class)
             .addMappings(
@@ -275,23 +236,12 @@ public class ModelConfig {
             ).addMapping(
                 ThsEntryEntity::getRevisionState, ThsEntryDto::setReviewState
             );
-        TextEntity.ListToPathsConverter listToPathsConverter = new TextEntity.ListToPathsConverter();
         modelMapper.createTypeMap(TextEntity.class, TextDto.class)
-            .addMappings(
-                m -> m.using(listToPathsConverter).map(
-                    TextEntity::getPaths, TextDto::setPaths
-                )
-            ).addMapping(
+            .addMapping(
                 TextEntity::getRevisionState, TextDto::setReviewState
-            ).addMapping(
-                TextEntity::getSentences, TextDto::setSentenceIds
             );
         modelMapper.createTypeMap(CorpusObjectEntity.class, CorpusObjectDto.class)
-            .addMappings(
-                m -> m.using(listToPathsConverter).map(
-                    CorpusObjectEntity::getPaths, CorpusObjectDto::setPaths
-                )
-            ).addMapping(
+            .addMapping(
                 CorpusObjectEntity::getRevisionState, CorpusObjectDto::setReviewState
             );
         modelMapper.createTypeMap(AnnotationEntity.class, AnnotationDto.class).addMapping(
@@ -301,6 +251,10 @@ public class ModelConfig {
             m -> m.using(translationsToMapConverter).map(
                 SentenceEntity::getTranslations, SentenceDto::setTranslations
             )
+        );
+        // note: addMapping on component (lemmatization) must be done before addMappings on container class (token)!
+        modelMapper.createTypeMap(Token.Lemmatization.class, SentenceToken.Lemmatization.class).addMapping(
+            Token.Lemmatization::getPartOfSpeech, SentenceToken.Lemmatization::setPartOfSpeech
         );
         modelMapper.createTypeMap(Token.class, SentenceToken.class).addMappings(
             m -> m.using(translationsToMapConverter).map(
@@ -315,10 +269,8 @@ public class ModelConfig {
      * attribute of the {@link Document} annotation.
      */
     public static String getIndexName(Class<? extends Indexable> clazz) {
-        for (Annotation annotation : clazz.getAnnotations()) {
-            if (annotation instanceof Document) {
-                return ((Document) annotation).indexName();
-            }
+        for (Annotation annotation : clazz.getAnnotationsByType(Document.class)) {
+            return ((Document) annotation).indexName();
         }
         throw new IllegalArgumentException(
             String.format(
@@ -346,7 +298,7 @@ public class ModelConfig {
             );
             return dtoClass.cast(dto);
         }
-        throw new NullPointerException();
+        throw new NullPointerException("can't convert null object!");
     }
 
     /**

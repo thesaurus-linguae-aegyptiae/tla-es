@@ -1,10 +1,13 @@
 package tla.backend.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.List;
 
-import org.elasticsearch.search.sort.SortOrder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +16,8 @@ import tla.backend.App;
 import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.ThsEntryEntity;
+import tla.domain.dto.meta.AbstractDto;
+import tla.domain.model.ExternalReference;
 
 @SpringBootTest(classes = {App.class})
 public class ServiceTest {
@@ -38,11 +43,19 @@ public class ServiceTest {
     }
 
     @Test
-    void testSearchSortSpec() {
-        assertAll("sort spec from string",
-            () -> assertEquals(SortOrder.ASC, LemmaService.SortSpec.from("sortKey_asc").order),
-            () -> assertEquals("field_name", LemmaService.SortSpec.from("field_name_desc").field),
-            () -> assertEquals(SortOrder.DESC, LemmaService.SortSpec.from("field_name_desc").order)
+    void dtoBatchMapping() throws Exception {
+        LemmaEntity l = tla.domain.util.IO.loadFromFile("src/test/resources/sample/lemma/31610.json", LemmaEntity.class);
+        LemmaEntity l2 = LemmaEntity.builder().id("1")
+            .externalReference("thor", List.of(
+                ExternalReference.builder().id("thot-1").build(),
+                ExternalReference.builder().id("thot-2").type("topbib").build()
+            )).name("nfr-nfr-nfr")
+            .type("substantive")
+            .build();
+        Collection<? extends AbstractDto> dto = lemmaService.toDTO(
+            List.of(l, l2)
         );
+        assertNotNull(dto);
     }
+
 }

@@ -14,7 +14,7 @@ import tla.backend.AbstractMockMvcTest;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.parts.EditDate;
 import tla.backend.es.model.parts.EditorInfo;
-import tla.backend.es.model.parts.LemmaWord;
+import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Transcription;
 import tla.backend.es.model.parts.Translations;
 import tla.backend.es.repo.LemmaRepo;
@@ -64,7 +64,9 @@ public class LemmaControllerTest extends AbstractMockMvcTest {
             .editors(EditorInfo.builder().author("author").updated(EditDate.of(1854,10,31)).build())
             .translations(
                 Translations.builder().de(List.of("übersetzung")).build()
-            ).word(new LemmaWord("N35:G47", new Transcription("nfr", "nfr")))
+            ).word(
+                new Token("N35:G47", new Transcription("nfr", "nfr"))
+            )
             .build();
         String ser = new ObjectMapper().writeValueAsString(l1);
         LemmaEntity l2 = mapper.readValue(ser, LemmaEntity.class);

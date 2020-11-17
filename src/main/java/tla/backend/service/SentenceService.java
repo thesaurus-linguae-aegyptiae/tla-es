@@ -1,7 +1,14 @@
 package tla.backend.service;
 
-import org.elasticsearch.action.search.SearchResponse;
+import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -10,20 +17,15 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.SentenceEntity;
-import tla.backend.es.model.meta.BaseEntity;
+import tla.backend.es.model.meta.Indexable;
+import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.backend.es.repo.SentenceRepo;
-import tla.domain.model.ObjectReference;
-
-import static org.elasticsearch.index.query.QueryBuilders.*;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import tla.domain.command.SearchCommand;
+import tla.domain.dto.SentenceDto;
 
 @Service
 @ModelClass(value = SentenceEntity.class, path = "sentence")
-public class SentenceService extends EntityService<SentenceEntity> {
+public class SentenceService extends EntityService<SentenceEntity, ElasticsearchRepository<SentenceEntity, String>, SentenceDto> {
 
     private final static String LEMMA_FREQ_AGG_NAME = "aggr_around_text_id";
 
@@ -39,20 +41,13 @@ public class SentenceService extends EntityService<SentenceEntity> {
      * make sure containing text gets included.
      */
     @Override
-    protected Collection<BaseEntity> retrieveRelatedDocs(SentenceEntity document) {
-        Collection<BaseEntity> relatedDocuments = super.retrieveRelatedDocs(document);
+    protected Collection<Indexable> retrieveRelatedDocs(SentenceEntity document) {
+        Collection<Indexable> relatedDocuments = super.retrieveRelatedDocs(document);
+        var text = this.retrieveSingleBTSDoc(
+            "BTSText", document.getContext().getTextId()
+        );
         relatedDocuments.addAll(
-            this.retrieveReferencedObjects(
-                List.of(
-                    ObjectReference.builder()
-                        .id(
-                            document.getContext().getTextId()
-                        )
-                        .eclass(
-                            "BTSText"
-                        ).build()
-                )
-            )
+            super.retrieveReferencedThesaurusEntries(text)
         );
         return relatedDocuments;
     }
@@ -71,7 +66,7 @@ public class SentenceService extends EntityService<SentenceEntity> {
                 ScoreMode.None
             ),
             AggregationBuilders.terms(LEMMA_FREQ_AGG_NAME)
-                .field("textId")
+                .field("context.textId")
                 .order(BucketOrder.count(false))
                 .size(10000000)
         );
@@ -82,6 +77,12 @@ public class SentenceService extends EntityService<SentenceEntity> {
                 Terms.Bucket::getDocCount
             )
         );
+    }
+
+    @Override
+    protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

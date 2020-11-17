@@ -19,6 +19,7 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.service.ModelClass;
+import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.backend.service.EntityService;
 
 /**
@@ -73,10 +74,13 @@ public class RepoPopulator {
         public RepoBatchIngestor(Class<S> modelClass) {
             this.modelClass = modelClass;
             this.path = getModelClassServicePath(
-                EntityService.getService(modelClass)
+                EntityService.getService(
+                    modelClass.asSubclass(AbstractBTSBaseClass.class)
+                )
             );
             this.batch = new ArrayList<>();
             this.count = 0;
+            log.info("set up batch ingestor for model class {}", modelClass.getName());
         }
 
         public void add(S doc) {
@@ -119,7 +123,11 @@ public class RepoPopulator {
         @SuppressWarnings("unchecked")
         public void ingest() {
             try {
-                ((ElasticsearchRepository<S, String>) EntityService.getService(modelClass).getRepo()).saveAll(this.batch);
+                (
+                    (ElasticsearchRepository<S, String>) EntityService.getService(
+                        modelClass.asSubclass(AbstractBTSBaseClass.class)
+                    ).getRepo()
+                ).saveAll(this.batch);
                 this.count += this.batch.size();
                 this.batch.clear();
             } catch (Exception e) {
@@ -139,7 +147,7 @@ public class RepoPopulator {
     /**
      * batch indexer registry
      */
-    private Map<String, RepoBatchIngestor<? extends Indexable>> repoIngestors = new HashMap<>();
+    protected Map<String, RepoBatchIngestor<? extends Indexable>> repoIngestors = new HashMap<>();
 
     /**
      * currently active batch indexer
@@ -149,7 +157,9 @@ public class RepoPopulator {
     /**
      * Return the <code>path</code> value of a entity service's {@link ModelClass} annotation
      */
-    private static String getModelClassServicePath(EntityService<? extends Indexable> service) {
+    private static String getModelClassServicePath(
+        EntityService<? extends Indexable, ? extends ElasticsearchRepository<?, ?>, ?> service
+    ) {
         for (Annotation a : service.getClass().getAnnotations()) {
             if (a instanceof ModelClass) {
                 return ((ModelClass) a).path();
@@ -159,30 +169,37 @@ public class RepoPopulator {
     }
 
     /**
-     * Registers {@link RepoBatchIngestor} instances for each model class specified via a {@link ModelClass} annotation
-     * on the {@link RepoPopulator} class.
+     * Registers {@link RepoBatchIngestor} instances for each model class for which an {@link EntityService}
+     * subclass has been registered with the {@link ModelClass} annotation.
+     * @return populator instance
+     * @see #ingestTarFile(List)
      */
-    private void registerRepoIngestors() {
+    public RepoPopulator init() {
         for (Class<? extends Indexable> modelClass : EntityService.getRegisteredModelClasses()) {
-            String modelPath = getModelClassServicePath(
-                EntityService.getService(modelClass)
-            );
-            if (modelPath != null && !modelPath.isEmpty()) {
-                this.repoIngestors.put(
-                    modelPath,
-                    new RepoBatchIngestor<>(modelClass)
+            if (AbstractBTSBaseClass.class.isAssignableFrom(modelClass)) {
+                String modelPath = getModelClassServicePath(
+                    EntityService.getService(
+                        modelClass.asSubclass(AbstractBTSBaseClass.class)
+                    )
                 );
+                if (modelPath != null && !modelPath.isEmpty()) {
+                    this.repoIngestors.put(
+                        modelPath,
+                        new RepoBatchIngestor<>(modelClass)
+                    );
+                }
             }
         }
+        return this;
     }
 
     /**
      * Indexes all documents inside a <code>*.tar.gz</code> file at the specified location.
      * @param filenames List of length 1
      * @throws IOException
+     * @see {@link #init()}
      */
     public void ingestTarFile(List<String> filenames) throws IOException {
-        registerRepoIngestors();
         log.info("process tar file {}", String.join(", ", filenames));
         if (filenames.size() == 1) {
             String filename = filenames.get(0);
@@ -229,7 +246,7 @@ public class RepoPopulator {
      *
      * @return might be null
      */
-    private void selectBatchIngestor(String modelPath) {
+    protected RepoBatchIngestor<?> selectBatchIngestor(String modelPath) {
         if (this.batchIngestor == null || !this.batchIngestor.path.equals(modelPath)) {
             if (this.repoIngestors.containsKey(modelPath)) {
                 this.batchIngestor = this.repoIngestors.get(modelPath);
@@ -242,6 +259,15 @@ public class RepoPopulator {
                 this.batchIngestor = null;
             }
         }
+        return this.batchIngestor;
+    }
+
+    /**
+     * Add single TLA entity deserialized from a JSON document to buffer of currently active
+     * {@link RepoBatchIngestor} for later batch ingestion into Elasticsearch index.
+     */
+    protected void addToBatch(String json) {
+        this.batchIngestor.add(json);
     }
 
     /**
@@ -250,14 +276,14 @@ public class RepoPopulator {
      */
     private void processTarArchive(TarArchiveInputStream input) throws IOException {
         TarArchiveEntry archiveEntry;
+        long filecount = 0;
         while ((archiveEntry = input.getNextTarEntry()) != null) {
             String typeId = this.extractDocTypeFromPath(archiveEntry);
-            this.selectBatchIngestor(typeId);
             if (!archiveEntry.isDirectory()) {
                 if (input.canReadEntryData(archiveEntry)) {
-                    this.selectBatchIngestor(typeId);
-                    if (this.batchIngestor != null) {
-                        this.batchIngestor.add(
+                    filecount++;
+                    if (this.selectBatchIngestor(typeId) != null) {
+                        this.addToBatch(
                             new String(input.readAllBytes())
                         );
                     }
@@ -266,6 +292,7 @@ public class RepoPopulator {
                 }
             }
         }
+        log.info("JSON documents extracted from archive: {}", filecount);
         flushIngestors();
     }
 

@@ -2,20 +2,20 @@ package tla.backend.es.model;
 
 import java.util.List;
 
-import org.modelmapper.AbstractConverter;
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.model.meta.UserFriendlyEntity;
+import tla.backend.es.model.parts.ObjectPath;
+import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.TextDto;
-import tla.domain.model.ObjectReference;
-import tla.domain.model.Paths;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
 
@@ -28,23 +28,38 @@ import tla.domain.model.meta.TLADTO;
 @NoArgsConstructor
 @BTSeClass("BTSText")
 @TLADTO(TextDto.class)
-@EqualsAndHashCode(callSuper = true)
-@Document(indexName = "text", type = "text")
-public class TextEntity extends TLAEntity {
+@Document(indexName = "text")
+public class TextEntity extends UserFriendlyEntity {
+
+    @Field(type = FieldType.Search_As_You_Type, name = "hash")
+    private String SUID;
 
     @Field(type = FieldType.Keyword)
-    String corpus;
+    private String corpus;
 
     @Field(type = FieldType.Object)
-    List<List<ObjectReference>> paths;
+    private ObjectPath[] paths;
 
-    @Field(type = FieldType.Keyword)
-    List<String> sentences;
+    @Field(type = FieldType.Object)
+    private List<Translations> translations;
 
-    public static class ListToPathsConverter extends AbstractConverter<List<List<ObjectReference>>, Paths> {
-        @Override
-        protected Paths convert(List<List<ObjectReference>> source) {
-            return Paths.of(source);
+    @Field(type = FieldType.Object)
+    private WordCount wordCount;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class WordCount {
+        @Field(type = FieldType.Integer)
+        int min = 0;
+        @Field(type = FieldType.Integer)
+        int max = 0;
+        /**
+         * for compatibility
+         */
+        public WordCount(int count) {
+            this.min = count;
+            this.max = count;
         }
     }
 

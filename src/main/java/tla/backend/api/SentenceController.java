@@ -16,7 +16,7 @@ public class SentenceController extends EntityController<SentenceEntity> {
     private SentenceService service;
 
     @Override
-    public EntityService<SentenceEntity> getService() {
+    public EntityService<SentenceEntity, ?, ?> getService() {
         return this.service;
     }
 

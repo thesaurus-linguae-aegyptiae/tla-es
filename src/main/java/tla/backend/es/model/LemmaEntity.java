@@ -15,12 +15,14 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import tla.backend.es.model.meta.TLAEntity;
-import tla.backend.es.model.parts.LemmaWord;
+import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.LemmaDto;
 import tla.domain.model.meta.BTSeClass;
@@ -31,11 +33,14 @@ import tla.domain.model.meta.TLADTO;
 @TLADTO(LemmaDto.class)
 @BTSeClass("BTSLemmaEntry")
 @ToString(callSuper = true)
-@JsonInclude(Include.NON_EMPTY)
+@JsonInclude(Include.NON_NULL)
 @EqualsAndHashCode(callSuper = true)
-@Document(indexName = "lemma", type = "lemma")
+@Document(indexName = "lemma")
 @Setting(settingPath = "/elasticsearch/settings/indices/lemma.json")
 public class LemmaEntity extends TLAEntity {
+
+    @Field(type = FieldType.Search_As_You_Type, analyzer = "transcription_analyzer")
+    private String name;
 
     @Field(type = FieldType.Keyword)
     @JsonAlias({"sortString", "sort_string", "sort_key"})
@@ -50,13 +55,15 @@ public class LemmaEntity extends TLAEntity {
 
     @Singular
     @Field(type = FieldType.Object)
-    private List<LemmaWord> words;
+    private List<Token> words;
 
     public LemmaEntity() {
         this.words = Collections.emptyList();
     }
 
-    @Data
+    @Getter
+    @Setter
+    @EqualsAndHashCode
     @NoArgsConstructor
     @AllArgsConstructor
     @JsonInclude(Include.NON_NULL)

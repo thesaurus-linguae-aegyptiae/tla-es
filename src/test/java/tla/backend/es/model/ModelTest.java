@@ -1,5 +1,17 @@
 package tla.backend.es.model;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.temporal.ChronoField;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -13,33 +25,32 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import tla.backend.App;
 import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.model.meta.Indexable;
+import tla.backend.es.model.meta.LinkedEntity.Relations;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
 import tla.backend.es.model.parts.EditDate;
 import tla.backend.es.model.parts.EditorInfo;
-import tla.backend.es.model.parts.LemmaWord;
+import tla.backend.es.model.parts.ObjectReference;
 import tla.backend.es.model.parts.PartOfSpeech;
 import tla.backend.es.model.parts.Token;
-import tla.backend.es.model.parts.Transcription;
-import tla.backend.es.model.parts.Translations;
 import tla.backend.es.model.parts.Token.Flexion;
 import tla.backend.es.model.parts.Token.Lemmatization;
+import tla.backend.es.model.parts.Transcription;
+import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
-import tla.domain.dto.meta.DocumentDto;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.SentenceDto;
 import tla.domain.dto.TextDto;
 import tla.domain.dto.ThsEntryDto;
+import tla.domain.dto.meta.AbstractDto;
+import tla.domain.dto.meta.DocumentDto;
 import tla.domain.model.Language;
 import tla.domain.model.Passport;
 import tla.domain.model.SentenceToken;
+import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.BTSeClass;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Arrays;
-import java.util.Collections;
+import tla.domain.util.IO;
 
 @SpringBootTest(classes = {App.class})
 public class ModelTest {
@@ -48,14 +59,14 @@ public class ModelTest {
 
     @Test
     void modelConfigInitialized() {
-        List<Class<? extends BaseEntity>> modelClasses = ModelConfig.getModelClasses();
+        List<Class<? extends AbstractBTSBaseClass>> modelClasses = ModelConfig.getModelClasses();
         assertAll("make sure model config class has been initialized",
             () -> assertTrue(ModelConfig.isInitialized(), "flag should be set"),
             () -> assertNotNull(modelClasses, "model class list should not be null"),
-            () -> assertNotNull(ModelConfig.getModelClassConfigs(), "model configurations registry expected"),
+            () -> assertNotNull(ModelConfig.getEclassConfigs(), "model configurations registry expected"),
             () -> assertEquals(
                 modelClasses.size(),
-                ModelConfig.getModelClassConfigs().size(),
+                ModelConfig.getEclassConfigs().size(),
                 String.format(
                     "number of model class configurations registered should be the same as model classes known to ModelConfig (%s)",
                     String.join(
@@ -77,7 +88,7 @@ public class ModelTest {
     @Test
     void registerModelClass() throws Exception {
         int numberOfRegisteredModels = ModelConfig.getModelClasses().size();
-        int numberOfRegisteredModelConfigs = ModelConfig.getModelClassConfigs().size();
+        int numberOfRegisteredModelConfigs = ModelConfig.getEclassConfigs().size();
         try {
             Map<String, ModelConfig.BTSeClassConfig> conf = ModelConfig.registerModelClass(
                 CorrectlyAnnotatedDummyModelClass.class
@@ -88,7 +99,7 @@ public class ModelTest {
                 () -> assertEquals("made_up_index_name", conf.get("BTSMadeUpModel").getIndex(), "expect index name"),
                 () -> assertEquals(CorrectlyAnnotatedDummyModelClass.class, conf.get("BTSMadeUpModel").getModelClass(), "expect class"),
                 () -> assertEquals(numberOfRegisteredModels + 1, ModelConfig.getModelClasses().size(), "expect one more known model class"),
-                () -> assertEquals(numberOfRegisteredModelConfigs + 1, ModelConfig.getModelClassConfigs().size(), "expect one more registered config"),
+                () -> assertEquals(numberOfRegisteredModelConfigs + 1, ModelConfig.getEclassConfigs().size(), "expect one more registered config"),
                 () -> assertEquals(conf.get("BTSMadeUpModel").getIndex(), ModelConfig.getIndexName(CorrectlyAnnotatedDummyModelClass.class)),
                 () -> assertEquals(CorrectlyAnnotatedDummyModelClass.class, ModelConfig.getModelClass("BTSMadeUpModel"))
             );
@@ -163,10 +174,11 @@ public class ModelTest {
             .id("1")
             .eclass("BTSThsEntry")
             .sortKey("1")
+            .SUID("gd7")
             .editors(EditorInfo.builder().author("author").updated(EditDate.of(2015, 12, 31)).build())
             .build();
         ThsEntryEntity t_read = mapper.readValue(
-            "{\"id\":\"ID\",\"eclass\":\"BTSThsEntry\",\"sort_string\":\"1\",\"editors\":{\"author\":\"author\",\"updated\":\"2015-12-31\"}}",
+            "{\"id\":\"ID\",\"hash\":\"gd7\",\"eclass\":\"BTSThsEntry\",\"sort_string\":\"1\",\"editors\":{\"author\":\"author\",\"updated\":\"2015-12-31\"}}",
             ThsEntryEntity.class
         );
         ThsEntryEntity t_round = mapper.readValue(mapper.writeValueAsString(t_built), ThsEntryEntity.class);
@@ -184,16 +196,22 @@ public class ModelTest {
             ThsEntryEntity.class
         );
         assertAll("synonyms should be extracted from passport and converted into translations",
+            () -> assertNotNull(t.getSUID(), "short ID"),
             () -> assertNotNull(t.getTranslations()),
             () -> assertNotNull(t.getTranslations().getFr()),
             () -> assertEquals(1, t.getTranslations().getFr().size()),
-            () -> assertEquals("21e dynastie", t.getTranslations().getFr().get(0))
+            () -> assertEquals("21e dynastie", t.getTranslations().getFr().get(0)),
+            () -> assertNotNull(t.getPaths(), "object paths"),
+            () -> assertFalse(t.getPaths().length < 1, "path not empty")
         );
-        DocumentDto dto = (DocumentDto) t.toDTO();
+        AbstractDto dto = ModelConfig.toDTO(t);
         assertAll("test thesaurus entity to DTO mapping",
             () -> assertTrue(dto instanceof ThsEntryDto),
-            () -> assertNotNull(dto.getReviewState(), "review status must not be null"),
-            () -> assertNotNull(((ThsEntryDto) dto).getTranslations(), "translations must not be null")
+            () -> assertNotNull(((ThsEntryDto) dto).getReviewState(), "review status must not be null"),
+            () -> assertNotNull(((ThsEntryDto) dto).getTranslations(), "translations must not be null"),
+            () -> assertTrue(!((ThsEntryDto) dto).getTranslations().isEmpty(), "translations not empty"),
+            () -> assertNotNull(((ThsEntryDto) dto).getPaths(), "object paths"),
+            () -> assertTrue(!((ThsEntryDto) dto).getPaths().isEmpty(), "paths not empty")
         );
     }
 
@@ -222,6 +240,7 @@ public class ModelTest {
         );
         assertAll("lemma entry instances should be equal regardless of creation method",
             () -> assertEquals("BTSLemmaEntry", l_built.getEclass(), "superclass getEclass() method should return registered eClass value"),
+            () -> assertEquals(IO.json(l_built), IO.json(l_round)),
             () -> assertEquals(l_built, l_read, "deserialized lemma instance should be equal to built instance with the same properties"),
             () -> assertEquals(l_built, l_round, "lemma instance serialized and then deserialized should equal itself")
         );
@@ -235,7 +254,9 @@ public class ModelTest {
         );
         assertAll("deserialize lemma entity from JSON file",
             () -> assertNotNull(l),
-            () -> assertNotNull(l.getPassport())
+            () -> assertNotNull(l.getPassport()),
+            () -> assertNotNull(l.getWords()),
+            () -> assertNotNull(l.getWords().get(0).getFlexion().getBtsGloss(), "lemma word flexion bts glossing")
         );
     }
 
@@ -255,7 +276,7 @@ public class ModelTest {
             .passport(p)
             .translations(Translations.builder().de(List.of("übersetzung")).build())
             .word(
-                new LemmaWord(
+                new Token(
                     "N35:G47",
                     new Transcription("nfr", "nfr")
                 )
@@ -323,9 +344,16 @@ public class ModelTest {
             AnnotationEntity.class
         );
         assertAll("after serialization and deserialization, annotation object should be still the same",
-            () -> assertEquals(a, b),
-            () -> assertEquals(a.hashCode(), b.hashCode()),
-            () -> assertEquals(a.toString(), b.toString())
+            () -> assertEquals(a, b, "instance"),
+            () -> assertEquals(a.hashCode(), b.hashCode(), "hashcode"),
+            () -> assertNotNull(b.getBody(), "body"),
+            () -> assertEquals(a.getBody(), b.getBody(), "body"),
+            () -> assertEquals(a.toString(), b.toString(), "tostring"),
+            () -> assertEquals(
+                tla.domain.util.IO.json(a),
+                tla.domain.util.IO.json(b),
+                "serialization"
+            )
         );
     }
 
@@ -338,7 +366,9 @@ public class ModelTest {
         assertAll("test text deserialization from JSON file",
             () -> assertNotNull(t),
             () -> assertNotNull(t.getPaths()),
-            () -> assertEquals("bbawarchive", t.getCorpus())
+            () -> assertEquals("bbawarchive", t.getCorpus()),
+            () -> assertEquals(t.getEditors().getUpdated(), t.getEditors().getCreated(), "creation & edit date"),
+            () -> assertEquals(5, t.getEditors().getUpdated().getLong(ChronoField.DAY_OF_WEEK), "date day of week")
         );
     }
 
@@ -352,7 +382,14 @@ public class ModelTest {
         assertAll("test text to DTO mapping",
             () -> assertNotNull(d),
             () -> assertTrue(d instanceof TextDto),
-            () -> assertEquals(t.getRevisionState(), d.getReviewState())
+            () -> assertEquals(t.getRevisionState(), d.getReviewState()),
+            () -> assertNotNull(((TextDto) d).getPaths(), "object paths"),
+            () -> assertTrue(((TextDto) d).getPaths().size() > 0, "indeed paths"),
+            () -> assertFalse(
+                d.getEditors().getUpdated().after(d.getEditors().getCreated()),
+                "update same day as creation"
+            ),
+            () -> assertEquals(14, ((TextDto) d).getWordCount().getMax(), "word count")
         );
         TextDto dto = (TextDto) d;
         assertAll("test mapped text DTO properties",
@@ -370,7 +407,9 @@ public class ModelTest {
             () -> assertNotNull(o),
             () -> assertNotNull(o.getEditors(), "editor info not null"),
             () -> assertNotNull(o.getEditors().getUpdated(), "edit date no null"),
-            () -> assertNotNull(o.getPaths()),
+            () -> assertNotNull(o.getPaths(), "corpus paths"),
+            () -> assertTrue(o.getPaths().length > 0, "paths deserialized"),
+            () -> assertTrue(!o.getPaths()[0].isEmpty(), "corpus object path contains elements"),
             () -> assertEquals("bbawarchive", o.getCorpus())
         );
         DocumentDto d = (DocumentDto) o.toDTO();
@@ -401,7 +440,8 @@ public class ModelTest {
             () -> assertNotNull(c.getRelations().get("partOf").get(0), "first relation"),
             () -> assertNotNull(c.getRelations().get("partOf").get(0).getRanges(), "text range"),
             () -> assertTrue(!c.getRelations().get("partOf").get(0).getRanges().isEmpty(), "text range"),
-            () -> assertNotNull(c.getRelations().get("partOf").get(0).getRanges().get(0).getFrom(), "text range boundary")
+            () -> assertNotNull(c.getRelations().get("partOf").get(0).getRanges().get(0).getStart(), "text range boundary left"),
+            () -> assertNotNull(c.getRelations().get("partOf").get(0).getRanges().get(0).getEnd(), "text range boundary right")
         );
         CommentEntity c2 = CommentEntity.builder()
             .id(c.getId())
@@ -425,30 +465,76 @@ public class ModelTest {
         assertAll("deserialize sentence",
             () -> assertNotNull(s, "sentence instance"),
             () -> assertNotNull(s.getTokens(), "contains words"),
-            () -> assertTrue(!s.getTokens().isEmpty(), "tokens not empty")
+            () -> assertTrue(!s.getTokens().isEmpty(), "tokens not empty"),
+            () -> assertNull(s.getType(), "type")
+        );
+        var c = s.getContext();
+        assertAll("sentence context should deserialize correctly",
+            () -> assertEquals(151, c.getPosition(), "sentence position within text"),
+            () -> assertEquals(1, c.getVariants(), "variant count"),
+            () -> assertEquals("Text", c.getTextType(), "text type"),
+            () -> assertEquals("[59,1]", c.getLine(), "line count info"),
+            () -> assertEquals("Eb 365", c.getParagraph(), "paragraph info")
+        );
+        SentenceEntity s2 = SentenceEntity.builder()
+            .relations(
+                Map.of(
+                    "partOf", Relations.of(
+                        ObjectReference.builder().id(
+                            "REED47N2PNGD5HULYWF4VHCJPA"
+                        ).eclass("BTSText").name(
+                            "55,20-64,5 = Eb 336-431: \"Sammelhandschrift f\u00fcr die Augen\" (Das Augenbuch)"
+                        ).type("Text").build()
+                    ),
+                    "contains", Relations.of(
+                        ObjectReference.builder().id(
+                            "PCMAZFOU7BCZ7EZ6XKPESL56ZI"
+                        ).eclass("BTSText").name(
+                            "Paginierung: Seite 59"
+                        ).type("subtext").build()
+                    )
+                )
+            ).id("IBYCcRHLQNYWZE3htMe7qAXwMmY").context(s.getContext())
+            .tokens(s.getTokens()).translations(s.getTranslations()).transcription(s.getTranscription())
+            .build();
+        assertAll("sentence component equality",
+            () -> {
+                List.of("contains", "partOf").forEach(
+                    key -> assertEquals(s2.getRelations().get(key), s.getRelations().get(key), key)
+                );
+            },
+            () -> assertEquals(s.getContext(), s2.getContext(), "context"),
+            () -> assertEquals(s.toString(), s2.toString(), "tostring")
         );
     }
 
-
     @Test
     void mapSentenceToDTO() throws Exception {
-        Flexion f = new Flexion();
         Lemmatization l = new Lemmatization();
         SentenceEntity.Context c = SentenceEntity.Context.builder()
-            .textId("textId").line("[1]").pos(0).build();
-        l.setPos(new PartOfSpeech("substantive", "masc"));
+            .textId("textId").line("[1]").position(90).build();
+        l.setPartOfSpeech(new PartOfSpeech("substantive", "masc"));
+        Flexion f = new Flexion();
         f.setNumeric(3L);
+        f.setBtsGloss("n/a");
         Token t = new Token();
         t.setFlexion(f);
         t.setLemma(l);
-        t.setTranslations(Translations.builder().de(List.of("bedeutung")).build());;
+        t.setTranslations(Translations.builder().de(List.of("bedeutung")).build());
+        t.setAnnoTypes(List.of("rubrum"));
         SentenceEntity s = SentenceEntity.builder()
             .id("ID")
-            .context(c)
+            .relation(
+                "partOf",
+                BaseEntity.Relations.of(
+                    ObjectReference.builder().id("textid").eclass("BTSText").type("Text").name("papyrus").build()
+                )
+            ).context(c)
             .transcription(new Transcription("nfr", "nfr"))
             .translations(Translations.builder().de(List.of("uebersetzung")).build())
             .tokens(List.of(t))
             .build();
+        s.setType("HS");
         SentenceDto dto = (SentenceDto) ModelConfig.toDTO(s);
         assertAll("test sentence entity to DTO mapping",
             () -> assertNotNull(dto, "instance"),
@@ -460,14 +546,20 @@ public class ModelTest {
             () -> assertNotNull(dto.getTokens(), "tokens"),
             () -> assertEquals(1, dto.getTokens().size(), "1 token"),
             () -> assertNotNull(dto.getContext(), "sentence context in DTO"),
-            () -> assertEquals(s.getContext().getLine(), dto.getContext().getLine(), "lc")
+            () -> assertEquals(s.getContext().getLine(), dto.getContext().getLine(), "lc"),
+            () -> assertEquals(s.getContext().getPosition(), dto.getContext().getPosition(), "sentence position"),
+            () -> assertEquals("HS", dto.getType(), "type")
         );
         SentenceToken tdto = dto.getTokens().get(0);
         assertAll("test sentence token to DTO mapping",
             () -> assertNotNull(tdto, "token"),
             () -> assertNotNull(tdto.getFlexion(), "flexion"),
             () -> assertEquals(3L, tdto.getFlexion().getNumeric(), "flexcode"),
-            () -> assertNotNull(tdto.getLemma(), "lemmatization")
+            () -> assertEquals("n/a", tdto.getFlexion().getBtsGloss(), "bts glossing"),
+            () -> assertNotNull(tdto.getLemma(), "lemmatization"),
+            () -> assertNotNull(tdto.getLemma().getPartOfSpeech(), "lemma POS"),
+            () -> assertNotNull(tdto.getLemma().getPartOfSpeech().getType(), "lemma POS type"),
+            () -> assertTrue(tdto.getAnnoTypes().contains("rubrum"), "token is rubrum")
         );
     }
 

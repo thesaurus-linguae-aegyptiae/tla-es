@@ -1,7 +1,6 @@
 package tla.backend.es.repo;
 
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-
 import tla.backend.es.model.CorpusObjectEntity;
+import tla.backend.es.repo.custom.UserFriendlyEntityRepo;
 
-public interface CorpusObjectRepo extends ElasticsearchRepository<CorpusObjectEntity, String> {}
+public interface CorpusObjectRepo extends UserFriendlyEntityRepo<CorpusObjectEntity, String> {}

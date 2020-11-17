@@ -11,3 +11,6 @@ bin/test/
 build
 sample.tar.gz
 settings.gradle
+*.csv
+*.gv
+*.pdf

@@ -1,6 +1,8 @@
 package tla.backend.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -20,7 +22,6 @@ public class ThsServiceTest {
             ThsEntryEntity.class
         );
     }
-
 
     @Test
     void deserializeFromFile() throws Exception {
@@ -46,4 +47,5 @@ public class ThsServiceTest {
             () -> assertEquals(-944, years.get(1), "latest year")
         );
     }
+
 }

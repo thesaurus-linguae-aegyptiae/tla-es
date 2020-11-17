@@ -1,0 +1,33 @@
+{
+    "corpus": null,
+    "eclass": "BTSAnnotation",
+    "editors": {
+        "author": "K. Stegbauer",
+        "contributors": [
+            "Alt\u00e4gyptisches W\u00f6rterbuch"
+        ],
+        "created": "2015-06-26 16:52:59",
+        "type": "user",
+        "updated": "2015-06-26 17:27:20"
+    },
+    "id": "IBUBd0kXx8hvzU9vuxAKWNHnf6s",
+    "passport": {},
+    "relations": {
+        "partOf": [
+            {
+                "eclass": "BTSSentence",
+                "id": "IBUBd3QvPWhrgk50h3u3Wv5PmdA",
+                "ranges": [
+                    {
+                        "end": "IBUBd3l3VyEPm0EbnVNUdogMKw8",
+                        "start": "IBUBd3l3VyEPm0EbnVNUdogMKw8"
+                    }
+                ]
+            }
+        ]
+    },
+    "revisionState": "published",
+    "subtype": null,
+    "title": null,
+    "type": "rubrum"
+}

@@ -1,1 +1,246 @@
-{"id": "IBUBd3QvPWhrgk50h3u3Wv5PmdA", "eclass": "BTSSentence", "context": {"textId": "CDWYGHBII5C37IBETSSI6RCIDQ", "line": "(1)", "paragraph": null, "pos": 0}, "type": "HS", "translations": {"de": ["Weiter: Blut der ersten Geburt der Kobra!"]}, "transcription": {"unicode": "k,t znf n(,j) ms,wt tp.t n.t \\ua725rry,t _", "mdc": "k,t znf n(,j) ms,wt tp.t n.t arry,t _"}, "tokens": [{"id": "IBUBd3l3VyEPm0EbnVNUdogMKw8", "type": "word", "label": "k,t", "lemma": {"id": "162830", "pos": {"type": "substantive", "subtype": "substantive_fem"}}, "flexion": {"numeric": 3, "verbal": "(not specified)", "glossing": null}, "glyphs": "V31A:X1", "translations": {"de": ["etwas Anderes"]}, "transcription": {"unicode": "k,t", "mdc": "k,t"}, "flags": ["rubrum"]}, {"id": "IBUBd6t8UfsvhkOWsNrRSndDv0M", "type": "word", "label": "znf", "lemma": {"id": "137250", "pos": {"type": "substantive", "subtype": "substantive_masc"}}, "flexion": {"numeric": 3, "verbal": "(not specified)", "glossing": null}, "glyphs": "O34:N35*I9-D26:Z2", "translations": {"de": ["Blut"]}, "transcription": {"unicode": "znf", "mdc": "znf"}}, {"id": "IBUBd1wvR9BQpE2ruFpnXjQSCf4", "type": "word", "label": "n(,j)", "lemma": {"id": "79800", "pos": {"type": "adjective", "subtype": "nisbe_adjective_preposition"}}, "flexion": {"numeric": 71010, "verbal": "Adj.sgm", "glossing": null}, "glyphs": "N35", "translations": {"de": ["von [Genitiv]"]}, "transcription": {"unicode": "n(,j)", "mdc": "n(,j)"}}, {"id": "IBUBd4wolaxJv0GxkQDQX811yUA", "type": "word", "label": "ms,wt", "lemma": {"id": "75070", "pos": {"type": "substantive", "subtype": "substantive_fem"}}, "flexion": {"numeric": 3, "verbal": "(not specified)", "glossing": null}, "glyphs": "F31-S29-X1:Z5", "translations": {"de": ["Geburt; das Geb\\u00e4ren"]}, "transcription": {"unicode": "ms,wt", "mdc": "ms,wt"}}, {"id": "IBUBd680f3WpZ0yfr5VlW04i63M", "type": "word", "label": "tp.t", "lemma": {"id": "171460", "pos": {"type": "adjective", "subtype": "nisbe_adjective_substantive"}}, "flexion": {"numeric": 71020, "verbal": "Adj.sgf", "glossing": null}, "glyphs": "D1-Q3:X1", "translations": {"de": ["erster"]}, "transcription": {"unicode": "tp.t", "mdc": "tp.t"}}, {"id": "IBUBd7RUakZ0F0JXnUg86tsQd2I", "type": "word", "label": "n.t", "lemma": {"id": "79800", "pos": {"type": "adjective", "subtype": "nisbe_adjective_preposition"}}, "flexion": {"numeric": 71020, "verbal": "Adj.sgf", "glossing": null}, "glyphs": "N35:X1", "translations": {"de": ["von [Genitiv]"]}, "transcription": {"unicode": "n.t", "mdc": "n.t"}}, {"id": "IBUBd9NjYcm5gk5cqHPcTArdUEo", "type": "word", "label": "\\ua725rry,t", "lemma": {"id": "21780", "pos": {"type": "substantive", "subtype": "substantive_fem"}}, "flexion": {"numeric": 3, "verbal": "(not specified)", "glossing": null}, "glyphs": "D36:D21-M17-M17-X1:Z5-I12", "translations": {"de": ["Schlange; Ur\\u00e4us"]}, "transcription": {"unicode": "\\ua725rry,t", "mdc": "arry,t"}}, {"id": "IBUBd7eksyVp50pHqMAfT1KL6Wo", "type": "VersbreakMarker", "label": null, "glyphs": null}]}
+{
+  "context": {
+    "line": null,
+    "paragraph": null,
+    "pos": 0,
+    "textId": "CDWYGHBII5C37IBETSSI6RCIDQ",
+    "variants": 1
+  },
+  "eclass": "BTSSentence",
+  "glyphs": "V31A:X1 O34:N35*I9-D26:Z2 N35 F31-S29-X1:Z5 D1-Q3:X1 N35:X1 D36:D21-M17-M17-X1:Z5-I12 ",
+  "id": "IBUBd3QvPWhrgk50h3u3Wv5PmdA",
+  "relations": {
+    "contains": [
+      {
+        "eclass": "BTSAnnotation",
+        "id": "IBUBd0kXx8hvzU9vuxAKWNHnf6s",
+        "ranges": [
+          {
+            "end": "IBUBd3l3VyEPm0EbnVNUdogMKw8",
+            "start": "IBUBd3l3VyEPm0EbnVNUdogMKw8"
+          }
+        ],
+        "type": "rubrum"
+      }
+    ],
+    "partOf": [
+      {
+        "eclass": "BTSText",
+        "id": "CDWYGHBII5C37IBETSSI6RCIDQ",
+        "name": "\u2329oBruxelles E 3209, \u232aSpruch 2",
+        "type": "Text"
+      }
+    ]
+  },
+  "tokens": [
+    {
+      "annoTypes": [
+        "rubrum"
+      ],
+      "flexion": {
+        "btsGloss": "n/a",
+        "lingGloss": "N.f:sg",
+        "numeric": 3
+      },
+      "glyphs": "V31A:X1",
+      "id": "IBUBd3l3VyEPm0EbnVNUdogMKw8",
+      "label": "k,t",
+      "lemma": {
+        "POS": {
+          "subtype": "substantive_fem",
+          "type": "substantive"
+        },
+        "id": "162830"
+      },
+      "transcription": {
+        "mdc": "k,t",
+        "unicode": "k,t"
+      },
+      "translations": {
+        "de": [
+          "etwas Anderes"
+        ]
+      },
+      "type": "word"
+    },
+    {
+      "flexion": {
+        "btsGloss": "n/a",
+        "lingGloss": "N.m:sg",
+        "numeric": 3
+      },
+      "glyphs": "O34:N35*I9-D26:Z2",
+      "id": "IBUBd6t8UfsvhkOWsNrRSndDv0M",
+      "label": "znf",
+      "lemma": {
+        "POS": {
+          "subtype": "substantive_masc",
+          "type": "substantive"
+        },
+        "id": "137250"
+      },
+      "transcription": {
+        "mdc": "znf",
+        "unicode": "znf"
+      },
+      "translations": {
+        "de": [
+          "Blut"
+        ]
+      },
+      "type": "word"
+    },
+    {
+      "flexion": {
+        "btsGloss": "Adj.sgm",
+        "lingGloss": "PREP-adjz:m.sg",
+        "numeric": 71010
+      },
+      "glyphs": "N35",
+      "id": "IBUBd1wvR9BQpE2ruFpnXjQSCf4",
+      "label": "n(,j)",
+      "lemma": {
+        "POS": {
+          "subtype": "nisbe_adjective_preposition",
+          "type": "adjective"
+        },
+        "id": "79800"
+      },
+      "transcription": {
+        "mdc": "n(,j)",
+        "unicode": "n(,j)"
+      },
+      "translations": {
+        "de": [
+          "von [Genitiv]"
+        ]
+      },
+      "type": "word"
+    },
+    {
+      "flexion": {
+        "btsGloss": "n/a",
+        "lingGloss": "N.f:sg",
+        "numeric": 3
+      },
+      "glyphs": "F31-S29-X1:Z5",
+      "id": "IBUBd4wolaxJv0GxkQDQX811yUA",
+      "label": "ms,wt",
+      "lemma": {
+        "POS": {
+          "subtype": "substantive_fem",
+          "type": "substantive"
+        },
+        "id": "75070"
+      },
+      "transcription": {
+        "mdc": "ms,wt",
+        "unicode": "ms,wt"
+      },
+      "translations": {
+        "de": [
+          "Geburt; das Geb\u00e4ren"
+        ]
+      },
+      "type": "word"
+    },
+    {
+      "flexion": {
+        "btsGloss": "Adj.sgf",
+        "lingGloss": "N-adjz:f.sg",
+        "numeric": 71020
+      },
+      "glyphs": "D1-Q3:X1",
+      "id": "IBUBd680f3WpZ0yfr5VlW04i63M",
+      "label": "tp.t",
+      "lemma": {
+        "POS": {
+          "subtype": "nisbe_adjective_substantive",
+          "type": "adjective"
+        },
+        "id": "171460"
+      },
+      "transcription": {
+        "mdc": "tp.t",
+        "unicode": "tp.t"
+      },
+      "translations": {
+        "de": [
+          "erster"
+        ]
+      },
+      "type": "word"
+    },
+    {
+      "flexion": {
+        "btsGloss": "Adj.sgf",
+        "lingGloss": "PREP-adjz:f.sg",
+        "numeric": 71020
+      },
+      "glyphs": "N35:X1",
+      "id": "IBUBd7RUakZ0F0JXnUg86tsQd2I",
+      "label": "n.t",
+      "lemma": {
+        "POS": {
+          "subtype": "nisbe_adjective_preposition",
+          "type": "adjective"
+        },
+        "id": "79800"
+      },
+      "transcription": {
+        "mdc": "n.t",
+        "unicode": "n.t"
+      },
+      "translations": {
+        "de": [
+          "von [Genitiv]"
+        ]
+      },
+      "type": "word"
+    },
+    {
+      "flexion": {
+        "btsGloss": "n/a",
+        "lingGloss": "N.f:sg",
+        "numeric": 3
+      },
+      "glyphs": "D36:D21-M17-M17-X1:Z5-I12",
+      "id": "IBUBd9NjYcm5gk5cqHPcTArdUEo",
+      "label": "\ua725rry,t",
+      "lemma": {
+        "POS": {
+          "subtype": "substantive_fem",
+          "type": "substantive"
+        },
+        "id": "21780"
+      },
+      "transcription": {
+        "mdc": "arry,t",
+        "unicode": "\ua725rry,t"
+      },
+      "translations": {
+        "de": [
+          "Schlange; Ur\u00e4us"
+        ]
+      },
+      "type": "word"
+    },
+    {
+      "glyphs": null,
+      "id": "IBUBd7eksyVp50pHqMAfT1KL6Wo",
+      "label": null,
+      "type": "VersbreakMarker"
+    }
+  ],
+  "transcription": {
+    "mdc": "k,t znf n(,j) ms,wt tp.t n.t arry,t ",
+    "unicode": "k,t znf n(,j) ms,wt tp.t n.t \ua725rry,t "
+  },
+  "translations": {
+    "de": [
+      "Weiter: Blut der ersten Geburt der Kobra!"
+    ]
+  },
+  "type": "HS",
+  "wordCount": 7
+}

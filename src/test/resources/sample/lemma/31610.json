@@ -1,8 +1,9 @@
 {
   "eclass": "BTSLemmaEntry",
   "editors": {
-    "author": "Altägyptisches Wörterbuch",
+    "author": "Alt\u00e4gyptisches W\u00f6rterbuch",
     "contributors": null,
+    "created": "2015-06-26 16:13:10",
     "type": "user",
     "updated": "2019-12-19 16:38:53"
   },
@@ -26,7 +27,7 @@
     "bibliography": [
       {
         "bibliographical_text_field": [
-          "Wb 1, 130.1-5; Germer, Flora, 125; LÄ II, 1265"
+          "Wb 1, 130.1-5; Germer, Flora, 125; L\u00c4 II, 1265"
         ]
       }
     ],
@@ -101,17 +102,17 @@
       {
         "eclass": "BTSLemmaEntry",
         "id": "d222",
-        "name": "ꜣsr",
+        "name": "\ua723sr",
         "type": "substantive"
       }
     ]
   },
   "revisionState": "published",
-  "sortString": "ATM",
+  "sortKey": "ATM",
   "subtype": "substantive_masc",
   "time_span": {
-    "begin": -1992,
-    "end": 395
+    "begin": -1939,
+    "end": 324
   },
   "translations": {
     "de": [
@@ -124,11 +125,24 @@
   "type": "substantive",
   "words": [
     {
+      "flexion": {
+        "btsGloss": "(unedited)",
+        "lingGloss": "\u2014",
+        "numeric": 0
+      },
       "glyphs": "M17:O34-D21:M1",
+      "id": "IBUBd4ZvJZI7qkj5mGSsN5q5OX0",
+      "label": "jzr",
+      "lemma": {
+        "POS": null,
+        "id": null
+      },
       "transcription": {
         "mdc": "jzr",
         "unicode": "jzr"
-      }
+      },
+      "translations": null,
+      "type": "word"
     }
   ]
 }

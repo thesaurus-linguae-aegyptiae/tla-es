@@ -13,7 +13,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Singular;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import tla.backend.es.repo.RepoPopulator;
 import tla.domain.model.ExternalReference;
@@ -29,9 +28,8 @@ import tla.domain.model.meta.TLADTO;
 @Getter
 @Setter
 @SuperBuilder
-@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public abstract class TLAEntity extends BaseEntity {
 
     @Singular

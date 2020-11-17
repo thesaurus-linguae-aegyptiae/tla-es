@@ -25,19 +25,32 @@
           ]
         }
       },
-      "analyzer": {
-        "lemmaname_analyzer": {
-          "type": "custom",
-          "tokenizer": "whitespace",
-          "filter": [
-            "lowercase"
-          ]
+      "char_filter": {
+        "transcription_brackets_filter": {
+          "type": "pattern_replace",
+          "pattern": "\\.\\S+|[\\(\\)\\[\\]⸢⸮?⸣]|\\{\\S*\\}",
+          "replacement": ""
         },
+        "transcription_suffix_filter": {
+          "type": "mapping",
+          "mappings": [
+            "pl => w",
+            ",t,pl => ,wt",
+            ",tpl => ,wt",
+            "t,du => ,tj",
+            ",tdu => ,tj",
+            "du => wj",
+            ",  => ."
+          ]
+        }
+      },
+      "analyzer": {
         "transcription_analyzer": {
           "type": "custom",
           "tokenizer": "whitespace",
-          "filter": [
-            "lowercase"
+          "char_filter": [
+            "transcription_brackets_filter",
+            "transcription_suffix_filter"
           ]
         },
         "hieroglyph_analyzer": {

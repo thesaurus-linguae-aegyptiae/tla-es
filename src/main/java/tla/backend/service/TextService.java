@@ -4,15 +4,18 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.TextEntity;
+import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.backend.es.repo.TextRepo;
+import tla.backend.es.repo.custom.UserFriendlyEntityRepo;
+import tla.domain.command.SearchCommand;
+import tla.domain.dto.TextDto;
 
 @Service
 @ModelClass(value = TextEntity.class, path = "text")
-public class TextService extends EntityService<TextEntity> {
+public class TextService extends UserFriendlyEntityService<TextEntity, UserFriendlyEntityRepo<TextEntity, String>, TextDto> {
 
     @Autowired
     private TextRepo textRepo;
@@ -21,7 +24,7 @@ public class TextService extends EntityService<TextEntity> {
     private ThesaurusService thsService;
 
     @Override
-    public ElasticsearchRepository<TextEntity, String> getRepo() {
+    public UserFriendlyEntityRepo<TextEntity, String> getRepo() {
         return textRepo;
     }
 
@@ -46,6 +49,12 @@ public class TextService extends EntityService<TextEntity> {
             years.first(),
             years.last()
         };
+    }
+
+    @Override
+    protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
