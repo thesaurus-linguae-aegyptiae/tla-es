@@ -2,6 +2,7 @@ package tla.backend.service;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.when;
@@ -15,12 +16,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import tla.backend.App;
+import tla.backend.Util;
 import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.TextEntity;
+import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.repo.AnnotationRepo;
 import tla.backend.es.repo.SentenceRepo;
 import tla.backend.es.repo.TextRepo;
+import tla.backend.es.repo.ThesaurusRepo;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 
 @SpringBootTest(classes = {App.class})
@@ -35,6 +39,9 @@ public class SentenceServiceTest {
     @MockBean
     private AnnotationRepo annoRepo;
 
+    @MockBean
+    private ThesaurusRepo thsRepo;
+
     @Autowired
     private SentenceService sentenceService;
 
@@ -43,18 +50,13 @@ public class SentenceServiceTest {
         String textId = "CDWYGHBII5C37IBETSSI6RCIDQ";
         String sentenceId = "IBUBd3QvPWhrgk50h3u3Wv5PmdA";
         String annoId = "IBUBd0kXx8hvzU9vuxAKWNHnf6s";
-        SentenceEntity s = tla.domain.util.IO.loadFromFile(
-            String.format("src/test/resources/sample/sentence/%s.json", sentenceId),
-            SentenceEntity.class
-        );
-        TextEntity t = tla.domain.util.IO.loadFromFile(
-            String.format("src/test/resources/sample/text/%s.json", textId),
-            TextEntity.class
-        );
-        AnnotationEntity rubrum = tla.domain.util.IO.loadFromFile(
-            String.format("src/test/resources/sample/annotation/%s.json", annoId),
-            AnnotationEntity.class
-        );
+        SentenceEntity s = Util.loadSampleFile(SentenceEntity.class, sentenceId);
+        TextEntity t = Util.loadSampleFile(TextEntity.class, textId);
+        AnnotationEntity rubrum = Util.loadSampleFile(AnnotationEntity.class, annoId);
+        ThsEntryEntity tm = Util.loadSampleFile(ThsEntryEntity.class, "LJHMV4523JB7NBGAJRDTS3H27Y");
+        when(
+            thsRepo.findAllById(anyCollection())
+        ).thenReturn(List.of(tm));
         when(
             sentenceRepo.findById(sentenceId)
         ).thenReturn(
@@ -80,7 +82,8 @@ public class SentenceServiceTest {
             () -> assertNotNull(result, "not null"),
             () -> assertNotNull(result.getDoc(), "payload found"),
             () -> assertNotNull(result.getRelated(), "related objects list"),
-            () -> assertFalse(result.getRelated().isEmpty(), "contains related objects")
+            () -> assertFalse(result.getRelated().isEmpty(), "contains related objects"),
+            () -> assertTrue(result.getRelated().containsKey("BTSThsEntry"), "related objects contain thesaurus terms")
         );
     }
 

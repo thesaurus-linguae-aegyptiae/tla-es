@@ -4,11 +4,9 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.elasticsearch.action.search.SearchRequest;
@@ -49,10 +47,8 @@ import tla.domain.dto.extern.SearchResultsWrapper;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.dto.meta.AbstractDto;
 import tla.domain.dto.meta.DocumentDto;
-import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.AbstractBTSBaseClass;
 import tla.domain.model.meta.BTSeClass;
-import tla.domain.model.meta.Resolvable;
 import tla.domain.model.meta.TLADTO;
 import tla.error.ObjectNotFoundException;
 
@@ -212,11 +208,15 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
             container = new SingleDocumentWrapper<AbstractDto>(
                 ModelConfig.toDTO(document)
             );
-            Collection<Indexable> relatedObjects = new HashSet<>();
-            relatedObjects.addAll(this.retrieveRelatedDocs(document));
-            relatedObjects.addAll(this.retrieveReferencedThesaurusEntries(document));
+            var bulk = this.retrieveRelatedDocs(document);
+            if (document instanceof TLAEntity) {
+                bulk.addAll(
+                    ((TLAEntity) document).getPassport() != null ?
+                    ((TLAEntity) document).getPassport().extractObjectReferences() : null
+                );
+            }
             try {
-                relatedObjects.forEach(
+                bulk.resolve().forEach(
                     relatedObject -> {
                         container.addRelated(
                             (DocumentDto) ModelConfig.toDTO(relatedObject)
@@ -233,19 +233,6 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     }
 
     /**
-     * Retrieves the documents represented by a collection of {@link ObjectReference} instances
-     * from their respective Elasticsearch indices.
-     *
-     * @deprecated operation has moved to entityretrieval service component
-     * @param references The object references to be lookup up and instantiated
-     * @return A List of TLA documents
-     * @see {@link #retrieveSingleBTSDoc(String, String)}
-     */
-    protected Collection<Indexable> retrieveReferencedObjects(Collection<Resolvable> references) {
-        return EntityRetrieval.BulkEntityResolver.of(references).resolve();
-    }
-
-    /**
      * If a document if an instance of {@link LinkedEntity}, go through its
      * {@link LinkedEntity#getRelations()} data structure and
      * try to look up all objects referenced in their respective Elasticsearch indices based on
@@ -255,10 +242,10 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * @return A list of the document instances referenced. Returns an empty list if the document
      * passed is not a {@link LinkedEntity} instance.
      */
-    protected Collection<Indexable> retrieveRelatedDocs(T document) {
+    protected EntityRetrieval.BulkEntityResolver retrieveRelatedDocs(T document) {
         return (document instanceof LinkedEntity) ? EntityRetrieval.BulkEntityResolver.from(
             (LinkedEntity) document
-        ).resolve() : Collections.emptyList();
+        ) : new EntityRetrieval.BulkEntityResolver();
     }
 
     /**
@@ -268,16 +255,14 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * should be thesaurus terms, and thus be located in the Elasticsearch index corresponding
      * to the eclass <code>"BTSThsEntry"</code>.
      */
-    protected Collection<Indexable> retrieveReferencedThesaurusEntries(Indexable document) {
+    protected EntityRetrieval.BulkEntityResolver retrieveReferencedThesaurusEntries(Indexable document) {
         if (document instanceof TLAEntity) {
-            Set<Resolvable> previews = new HashSet<>(); // XXX why tho
-            TLAEntity entity = (TLAEntity) document;
-            if (entity.getPassport() != null) {
-                previews.addAll(entity.getPassport().extractObjectReferences());
-            }
-            return retrieveReferencedObjects(previews); // XXX kinda pointlesz now as the actual stuff happens in entity retrieval
+            return EntityRetrieval.BulkEntityResolver.of(
+                ((TLAEntity) document).getPassport() != null ?
+                ((TLAEntity) document).getPassport().extractObjectReferences() : null
+            );
         }
-        return Collections.emptyList();
+        return new EntityRetrieval.BulkEntityResolver();
     }
 
     /**

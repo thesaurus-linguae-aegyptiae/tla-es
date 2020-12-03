@@ -33,7 +33,7 @@ public abstract class AbstractEntityIDsQueryBuilder<S extends SearchCommand<? ex
     }
 
     /**
-     * just returns {@link AbstractEntityQueryBuilder#build(Pageable) default implementation},
+     * just returns {@link AbstractEntityQueryBuilder#build(Pageable)} default implementation,
      * but without any paging.
      */
     @Override

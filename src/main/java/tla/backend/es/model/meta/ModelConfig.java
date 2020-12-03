@@ -94,14 +94,10 @@ public class ModelConfig {
      *         or <code>null</code> if any config value could not be extracted
      */
     private static Map<String, BTSeClassConfig> mapModelClassConfigToEclass(Class<? extends AbstractBTSBaseClass> clazz) {
-        String eclass = null;
+        String eclass = tla.domain.model.meta.Util.extractEclass(clazz);
         String index = null;
-        for (Annotation annotation : clazz.getAnnotations()) {
-            if (annotation instanceof BTSeClass) {
-                eclass = ((BTSeClass) annotation).value();
-            } else if (annotation instanceof Document) {
-                index = ((Document) annotation).indexName();
-            }
+        for (Annotation annotation : clazz.getAnnotationsByType(Document.class)) {
+            index = ((Document) annotation).indexName();
         }
         BTSeClassConfig config = BTSeClassConfig.builder()
             .index(index)
@@ -131,16 +127,10 @@ public class ModelConfig {
     }
 
     /**
-     * extract <code>eclass</code> from {@link BTSeClass} annotation of given model class
+     * extract <code>eclass</code> from {@link BTSeClass} or {@link TLADTO} annotation of given model class
      */
     public static String getEclass(Class<? extends BaseEntity> modelClass) {
-        for (Annotation annotation : modelClass.getAnnotations()) {
-            if (annotation instanceof BTSeClass) {
-                return ((BTSeClass) annotation).value();
-            }
-        }
-        log.warn("class {} seems to have no BTSeClass annotation!", modelClass.getName());
-        return null;
+        return tla.domain.model.meta.Util.extractEclass(modelClass);
     }
 
     /**

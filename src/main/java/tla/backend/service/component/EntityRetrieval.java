@@ -14,6 +14,7 @@ import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.LinkedEntity;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.service.EntityService;
+import tla.domain.model.ObjectReference;
 import tla.domain.model.meta.Resolvable;
 
 public class EntityRetrieval {
@@ -47,13 +48,43 @@ public class EntityRetrieval {
             return bulk;
         }
 
+        /**
+         * Add object references to bulk retrieval queue.
+         */
         public BulkEntityResolver addAll(Collection<? extends Resolvable> references) {
-            references.forEach(
-                ref -> this.add(ref)
+            if (references != null) {
+                references.forEach(
+                    ref -> this.add(ref)
+                );
+            }
+            return this;
+        }
+
+        /**
+         * Merge another bulk retriever's object references queue into this bulk retriever.
+         */
+        public BulkEntityResolver merge(BulkEntityResolver bulkResolver) {
+            bulkResolver.getQueue().entrySet().forEach(
+                e -> e.getValue().forEach(
+                    v -> this.add(
+                        ObjectReference.builder().id(v).eclass(e.getKey()).build()
+                    )
+                )
             );
             return this;
         }
 
+        /**
+         * Get object reference queue, which is a map with <code>eClass</code> values as keys,
+         * associated with sets of entity IDs.
+         */
+        public Map<String, Set<String>> getQueue() {
+            return this.refs;
+        }
+
+        /**
+         * Add a single object reference to bulk retrieval queue.
+         */
         protected void add(Resolvable ref) {
             this.refs.merge(
                 ref.getEclass(),
@@ -65,6 +96,9 @@ public class EntityRetrieval {
             );
         }
 
+        /**
+         * Retrieve referenced object from respective ES repositories.
+         */
         public Collection<Indexable> resolve() {
             return this.refs.entrySet().stream().flatMap(
                 e -> this.resolve(e.getKey(), e.getValue())
@@ -73,6 +107,9 @@ public class EntityRetrieval {
             );
         }
 
+        /**
+         * Retrieve object references to entities of specified type from respective ES repository.
+         */
         protected Stream<? extends Indexable> resolve(String eclass, Collection<String> ids) {
             EntityService<?,?,?> service = EntityService.getService(
                 ModelConfig.getModelClass(eclass)
