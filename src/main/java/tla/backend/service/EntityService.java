@@ -9,25 +9,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.filter.Filter;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
@@ -41,6 +30,7 @@ import tla.backend.es.query.AbstractEntityIDsQueryBuilder;
 import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.backend.service.component.EntityRetrieval;
 import tla.backend.service.search.AutoCompleteSupport;
+import tla.backend.service.search.SearchService;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.extern.PageInfo;
 import tla.domain.dto.extern.SearchResultsWrapper;
@@ -60,16 +50,11 @@ import tla.error.ObjectNotFoundException;
 @Slf4j
 public abstract class EntityService<T extends Indexable, R extends ElasticsearchRepository<T, String>, D extends AbstractDto> {
 
-    /**
-     * How many search results fit in 1 page.
-     */
-    public static final int SEARCH_RESULT_PAGE_SIZE = 20;
-
-    @Autowired
-    protected RestHighLevelClient restClient;
-
     @Autowired
     private ElasticsearchOperations operations;
+
+    @Autowired
+    private SearchService searchService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -256,53 +241,21 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * to the eclass <code>"BTSThsEntry"</code>.
      */
     protected EntityRetrieval.BulkEntityResolver retrieveReferencedThesaurusEntries(Indexable document) {
-        if (document instanceof TLAEntity) {
-            return EntityRetrieval.BulkEntityResolver.of(
-                ((TLAEntity) document).getPassport() != null ?
-                ((TLAEntity) document).getPassport().extractObjectReferences() : null
-            );
-        }
-        return new EntityRetrieval.BulkEntityResolver();
+        return ThesaurusService.extractThsEntriesFromPassport(document);
     }
 
     /**
-     * Execute an Elasticsearch query against the index defined for <code>entityClass</code>.
+     * Creates and executes native query from an Elasticsearch query builder against whatever index
+     * is known for storing documents of the type specified via the <code>entityClass</code> parameter.
+     *
+     * @Deprecated
      */
     public SearchResponse query(
         Class<? extends Indexable> entityClass,
         QueryBuilder queryBuilder,
         AggregationBuilder aggsBuilder
     ) {
-        String index = operations.getIndexCoordinatesFor(entityClass).getIndexName();
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-            .query(queryBuilder);
-        if (aggsBuilder != null) {
-            searchSourceBuilder = searchSourceBuilder.aggregation(aggsBuilder);
-        }
-        SearchRequest request = new SearchRequest()
-            .indices(
-                index
-            )
-            .source(
-                searchSourceBuilder
-            );
-        SearchResponse response = null;
-        try {
-            response = restClient
-                .search(
-                    request,
-                    RequestOptions.DEFAULT
-                );
-        } catch (Exception e) {
-            log.error(
-                String.format(
-                    "could not query index %s",
-                    index
-                ),
-                e
-            );
-        }
-        return response;
+        return searchService.query(entityClass, queryBuilder, aggsBuilder);
     }
 
     /**
@@ -342,6 +295,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
 
     /**
      * Try to find a bunch of domain objects in an ES index by running a query.
+     * @Deprecated
      */
     public SearchHits<T> search(Query query) {
         log.info("query: {}", tla.domain.util.IO.json(query));
@@ -355,72 +309,31 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     /**
      * Create a serializable transfer object containing page information
      * about an ES search result.
+     *
+     * @Deprecated
      */
     public PageInfo pageInfo(SearchHits<?> hits, Pageable pageable) {
-        return PageInfo.builder()
-            .number(pageable.getPageNumber())
-            .totalElements(hits.getTotalHits())
-            .size(EntityService.SEARCH_RESULT_PAGE_SIZE)
-            .numberOfElements(
-                Math.min(
-                    EntityService.SEARCH_RESULT_PAGE_SIZE,
-                    hits.getSearchHits().size()
-                )
-            ).totalPages(
-                (int) hits.getTotalHits() / EntityService.SEARCH_RESULT_PAGE_SIZE + 1 // TODO
-            ).build();
+        return searchService.pageInfo(hits, pageable);
     }
 
-    /**
-     * extract a simple map of terms and their counts from
-     * a bucketed aggregation's buckets.
-     */
-    private Map<String, Long> getFacetsFromBuckets(Terms agg) {
-        return ((Terms) agg).getBuckets().stream().collect(
-            Collectors.toMap(
-                Terms.Bucket::getKeyAsString,
-                Terms.Bucket::getDocCount
-            )
-        );
-    }
 
     /**
      * Converts terms aggregations to a map of field value counts.
+     *
+     * @Deprecated
      */
     public Map<String, Map<String, Long>> facets(SearchHits<?> hits) {
-        if (hits.hasAggregations()) {
-            Map<String, Map<String, Long>> facets = new HashMap<>();
-            for (Aggregation agg : hits.getAggregations().asList()) {
-                if (agg instanceof Terms) {
-                    facets.put(
-                        agg.getName(),
-                        getFacetsFromBuckets((Terms) agg)
-                    );
-                } else if (agg instanceof Filter) {
-                    ((Filter) agg).getAggregations().asList().stream().filter(
-                        sub -> sub instanceof Terms
-                    ).forEach(
-                        sub -> facets.put(
-                            agg.getName(),
-                            getFacetsFromBuckets((Terms) sub)
-                        )
-                    );
-                }
-            }
-            return facets;
-        } else {
-            return null;
-        }
+        return searchService.extractFacets(hits);
     }
 
     /**
      * Extract DTO objects out of a list of searchresults of an entity type.
      */
-    public List<D> hitsToDTO(SearchHits<T> hits) {
+    public List<D> hitsToDTO(SearchHits<T> hits, Class<D> dtoClass) {
         return hits.getSearchHits().stream().map(
             hit -> modelMapper.map(
                 hit.getContent(),
-                getDtoClass()
+                dtoClass
             )
         ).collect(Collectors.toList());
     }
@@ -434,7 +347,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
         SearchHits<T> hits, Pageable pageable, SearchCommand<D> command
     ) throws Exception {
         return new SearchResultsWrapper<D>(
-            hitsToDTO(hits),
+            hitsToDTO(hits, getDtoClass()),
             command,
             pageInfo(hits, pageable),
             facets(hits)
@@ -450,20 +363,11 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
         if (term.length() < 3) {
             return Collections.emptyList();
         }
-        NativeSearchQuery query = new NativeSearchQueryBuilder()
-            .withFields(
-                getAutoCompleteSupport().getResponseFields()
-            )
-            .withFilter(
-                (type != null && !type.isBlank()) ? QueryBuilders.termQuery("type", type) :
-                    QueryBuilders.boolQuery()
-            ).withQuery(
-                getAutoCompleteSupport().autocompleteQuery(term)
-            ).withPageable(
-                PageRequest.of(0, 60)
-            ).build();
         return hitsToDTO(
-            search(query)
+            search(
+                getAutoCompleteSupport().autoCompleteQuery(term, type)
+            ),
+            getDtoClass()
         );
     }
 
