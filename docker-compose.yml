@@ -10,7 +10,7 @@ services:
             ES_JAVA_OPTS: -Xms512m -Xmx512m
             discovery.type: single-node
         ports:
-            - ${ES_PORT}:9200
+            - ${ES_PORT:-9200}:9200
         stdin_open: true
         tty: true
         restart: unless-stopped
@@ -22,9 +22,9 @@ services:
         build:
             context: .
         environment:
-            ES_HOST: es
-            ES_PORT: 9200
-            SAMPLE_URL: ${SAMPLE_URL}
+            - ES_HOST=es
+            - ES_PORT=9200
+            - SAMPLE_URL
         tty: true
         command: "ingest"
 
@@ -35,8 +35,8 @@ services:
         build:
             context: .
         environment:
-            ES_HOST: ${ES_HOST}
-            ES_PORT: ${ES_PORT}
+            - ES_HOST=${ES_HOST:-localhost}
+            - ES_PORT=${ES_PORT:-9200}
         ports:
             - 8090:8090
         tty: true
