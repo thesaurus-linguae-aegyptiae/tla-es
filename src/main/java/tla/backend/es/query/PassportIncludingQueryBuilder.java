@@ -31,7 +31,7 @@ public class PassportIncludingQueryBuilder extends ESQueryBuilder {
     }
 
     public void setPassport(PassportSpec spec) {
-        if (spec != null) {
+        if (spec != null && !spec.isEmpty()) {
             log.info("passport specs: {}", tla.domain.util.IO.json(spec));
             spec.entrySet().forEach(
                 e -> {

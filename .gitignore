@@ -9,8 +9,9 @@ app.log.*
 bin/main/
 bin/test/
 build
-sample.tar.gz
+*.tar.gz
 settings.gradle
 *.csv
 *.gv
 *.pdf
+*.json

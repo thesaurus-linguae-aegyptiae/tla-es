@@ -29,6 +29,7 @@ import tla.backend.es.model.parts.Translations;
 import tla.backend.es.query.LemmaSearchQueryBuilder;
 import tla.backend.es.query.SentenceSearchQueryBuilder;
 import tla.backend.es.query.TextSearchQueryBuilder;
+import tla.backend.es.query.TokenSearchQueryBuilder;
 import tla.backend.service.EntityService;
 import tla.backend.service.component.EntityRetrieval;
 import tla.domain.command.LemmaSearch;
@@ -300,6 +301,7 @@ public class ModelConfig {
                 SentenceSearch::getTranslation, SentenceSearchQueryBuilder::setTranslation
             )
         );
+        modelMapper.createTypeMap(SentenceSearch.TokenSpec.class, TokenSearchQueryBuilder.class);
         return modelMapper;
     }
 
