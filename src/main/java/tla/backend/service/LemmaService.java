@@ -2,6 +2,7 @@ package tla.backend.service;
 
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -27,11 +28,13 @@ import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.backend.es.query.EntityQueryBuilders;
 import tla.backend.es.repo.LemmaRepo;
+import tla.backend.service.search.AutoCompleteSupport;
 import tla.domain.command.LemmaSearch;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.dto.meta.AbstractDto;
+import tla.domain.model.Language;
 import tla.domain.model.Passport;
 import tla.domain.model.extern.AttestedTimespan;
 
@@ -51,6 +54,8 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
 
     @Autowired
     private ThesaurusService thsService;
+
+    private AutoCompleteSupport autoComplete;
 
     @Override
     public ElasticsearchRepository<LemmaEntity, String> getRepo() {
@@ -141,6 +146,22 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
             }
         }
         return null;
+    }
+
+    @Override
+    public AutoCompleteSupport getAutoCompleteSupport() {
+        if (this.autoComplete == null) {
+            this.autoComplete = new AutoCompleteSupport(
+                Arrays.stream(Language.values()).collect(
+                    Collectors.toMap(
+                        lang -> String.format("translations.%s", lang),
+                        lang -> .5f
+                    )
+                ),
+                new String[]{"translations"}
+            );
+        }
+        return this.autoComplete;
     }
 
 }
