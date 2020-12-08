@@ -17,7 +17,7 @@ public class AutoCompleteSupportTest {
     @Test
     void testDefaultAutocompleteConfig() {
         AutoCompleteSupport ac = AutoCompleteSupport.DEFAULT;
-        MultiMatchQueryBuilder query = ac.autocompleteQuery("thut");
+        MultiMatchQueryBuilder query = ac.autoCompleteQueryBuilder("thut");
         assertAll("make sure assumptions about default autocomplete config are correct",
             () -> assertEquals(4, ac.getQueryFields().size(), "match 4 fields"),
             () -> assertEquals(5, ac.getResponseFields().length, "return 5 result fields"),
@@ -68,7 +68,7 @@ public class AutoCompleteSupportTest {
                 Map.of("hash", 2F)
             ).responseFields(new String[]{"hash"})
             .build();
-        MultiMatchQueryBuilder query = ac.autocompleteQuery("thut");
+        MultiMatchQueryBuilder query = ac.autoCompleteQueryBuilder("thut");
         assertAll("test multimatch query generation based on autocomplete config",
             () -> assertEquals(
                 AutoCompleteSupport.QUERY_FIELDS.length + 1,
@@ -90,7 +90,7 @@ public class AutoCompleteSupportTest {
 
     @Test
     void testEmptyInput() {
-        MultiMatchQueryBuilder q = AutoCompleteSupport.DEFAULT.autocompleteQuery("");
+        MultiMatchQueryBuilder q = AutoCompleteSupport.DEFAULT.autoCompleteQueryBuilder("");
         assertAll("check out query with empty input string",
             () -> assertNotNull(q, "returned instance nonetheless"),
             () -> assertTrue(q.prefixLength() < 1, "has no requirements for prefix length")
@@ -104,7 +104,7 @@ public class AutoCompleteSupportTest {
         ).clearQueryFields()
         .responseFields(null)
         .build();
-        MultiMatchQueryBuilder q = ac.autocompleteQuery("thut");
+        MultiMatchQueryBuilder q = ac.autoCompleteQueryBuilder("thut");
         assertAll("config and query built based on empty config inputs",
             () -> assertNotNull(ac, "construction successful"),
             () -> assertTrue(ac.getQueryFields().size() > 1, "default query field config intact"),

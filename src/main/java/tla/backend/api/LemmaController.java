@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.LemmaEntity;
+import tla.backend.es.query.LemmaSearchQueryBuilder;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.service.EntityService;
 import tla.backend.service.LemmaService;
@@ -102,6 +103,24 @@ public class LemmaController extends EntityController<LemmaEntity> {
                 HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
+    }
+
+    @RequestMapping(
+        value = "/query",
+        method = RequestMethod.POST
+    )
+    public ResponseEntity<?> query(@RequestBody LemmaSearch command, Pageable pageable) {
+        log.info("incoming search command: {}", tla.domain.util.IO.json(command));
+        LemmaSearchQueryBuilder qb = modelMapper.map(
+            command, LemmaSearchQueryBuilder.class
+        );
+        var hits = queryService.search(
+            qb.buildNativeSearchQuery()
+        );
+        return new ResponseEntity<>(
+            hits,
+            HttpStatus.OK
+        );
     }
 
 }

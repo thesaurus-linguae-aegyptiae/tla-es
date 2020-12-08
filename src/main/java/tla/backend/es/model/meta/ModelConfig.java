@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +26,16 @@ import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.model.parts.EditorInfo;
 import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Translations;
+import tla.backend.es.query.LemmaSearchQueryBuilder;
+import tla.backend.es.query.SentenceSearchQueryBuilder;
+import tla.backend.es.query.TextSearchQueryBuilder;
 import tla.backend.service.EntityService;
 import tla.backend.service.component.EntityRetrieval;
+import tla.domain.command.LemmaSearch;
+import tla.domain.command.PassportSpec;
+import tla.domain.command.SentenceSearch;
+import tla.domain.command.TextSearch;
+import tla.domain.command.TranslationSpec;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.LemmaDto;
@@ -48,6 +57,19 @@ import tla.domain.model.meta.TLADTO;
 @Configuration
 public class ModelConfig {
 
+    public static class PassportSpecConverter extends AbstractConverter<PassportSpec, PassportSpec> {
+        @Override
+        protected PassportSpec convert(PassportSpec source) {
+            return source;
+        }
+    }
+
+    public static class TranslationSpecConverter extends AbstractConverter<TranslationSpec, TranslationSpec> {
+        @Override
+        protected TranslationSpec convert(TranslationSpec source) {
+            return source;
+        }
+    }
     /**
      * Container for configurations that can be attributed to an eClass specified
      * via {@link BTSeClass} annotation on top of an {@link TLAEntity} instance:
@@ -249,6 +271,33 @@ public class ModelConfig {
         modelMapper.createTypeMap(Token.class, SentenceToken.class).addMappings(
             m -> m.using(translationsToMapConverter).map(
                 Token::getTranslations, SentenceToken::setTranslations
+            )
+        );
+        // patches for search-command-to-query-adapter mappings, which for the most part don't require excplicit mappings
+        modelMapper.createTypeMap(PassportSpec.class, PassportSpec.class);
+        modelMapper.createTypeMap(TextSearch.class, TextSearchQueryBuilder.class).addMappings(
+            m -> m.using(
+                new PassportSpecConverter()
+            ).map(
+                TextSearch::getPassport, TextSearchQueryBuilder::setPassport
+            )
+        );
+        modelMapper.createTypeMap(SentenceSearch.class, SentenceSearchQueryBuilder.class).addMappings(
+            m -> m.using(
+                new PassportSpecConverter()
+            ).map(
+                SentenceSearch::getPassport, SentenceSearchQueryBuilder::setPassport
+            )
+        );
+        modelMapper.createTypeMap(TranslationSpec.class, TranslationSpec.class);
+        modelMapper.createTypeMap(LemmaSearch.class, LemmaSearchQueryBuilder.class).addMappings(
+            m -> m.using(new TranslationSpecConverter()).map(
+                LemmaSearch::getTranslation, LemmaSearchQueryBuilder::setTranslation
+            )
+        );
+        modelMapper.getTypeMap(SentenceSearch.class, SentenceSearchQueryBuilder.class).addMappings(
+            m -> m.using(new TranslationSpecConverter()).map(
+                SentenceSearch::getTranslation, SentenceSearchQueryBuilder::setTranslation
             )
         );
         return modelMapper;
