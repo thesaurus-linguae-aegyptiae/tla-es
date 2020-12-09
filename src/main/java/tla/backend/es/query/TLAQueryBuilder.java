@@ -9,7 +9,6 @@ import java.util.function.Function;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
-import org.springframework.data.elasticsearch.core.SearchHits;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -97,8 +96,8 @@ public interface TLAQueryBuilder {
 
     public List<AbstractAggregationBuilder<?>> getNativeAggregationBuilders();
 
-    public SearchHits<?> getResults();
-    public void setResults(SearchHits<?> hits); // maybe write a TLAQueryResult wrapper instead..
+    public ESQueryResult<?> getResult();
+    public void setResult(ESQueryResult<?> result);
 
     /**
      * Conjunct criterion with bool query's <code>must</code> clause list.

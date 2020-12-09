@@ -26,7 +26,9 @@ import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.query.AbstractEntityQueryBuilder;
+import tla.backend.es.query.ESQueryBuilder;
 import tla.backend.es.query.EntityQueryBuilders;
+import tla.backend.es.query.LemmaSearchQueryBuilder;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.service.search.AutoCompleteSupport;
 import tla.domain.command.LemmaSearch;
@@ -162,6 +164,13 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
             );
         }
         return this.autoComplete;
+    }
+
+    @Override
+    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<LemmaDto> command) {
+        return this.getModelMapper().map(
+            command, LemmaSearchQueryBuilder.class
+        );
     }
 
 }

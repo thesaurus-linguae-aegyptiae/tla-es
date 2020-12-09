@@ -52,7 +52,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.16'
     annotationProcessor 'org.projectlombok:lombok:1.18.16'
 
-    implementation 'com.github.jkatzwinkel:tla-common:etl-model-SNAPSHOT'
+    implementation 'com.github.jkatzwinkel:tla-common:query-expansion-SNAPSHOT'
     implementation 'org.modelmapper:modelmapper:2.3.9'
     implementation 'org.apache.commons:commons-compress:1.20'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.35'

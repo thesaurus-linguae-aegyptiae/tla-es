@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
-import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 
@@ -34,7 +34,7 @@ public abstract class ESQueryBuilder implements TLAQueryBuilder {
 
     private List<TLAQueryBuilder.QueryDependency<?>> dependencies;
 
-    private SearchHits<?> results;
+    private ESQueryResult<?> result;
 
     public ESQueryBuilder() {
         this.nativeRootQueryBuilder = boolQuery();
@@ -45,9 +45,11 @@ public abstract class ESQueryBuilder implements TLAQueryBuilder {
     /**
      * Put together an actual Elasticsearch query ready for execution.
      */
-    public NativeSearchQuery buildNativeSearchQuery() {
+    public NativeSearchQuery buildNativeSearchQuery(Pageable page) {
         var qb = new NativeSearchQueryBuilder().withQuery(
             this.getNativeRootQueryBuilder()
+        ).withPageable(
+            page
         );
         log.info("query: {}", this.getNativeRootQueryBuilder());
         this.getNativeAggregationBuilders().forEach(
@@ -59,8 +61,8 @@ public abstract class ESQueryBuilder implements TLAQueryBuilder {
         return qb.build();
     }
 
-    public void setResults(SearchHits<?> hits) { // maybe write a TLAQueryResult wrapper instead..
-        this.results = hits;
+    public void setResult(ESQueryResult<?> result) {
+        this.result = result;
     }
 
     public void setDTOClass(Class<? extends AbstractBTSBaseClass> dtoClass) {

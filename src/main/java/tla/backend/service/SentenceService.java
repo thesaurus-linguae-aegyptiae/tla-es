@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.query.AbstractEntityQueryBuilder;
+import tla.backend.es.query.ESQueryBuilder;
+import tla.backend.es.query.SentenceSearchQueryBuilder;
 import tla.backend.es.repo.SentenceRepo;
 import tla.backend.service.component.EntityRetrieval;
 import tla.domain.command.SearchCommand;
@@ -82,6 +84,11 @@ public class SentenceService extends EntityService<SentenceEntity, Elasticsearch
     protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<SentenceDto> command) {
+        return this.getModelMapper().map(command, SentenceSearchQueryBuilder.class);
     }
 
 }

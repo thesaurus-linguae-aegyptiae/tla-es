@@ -28,6 +28,8 @@ import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
 import tla.backend.es.query.AbstractEntityIDsQueryBuilder;
 import tla.backend.es.query.AbstractEntityQueryBuilder;
+import tla.backend.es.query.ESQueryBuilder;
+import tla.backend.es.query.ESQueryResult;
 import tla.backend.service.component.EntityRetrieval;
 import tla.backend.service.search.AutoCompleteSupport;
 import tla.backend.service.search.SearchService;
@@ -91,6 +93,10 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
         }
     }
 
+    public ModelMapper getModelMapper() {
+        return this.modelMapper;
+    }
+
     /**
      * Returns the domain class a service is taking care of (extracted from its
      * {@link ModelClass} annotation.
@@ -103,6 +109,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * Returns the entity service registered for a given model class, or null if no such model class have been
      * registered.
      * Registration takes place at construction time of any service with a {@link ModelClass} annotation.
+     * This is required for the entity retrieval service to work.
      */
     public static EntityService<? extends Indexable, ? extends ElasticsearchRepository<?, ?>, ? extends AbstractDto> getService(
         Class<? extends AbstractBTSBaseClass> modelClass
@@ -313,9 +320,8 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * @Deprecated
      */
     public PageInfo pageInfo(SearchHits<?> hits, Pageable pageable) {
-        return searchService.pageInfo(hits, pageable);
+        return ESQueryResult.pageInfo(hits, pageable, 0);
     }
-
 
     /**
      * Converts terms aggregations to a map of field value counts.
@@ -329,7 +335,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     /**
      * Extract DTO objects out of a list of searchresults of an entity type.
      */
-    public List<D> hitsToDTO(SearchHits<T> hits, Class<D> dtoClass) {
+    public List<D> hitsToDTO(SearchHits<?> hits, Class<D> dtoClass) {
         return hits.getSearchHits().stream().map(
             hit -> modelMapper.map(
                 hit.getContent(),
@@ -344,7 +350,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * to the requesting client.
      */
     public SearchResultsWrapper<D> wrapSearchResults(
-        SearchHits<T> hits, Pageable pageable, SearchCommand<D> command
+        SearchHits<?> hits, Pageable pageable, SearchCommand<D> command
     ) throws Exception {
         return new SearchResultsWrapper<D>(
             hitsToDTO(hits, getDtoClass()),
@@ -364,9 +370,10 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
             return Collections.emptyList();
         }
         return hitsToDTO(
-            search(
-                getAutoCompleteSupport().autoCompleteQuery(term, type)
-            ),
+            searchService.executeSearchQuery(
+                this.getAutoCompleteSupport().autoCompleteQuery(term, type),
+                this.getModelClass()
+            ).getHits(),
             getDtoClass()
         );
     }
@@ -376,11 +383,15 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * {@link AbstractEntityQueryBuilder entitiy query builder} or {@link
      * AbstractEntityIDsQueryBuilder entity ID query builder} you can put together
      * with this.
+     * @deprecated
      */
     protected abstract AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(
         SearchCommand<?> search
     );
 
+    /**
+     * @deprecated
+     */
     public Optional<AbstractEntityQueryBuilder<?, ?>> findMatchingEntityQueryBuilder(
         SearchCommand<?> search, Class<? extends AbstractBTSBaseClass> target
     ) {
@@ -401,6 +412,9 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
         }
     }
 
+    /**
+     * @deprecated
+     */
     @SuppressWarnings("unchecked")
     public Optional<SearchResultsWrapper<D>> search(
         SearchCommand<? extends AbstractDto> command,
@@ -425,6 +439,28 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
                     (SearchCommand<D>) command
                 )
             );
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * subclasses should implement this by using {@link #getModelMapper()} to convert command into native query builder/adapter.
+     */
+    public abstract ESQueryBuilder getSearchCommandAdapter(SearchCommand<D> command);
+
+    public Optional<SearchResultsWrapper<? extends D>> runSearchCommand(SearchCommand<D> command, Pageable page) {
+        log.info("page: {}", page);
+        var queryAdapter = this.getSearchCommandAdapter(command);
+        var result = searchService.register(queryAdapter).run(page);
+        try {
+            var wrapper = new SearchResultsWrapper<D>(
+                hitsToDTO(result.getHits(), this.getDtoClass()),
+                command,
+                result.getPageInfo(),
+                facets(result.getHits())
+            );
+            return Optional.of(wrapper);
         } catch (Exception e) {
             return Optional.empty();
         }

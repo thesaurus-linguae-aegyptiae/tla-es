@@ -3,9 +3,6 @@ package tla.backend.es.query;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 
 import lombok.extern.slf4j.Slf4j;
 import tla.domain.command.PassportSpec;
@@ -33,14 +30,12 @@ public class ThsRefExpansionDependency extends TLAQueryBuilder.QueryDependency<P
             expansionQuery,
             waitingQuery::setPassport,
             query -> {
-                log.info("result aggregations: {}", query.getResults().getAggregations());
+                log.info("result aggregations: {}", query.getResult().getHits().getAggregations());
                 var expanded = new PassportSpec();
                 expanded.put(
                     passportKey,
                     PassportSpec.ThsRefPassportValue.of(
-                        ((Terms) query.getResults().getAggregations().get("ids")).getBuckets().stream().map(
-                            Terms.Bucket::getKeyAsString
-                        ).collect(Collectors.toList()),
+                        query.getResult().getIDAggValues(),
                         false
                     )
                 );

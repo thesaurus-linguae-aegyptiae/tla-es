@@ -10,6 +10,8 @@ import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.TLAEntity;
 import tla.backend.es.query.AbstractEntityQueryBuilder;
+import tla.backend.es.query.ESQueryBuilder;
+import tla.backend.es.query.ThsSearchQueryBuilder;
 import tla.backend.es.repo.ThesaurusRepo;
 import tla.backend.es.repo.custom.UserFriendlyEntityRepo;
 import tla.backend.service.component.EntityRetrieval;
@@ -73,6 +75,11 @@ public class ThesaurusService extends UserFriendlyEntityService<ThsEntryEntity, 
     protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<ThsEntryDto> command) {
+        return this.getModelMapper().map(command, ThsSearchQueryBuilder.class);
     }
 
 }

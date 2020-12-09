@@ -1,6 +1,7 @@
 package tla.backend.es.query;
 
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.BucketOrder;
 
 public interface ExpansionQueryBuilder extends TLAQueryBuilder {
 
@@ -11,7 +12,7 @@ public interface ExpansionQueryBuilder extends TLAQueryBuilder {
     public default void setExpansion(boolean expansion) {
         if (expansion) {
             this.aggregate(
-                AggregationBuilders.terms("ids").field("id").size(100000)
+                AggregationBuilders.terms("ids").field("id").size(100000).order(BucketOrder.key(true))
             );
         }
     }

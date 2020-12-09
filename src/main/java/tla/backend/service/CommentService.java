@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.CommentEntity;
 import tla.backend.es.query.AbstractEntityQueryBuilder;
+import tla.backend.es.query.ESQueryBuilder;
 import tla.backend.es.repo.CommentRepo;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.CommentDto;
@@ -24,6 +25,12 @@ public class CommentService extends EntityService<CommentEntity, ElasticsearchRe
 
     @Override
     protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<CommentDto> command) {
         // TODO Auto-generated method stub
         return null;
     }

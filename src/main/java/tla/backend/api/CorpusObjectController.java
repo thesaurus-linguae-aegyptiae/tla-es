@@ -7,16 +7,17 @@ import org.springframework.web.bind.annotation.RestController;
 import tla.backend.es.model.CorpusObjectEntity;
 import tla.backend.service.CorpusObjectService;
 import tla.backend.service.EntityService;
+import tla.domain.dto.CorpusObjectDto;
 
 @RestController
 @RequestMapping("/object")
-public class CorpusObjectController extends EntityController<CorpusObjectEntity> {
+public class CorpusObjectController extends EntityController<CorpusObjectEntity, CorpusObjectDto> {
 
     @Autowired
     private CorpusObjectService service;
 
     @Override
-    public EntityService<CorpusObjectEntity, ?, ?> getService() {
+    public EntityService<CorpusObjectEntity, ?, CorpusObjectDto> getService() {
         return service;
     }
 

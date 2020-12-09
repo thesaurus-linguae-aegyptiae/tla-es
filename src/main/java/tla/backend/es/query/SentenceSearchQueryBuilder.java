@@ -1,11 +1,9 @@
 package tla.backend.es.query;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,12 +38,7 @@ public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiL
             this.dependsOn(
                 textSearchQuery,
                 this::setTextIds,
-                query -> {
-                    log.info("extract IDs aggregation");
-                    return ((Terms) query.getResults().getAggregations().get("ids")).getBuckets().stream().map(
-                        Terms.Bucket::getKeyAsString
-                    ).collect(Collectors.toList());
-                }
+                query -> query.getResult().getIDAggValues()
             );
         }
     }

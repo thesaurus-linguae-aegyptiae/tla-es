@@ -25,29 +25,36 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.query.ESQueryBuilder;
-import tla.backend.es.query.TLAQueryBuilder;
+import tla.backend.es.query.ESQueryResult;
 import tla.backend.es.query.TLAQueryBuilder.QueryDependency;
-import tla.domain.dto.extern.PageInfo;
 
 @Slf4j
 @Service
 public class SearchService {
 
+    /**
+     * Execute search command query adapter and its dependencies.
+     */
     public class QueryExecutor {
+
         private ESQueryBuilder query;
+
         public QueryExecutor(ESQueryBuilder query) {
             this.query = query;
         }
-        public SearchHits<?> run() {
-            log.info("run query");
+
+        public ESQueryResult<?> run(Pageable page) {
+            log.info("run query for page {}", page);
             log.info("dependency: {}", this.query.getDependencies());
             List<QueryDependency<?>> queue = this.query.resolveDependencies();
             log.info("dependencies: {}", queue.size());
             for (QueryDependency<?> dependency : queue) {
                 log.info("execute query dependency {}", dependency);
-                dependency.getQuery().setResults(
+                dependency.getQuery().setResult(
                     executeSearchQuery(
-                        ((ESQueryBuilder) dependency.getQuery()).buildNativeSearchQuery(),
+                        ((ESQueryBuilder) dependency.getQuery()).buildNativeSearchQuery(
+                            Pageable.unpaged()
+                        ),
                         dependency.getQuery().getModelClass()
                     )
                 );
@@ -55,16 +62,12 @@ public class SearchService {
             }
             log.info("run head query");
             return executeSearchQuery(
-                this.query.buildNativeSearchQuery(),
+                this.query.buildNativeSearchQuery(page),
                 this.query.getModelClass()
             );
         }
-    }
 
-    /**
-     * How many search results fit in 1 page.
-     */
-    public static final int SEARCH_RESULT_PAGE_SIZE = 20;
+    }
 
     @Autowired
     private ElasticsearchOperations operations;
@@ -72,21 +75,30 @@ public class SearchService {
     @Autowired
     protected RestHighLevelClient restClient;
 
+    public QueryExecutor register(ESQueryBuilder query) {
+        return new QueryExecutor(query);
+    }
+
     /**
      * Execute native Elasticsearch query against a single index.
      */
-    public SearchHits<?> executeSearchQuery(
-        NativeSearchQuery query, Class<? extends Indexable> modelClass
+    public <T extends Indexable> ESQueryResult<T> executeSearchQuery(
+        NativeSearchQuery query, Class<T> modelClass
     ) {
-        return operations.search(
-            query,
-            modelClass,
-            operations.getIndexCoordinatesFor(modelClass)
+        var page = query.getPageable();
+        var count = page.isUnpaged() ? 0L : operations.count(
+            query, modelClass, operations.getIndexCoordinatesFor(modelClass)
         );
-    }
-
-    public SearchHits<?> register(ESQueryBuilder query) {
-        return new QueryExecutor(query).run();
+        log.info("query pageable: {}", page.isPaged());
+        log.info("SEARCH RESULT COUNT: {}", count);
+        return new ESQueryResult<T>(
+            operations.<T>search(
+                query,
+                modelClass,
+                operations.getIndexCoordinatesFor(modelClass)
+            ),
+            page, count
+        );
     }
 
     /**
@@ -173,23 +185,5 @@ public class SearchService {
         }
     }
 
-    /**
-     * Create a serializable transfer object containing page information
-     * about an ES search result.
-     */
-    public PageInfo pageInfo(SearchHits<?> hits, Pageable pageable) {
-        return PageInfo.builder()
-            .number(pageable.getPageNumber())
-            .totalElements(hits.getTotalHits())
-            .size(SEARCH_RESULT_PAGE_SIZE)
-            .numberOfElements(
-                Math.min(
-                    SEARCH_RESULT_PAGE_SIZE,
-                    hits.getSearchHits().size()
-                )
-            ).totalPages(
-                (int) hits.getTotalHits() / SEARCH_RESULT_PAGE_SIZE + 1 // TODO
-            ).build();
-    }
 
 }
