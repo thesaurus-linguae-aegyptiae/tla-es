@@ -25,13 +25,10 @@ import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
-import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.backend.es.query.ESQueryBuilder;
-import tla.backend.es.query.EntityQueryBuilders;
 import tla.backend.es.query.LemmaSearchQueryBuilder;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.service.search.AutoCompleteSupport;
-import tla.domain.command.LemmaSearch;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
@@ -138,16 +135,6 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
         Terms terms = aggs.getAggregations().get("lemmata");
         return terms.getBuckets().stream()
                 .collect(Collectors.toMap(Terms.Bucket::getKeyAsString, Terms.Bucket::getDocCount));
-    }
-
-    @Override
-    protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
-        if (search.getDTOClass().equals(LemmaDto.class)) {
-            if (search instanceof LemmaSearch) {
-                return EntityQueryBuilders.lemmaEntityQuery((LemmaSearch) search);
-            }
-        }
-        return null;
     }
 
     @Override

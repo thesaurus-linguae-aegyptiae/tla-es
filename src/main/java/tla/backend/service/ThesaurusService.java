@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.TLAEntity;
-import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.backend.es.query.ESQueryBuilder;
 import tla.backend.es.query.ThsSearchQueryBuilder;
 import tla.backend.es.repo.ThesaurusRepo;
@@ -69,12 +68,6 @@ public class ThesaurusService extends UserFriendlyEntityService<ThsEntryEntity, 
             );
         }
         return new EntityRetrieval.BulkEntityResolver();
-    }
-
-    @Override
-    protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

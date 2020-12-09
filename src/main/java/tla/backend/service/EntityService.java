@@ -26,8 +26,6 @@ import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.LinkedEntity;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.meta.TLAEntity;
-import tla.backend.es.query.AbstractEntityIDsQueryBuilder;
-import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.backend.es.query.ESQueryBuilder;
 import tla.backend.es.query.ESQueryResult;
 import tla.backend.service.component.EntityRetrieval;
@@ -376,72 +374,6 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
             ).getHits(),
             getDtoClass()
         );
-    }
-
-    /**
-     * take a search command and based on the type figure out which
-     * {@link AbstractEntityQueryBuilder entitiy query builder} or {@link
-     * AbstractEntityIDsQueryBuilder entity ID query builder} you can put together
-     * with this.
-     * @deprecated
-     */
-    protected abstract AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(
-        SearchCommand<?> search
-    );
-
-    /**
-     * @deprecated
-     */
-    public Optional<AbstractEntityQueryBuilder<?, ?>> findMatchingEntityQueryBuilder(
-        SearchCommand<?> search, Class<? extends AbstractBTSBaseClass> target
-    ) {
-        EntityService<?, ?, ?> targetService = EntityService.getService(target);
-        if (target != null) {
-            return Optional.of(
-                targetService.getEntityQueryBuilder(search)
-            );
-        } else {
-            log.error(
-                String.format(
-                    "Could not find an entity query builder suitable for target entity type %s" +
-                    " and incoming search command type %s!",
-                    target, search
-                )
-            );
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * @deprecated
-     */
-    @SuppressWarnings("unchecked")
-    public Optional<SearchResultsWrapper<D>> search(
-        SearchCommand<? extends AbstractDto> command,
-        Class<? extends AbstractBTSBaseClass> entityType,
-        Pageable page
-    ) {
-        AbstractEntityQueryBuilder<?, ?> entityQueryBuilder = findMatchingEntityQueryBuilder(
-            command,
-            entityType
-        ).orElseThrow(
-            () -> new ObjectNotFoundException(
-                command.getClass().getName()
-            )
-        );
-        try {
-            return Optional.of(
-                wrapSearchResults(
-                    search(
-                        entityQueryBuilder.build(page)
-                    ),
-                    page,
-                    (SearchCommand<D>) command
-                )
-            );
-        } catch (Exception e) {
-            return Optional.empty();
-        }
     }
 
     /**

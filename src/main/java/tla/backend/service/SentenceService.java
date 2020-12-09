@@ -16,7 +16,6 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.SentenceEntity;
-import tla.backend.es.query.AbstractEntityQueryBuilder;
 import tla.backend.es.query.ESQueryBuilder;
 import tla.backend.es.query.SentenceSearchQueryBuilder;
 import tla.backend.es.repo.SentenceRepo;
@@ -78,12 +77,6 @@ public class SentenceService extends EntityService<SentenceEntity, Elasticsearch
                 Terms.Bucket::getDocCount
             )
         );
-    }
-
-    @Override
-    protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override
