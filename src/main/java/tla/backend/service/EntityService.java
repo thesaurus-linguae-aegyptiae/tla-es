@@ -195,9 +195,9 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      */
     public SingleDocumentWrapper<? extends AbstractDto> getDetails(String id) {
         T document = this.retrieve(id);
-        final SingleDocumentWrapper<? extends AbstractDto> container;
+        final SingleDocumentWrapper<?> container;
         if (document != null) {
-            container = new SingleDocumentWrapper<AbstractDto>(
+            container = new SingleDocumentWrapper<>(
                 ModelConfig.toDTO(document)
             );
             var bulk = this.retrieveRelatedDocs(document);

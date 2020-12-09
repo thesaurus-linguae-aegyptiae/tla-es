@@ -3,13 +3,13 @@ package tla.backend.es.query;
 import org.elasticsearch.index.query.QueryBuilder;
 
 import tla.backend.es.model.TextEntity;
-import tla.domain.command.OccurrenceSearch;
+import tla.domain.command.SentenceSearch;
 
 public class TextIdsQueryBuilder
-        extends AbstractEntityIDsQueryBuilder<OccurrenceSearch, TextEntity> {
+        extends AbstractEntityIDsQueryBuilder<SentenceSearch, TextEntity> {
 
 
-    protected TextIdsQueryBuilder(OccurrenceSearch command) {
+    protected TextIdsQueryBuilder(SentenceSearch command) {
         super(command, TextEntity.class);
     }
 

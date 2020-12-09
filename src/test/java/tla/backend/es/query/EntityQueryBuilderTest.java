@@ -13,7 +13,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.Query;
 
 import tla.backend.es.model.ThsEntryEntity;
-import tla.domain.command.OccurrenceSearch;
+import tla.domain.command.SentenceSearch;
 import tla.domain.command.TextSearch;
 
 public class EntityQueryBuilderTest {
@@ -39,7 +39,7 @@ public class EntityQueryBuilderTest {
 
     @Test
     void testIdsQueryBuilder() {
-        TextIdsQueryBuilder qb = new TextIdsQueryBuilder(new OccurrenceSearch());
+        TextIdsQueryBuilder qb = new TextIdsQueryBuilder(new SentenceSearch());
         Query q = qb.build(Pageable.unpaged());
         assertAll("built query must have IDs aggregation",
             () -> assertTrue(

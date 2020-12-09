@@ -31,6 +31,7 @@ public abstract class ESQueryBuilder implements TLAQueryBuilder {
 
     private BoolQueryBuilder nativeRootQueryBuilder;
     private List<AbstractAggregationBuilder<?>> nativeAggregationBuilders;
+    protected SortSpec sortSpec;
 
     private List<TLAQueryBuilder.QueryDependency<?>> dependencies;
 
@@ -50,6 +51,8 @@ public abstract class ESQueryBuilder implements TLAQueryBuilder {
             this.getNativeRootQueryBuilder()
         ).withPageable(
             page
+        ).withSort(
+            this.getSortSpec().primary() // XXX
         );
         log.info("query: {}", this.getNativeRootQueryBuilder());
         this.getNativeAggregationBuilders().forEach(
@@ -89,6 +92,11 @@ public abstract class ESQueryBuilder implements TLAQueryBuilder {
                 )
             );
         }
+    }
+
+    public void setSort(String sort) {
+        log.info("receive sort order: {}", sort);
+        this.sortSpec = SortSpec.from(sort);
     }
 
 }

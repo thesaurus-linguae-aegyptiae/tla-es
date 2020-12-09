@@ -19,6 +19,13 @@ import tla.backend.es.model.meta.Indexable;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.meta.AbstractDto;
 
+/**
+ * An abstract base class for entity-specific search query builders. Subclasses need to provide
+ * an implementation of {@link #getQuery()} in which a native Elasticsearch query builder is being
+ * created based on an incoming TLA {@link SearchCommand}. They can also override the
+ * {@link #getAggregations()} and {@link #getSortSpec()} methods. All three of these methods
+ * are being invoked during creation of a native Elasticsearch search query in {@link #build(Pageable)}.
+ */
 public abstract class AbstractEntityQueryBuilder<S extends SearchCommand<? extends AbstractDto>, T extends Indexable> {
 
     /**
@@ -92,7 +99,7 @@ public abstract class AbstractEntityQueryBuilder<S extends SearchCommand<? exten
     }
 
     /**
-     * Make sure query string is lowercased in query.
+     * Creates a native ES term query builder after lowercasing the search term.
      */
     public static QueryBuilder termQuery(String field, String value) {
         if (value == null || value.isBlank()) {

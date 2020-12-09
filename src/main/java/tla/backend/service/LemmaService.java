@@ -77,7 +77,7 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
         if (lemma == null) {
             return null;
         }
-        SingleDocumentWrapper<? extends AbstractDto> wrapper = super.getDetails(id);
+        SingleDocumentWrapper<?> wrapper = super.getDetails(id);
         ((LemmaDto) wrapper.getDoc()).setAttestations(
             new LinkedList<>(
                 this.computeAttestedTimespans(id)

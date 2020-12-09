@@ -50,9 +50,9 @@ public abstract class EntityController<T extends Indexable, D extends AbstractDt
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<SingleDocumentWrapper<? extends AbstractDto>> get(@PathVariable String id) throws ObjectNotFoundException {
-        SingleDocumentWrapper<? extends AbstractDto> result = getService().getDetails(id);
+        SingleDocumentWrapper<?> result = getService().getDetails(id);
         if (result != null) {
-            return new ResponseEntity<SingleDocumentWrapper<? extends AbstractDto>>(
+            return new ResponseEntity<SingleDocumentWrapper<?>>(
                 result,
                 HttpStatus.OK
             );

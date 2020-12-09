@@ -100,4 +100,11 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
         }
     }
 
+    public void setSort(String sort) {
+        super.setSort(sort);
+        if (sortSpec.field.equals("root")) {
+            sortSpec.field = "relations.root.name";
+        }
+    }
+
 }
