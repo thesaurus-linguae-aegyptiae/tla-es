@@ -31,7 +31,7 @@ public abstract class ESQueryBuilder implements TLAQueryBuilder {
 
     private BoolQueryBuilder nativeRootQueryBuilder;
     private List<AbstractAggregationBuilder<?>> nativeAggregationBuilders;
-    protected SortSpec sortSpec;
+    protected SortSpec sortSpec = SortSpec.DEFAULT;
 
     private List<TLAQueryBuilder.QueryDependency<?>> dependencies;
 
