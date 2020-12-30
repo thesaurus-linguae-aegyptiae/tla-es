@@ -47,7 +47,7 @@
         "lingGloss": "V\\tam.pass",
         "numeric": 10910
       },
-      "glyphs": "D21:D36",
+      "glyphs": {"mdc": "D21:D36"},
       "id": "IBYCcff11CHvf0hwlw17Fbn9qTo",
       "label": "r\u1e0fi\u032f",
       "lemma": {
@@ -77,7 +77,7 @@
         "lingGloss": "PREP",
         "numeric": 3
       },
-      "glyphs": "G17",
+      "glyphs": {"mdc": "G17"},
       "id": "IBYCcsQp0dQ5OEDsvu7mTukwWuo",
       "label": "m",
       "lemma": {
@@ -106,7 +106,7 @@
         "lingGloss": "N.m:sg:stc",
         "numeric": 70060
       },
-      "glyphs": "F26:N35-W24-Z7-O1",
+      "glyphs": {"mdc": "F26:N35-W24-Z7-O1"},
       "id": "IBYCcjl5TU6iukz3uFjouwGVgx0",
       "label": "\u1e96nw",
       "lemma": {
@@ -136,7 +136,7 @@
         "lingGloss": "N.f:sg",
         "numeric": 3
       },
-      "glyphs": "D4:X1*Z1",
+      "glyphs": {"mdc": "D4:X1*Z1"},
       "id": "IBYCcRtX3EYndEzkmbnQQTQd5AY",
       "label": "jr,t",
       "lemma": {

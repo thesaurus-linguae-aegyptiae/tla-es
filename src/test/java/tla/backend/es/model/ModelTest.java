@@ -261,6 +261,7 @@ public class ModelTest {
             () -> assertNotNull(l),
             () -> assertNotNull(l.getPassport()),
             () -> assertNotNull(l.getWords()),
+            () -> assertNotNull(l.getWords().get(0).getGlyphs().getMdc()),
             () -> assertNotNull(l.getWords().get(0).getFlexion().getBtsGloss(), "lemma word flexion bts glossing")
         );
     }
@@ -298,6 +299,7 @@ public class ModelTest {
             () -> assertEquals(-30, d.getTimeSpan().getEnd(), "last year"),
             () -> assertTrue(!d.getTranslations().isEmpty(), "translations should not be empty"),
             () -> assertEquals(1, l.getWords().size(), "expect 1 word"),
+            () -> assertEquals("N35:G47", l.getWords().get(0).getGlyphs().getMdc(), "hieroglyphs MdC mapped"),
             () -> assertNotNull(d.getWords().get(0).getTranscription(), "word should have transcription"),
             () -> assertTrue(!d.getPassport().isEmpty(), "passport not empty"),
             () -> assertEquals(List.of("key"), d.getPassport().getFields(), "passport key set")

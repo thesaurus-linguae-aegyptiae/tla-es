@@ -40,8 +40,8 @@ public class Token {
     @Field(type = FieldType.Object)
     private Flexion flexion;
 
-    @Field(type = FieldType.Text, analyzer = "hieroglyph_analyzer")
-    private String glyphs;
+    @Field(type = FieldType.Object)
+    private Glyphs glyphs;
 
     @Field(type = FieldType.Object)
     private Transcription transcription;
@@ -54,7 +54,8 @@ public class Token {
 
     public Token(String glyphs, Transcription transcription) {
         super();
-        this.glyphs = glyphs;
+        this.glyphs = new Glyphs();
+        this.glyphs.setMdc(glyphs);
         this.transcription = transcription;
     }
 
@@ -104,6 +105,26 @@ public class Token {
          */
         @Field(type = FieldType.Keyword)
         private String id;
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @NoArgsConstructor
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Glyphs {
+        @Field(type = FieldType.Text, analyzer = "hieroglyph_analyzer")
+        private String mdc;
+
+        @Field(type = FieldType.Text)
+        private String unicode;
+
+        @Field(type = FieldType.Text)
+        private String orig;
+
+        @Field(type = FieldType.Long)
+        private List<Long> order;
     }
 
 }

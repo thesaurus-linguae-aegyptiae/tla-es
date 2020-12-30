@@ -42,7 +42,7 @@
         "lingGloss": "N.f:sg",
         "numeric": 3
       },
-      "glyphs": "V31A:X1",
+      "glyphs": {"mdc": "V31A:X1"},
       "id": "IBUBd3l3VyEPm0EbnVNUdogMKw8",
       "label": "k,t",
       "lemma": {
@@ -69,7 +69,7 @@
         "lingGloss": "N.m:sg",
         "numeric": 3
       },
-      "glyphs": "O34:N35*I9-D26:Z2",
+      "glyphs": {"mdc": "O34:N35*I9-D26:Z2"},
       "id": "IBUBd6t8UfsvhkOWsNrRSndDv0M",
       "label": "znf",
       "lemma": {
@@ -96,7 +96,7 @@
         "lingGloss": "PREP-adjz:m.sg",
         "numeric": 71010
       },
-      "glyphs": "N35",
+      "glyphs": {"mdc": "N35"},
       "id": "IBUBd1wvR9BQpE2ruFpnXjQSCf4",
       "label": "n(,j)",
       "lemma": {
@@ -123,7 +123,7 @@
         "lingGloss": "N.f:sg",
         "numeric": 3
       },
-      "glyphs": "F31-S29-X1:Z5",
+      "glyphs": {"mdc": "F31-S29-X1:Z5"},
       "id": "IBUBd4wolaxJv0GxkQDQX811yUA",
       "label": "ms,wt",
       "lemma": {
@@ -150,7 +150,7 @@
         "lingGloss": "N-adjz:f.sg",
         "numeric": 71020
       },
-      "glyphs": "D1-Q3:X1",
+      "glyphs": {"mdc": "D1-Q3:X1"},
       "id": "IBUBd680f3WpZ0yfr5VlW04i63M",
       "label": "tp.t",
       "lemma": {
@@ -177,7 +177,7 @@
         "lingGloss": "PREP-adjz:f.sg",
         "numeric": 71020
       },
-      "glyphs": "N35:X1",
+      "glyphs": {"mdc": "N35:X1"},
       "id": "IBUBd7RUakZ0F0JXnUg86tsQd2I",
       "label": "n.t",
       "lemma": {
@@ -204,7 +204,7 @@
         "lingGloss": "N.f:sg",
         "numeric": 3
       },
-      "glyphs": "D36:D21-M17-M17-X1:Z5-I12",
+      "glyphs": {"mdc": "D36:D21-M17-M17-X1:Z5-I12"},
       "id": "IBUBd9NjYcm5gk5cqHPcTArdUEo",
       "label": "\ua725rry,t",
       "lemma": {
@@ -226,7 +226,7 @@
       "type": "word"
     },
     {
-      "glyphs": null,
+      "glyphs":{},
       "id": "IBUBd7eksyVp50pHqMAfT1KL6Wo",
       "label": null,
       "type": "VersbreakMarker"
