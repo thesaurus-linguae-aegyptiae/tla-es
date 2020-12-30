@@ -27,9 +27,9 @@ public class ESQueryResult<T extends Indexable> {
 
     private PageInfo pageInfo;
 
-    public ESQueryResult(SearchHits<T> hits, Pageable page, long totalCount) {
+    public ESQueryResult(SearchHits<T> hits, Pageable page) {
         this.hits = hits;
-        this.pageInfo = page.isUnpaged() ? null : pageInfo(hits, page, totalCount);
+        this.pageInfo = page.isUnpaged() ? null : pageInfo(hits, page);
     }
 
     /**
@@ -53,11 +53,10 @@ public class ESQueryResult<T extends Indexable> {
      * Create a serializable transfer object containing page information
      * about an ES search result.
      */
-    public static PageInfo pageInfo(SearchHits<?> hits, Pageable pageable, long totalCount) {
-        var total = Math.max(hits.getTotalHits(), totalCount);
+    public static PageInfo pageInfo(SearchHits<?> hits, Pageable pageable) {
         return PageInfo.builder()
             .number(pageable.getPageNumber())
-            .totalElements(total)
+            .totalElements(hits.getTotalHits())
             .size(SEARCH_RESULT_PAGE_SIZE)
             .numberOfElements(
                 Math.min(
@@ -65,7 +64,7 @@ public class ESQueryResult<T extends Indexable> {
                     hits.getSearchHits().size()
                 )
             ).totalPages(
-                (int) total / SEARCH_RESULT_PAGE_SIZE + 1 // TODO
+                (int) hits.getTotalHits() / SEARCH_RESULT_PAGE_SIZE + 1 // TODO
             ).build();
     }
 

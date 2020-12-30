@@ -318,7 +318,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * @Deprecated
      */
     public PageInfo pageInfo(SearchHits<?> hits, Pageable pageable) {
-        return ESQueryResult.pageInfo(hits, pageable, 0);
+        return ESQueryResult.pageInfo(hits, pageable);
     }
 
     /**

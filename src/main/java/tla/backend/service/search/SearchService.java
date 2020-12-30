@@ -53,7 +53,7 @@ public class SearchService {
                 dependency.getQuery().setResult(
                     executeSearchQuery(
                         ((ESQueryBuilder) dependency.getQuery()).buildNativeSearchQuery(
-                            Pageable.unpaged()
+                            Pageable.unpaged() // TODO size=0
                         ),
                         dependency.getQuery().getModelClass()
                     )
@@ -86,18 +86,23 @@ public class SearchService {
         NativeSearchQuery query, Class<T> modelClass
     ) {
         var page = query.getPageable();
-        var count = page.isUnpaged() ? 0L : operations.count(
-            query, modelClass, operations.getIndexCoordinatesFor(modelClass)
-        );
-        log.info("query pageable: {}", page.isPaged());
-        log.info("SEARCH RESULT COUNT: {}", count);
+        log.info("query paged: {}", page.isPaged());
         return new ESQueryResult<T>(
             operations.<T>search(
                 query,
                 modelClass,
                 operations.getIndexCoordinatesFor(modelClass)
             ),
-            page, count
+            page
+        );
+    }
+
+    /**
+     * count exact number of search results for given query (we don't really need this).
+     */
+    public <T extends Indexable> long countSearchResults(NativeSearchQuery query, Class<T> modelClass) {
+        return query.getPageable().isUnpaged() ? 0L : operations.count(
+            query, modelClass, operations.getIndexCoordinatesFor(modelClass)
         );
     }
 
