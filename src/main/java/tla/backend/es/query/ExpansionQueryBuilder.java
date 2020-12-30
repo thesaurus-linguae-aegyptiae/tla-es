@@ -1,5 +1,6 @@
 package tla.backend.es.query;
 
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 
@@ -19,7 +20,11 @@ public interface ExpansionQueryBuilder extends TLAQueryBuilder {
 
     public boolean isExpansion();
 
-    public void setRootIds(String[] ids);
+    public default void setRootIds(String[] ids) {
+        this.must(
+            QueryBuilders.termsQuery("paths.id.keyword", ids)
+        );
+    }
 
     public String[] getRootIds();
 
