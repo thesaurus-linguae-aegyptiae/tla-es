@@ -101,6 +101,13 @@ task downloadSample(type: Download) {
     src env.fetch("SAMPLE_URL", "http://")
     dest new File('sample.tar.gz')
     onlyIfModified true
+    outputs.files(
+        file("sample.tar.gz")
+    )
+}
+
+clean {
+    dependsOn 'cleanDownloadSample'
 }
 
 task populate {
