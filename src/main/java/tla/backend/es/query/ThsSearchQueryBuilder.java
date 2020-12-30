@@ -1,7 +1,5 @@
 package tla.backend.es.query;
 
-import org.elasticsearch.index.query.QueryBuilders;
-
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.ThsEntryEntity;
@@ -20,13 +18,6 @@ public class ThsSearchQueryBuilder extends ESQueryBuilder implements MultiLingQu
         log.info("ths query: add IDs aggregation");
         ExpansionQueryBuilder.super.setExpansion(expansion);
         this.expansion = expansion;
-    }
-
-    @Override
-    public void setRootIds(String[] ids) {
-        this.must(
-            QueryBuilders.termsQuery("paths.id.keyword", ids)
-        );
     }
 
 }
