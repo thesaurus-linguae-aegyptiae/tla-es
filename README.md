@@ -4,6 +4,8 @@
 
 Thesaurus Linguae Aegyptiae (TLA) backend.
 
+Copyright (C) 2019-2021 Berlin-Brandenburgische Akademie der Wissenschaften
+
 ## Overview
 
 The TLA backend server is a Spring Boot application using an Elasticsearch instance as a search engine.
