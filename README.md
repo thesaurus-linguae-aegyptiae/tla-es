@@ -1,4 +1,4 @@
-![build](https://github.com/JKatzwinkel/tla-es/workflows/build/badge.svg)
+![build](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/build/badge.svg)
 ![LINE](https://img.shields.io/badge/line--coverage-57%25-orange.svg)
 ![METHOD](https://img.shields.io/badge/method--coverage-69%25-yellow.svg)
 
