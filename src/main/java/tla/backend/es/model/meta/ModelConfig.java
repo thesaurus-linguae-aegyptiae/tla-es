@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +26,17 @@ import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.model.parts.EditorInfo;
 import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Translations;
+import tla.backend.es.query.LemmaSearchQueryBuilder;
+import tla.backend.es.query.SentenceSearchQueryBuilder;
+import tla.backend.es.query.TextSearchQueryBuilder;
+import tla.backend.es.query.TokenSearchQueryBuilder;
 import tla.backend.service.EntityService;
 import tla.backend.service.component.EntityRetrieval;
+import tla.domain.command.LemmaSearch;
+import tla.domain.command.PassportSpec;
+import tla.domain.command.SentenceSearch;
+import tla.domain.command.TextSearch;
+import tla.domain.command.TranslationSpec;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.LemmaDto;
@@ -48,6 +58,19 @@ import tla.domain.model.meta.TLADTO;
 @Configuration
 public class ModelConfig {
 
+    public static class PassportSpecConverter extends AbstractConverter<PassportSpec, PassportSpec> {
+        @Override
+        protected PassportSpec convert(PassportSpec source) {
+            return source;
+        }
+    }
+
+    public static class TranslationSpecConverter extends AbstractConverter<TranslationSpec, TranslationSpec> {
+        @Override
+        protected TranslationSpec convert(TranslationSpec source) {
+            return source;
+        }
+    }
     /**
      * Container for configurations that can be attributed to an eClass specified
      * via {@link BTSeClass} annotation on top of an {@link TLAEntity} instance:
@@ -94,14 +117,10 @@ public class ModelConfig {
      *         or <code>null</code> if any config value could not be extracted
      */
     private static Map<String, BTSeClassConfig> mapModelClassConfigToEclass(Class<? extends AbstractBTSBaseClass> clazz) {
-        String eclass = null;
+        String eclass = tla.domain.model.meta.Util.extractEclass(clazz);
         String index = null;
-        for (Annotation annotation : clazz.getAnnotations()) {
-            if (annotation instanceof BTSeClass) {
-                eclass = ((BTSeClass) annotation).value();
-            } else if (annotation instanceof Document) {
-                index = ((Document) annotation).indexName();
-            }
+        for (Annotation annotation : clazz.getAnnotationsByType(Document.class)) {
+            index = ((Document) annotation).indexName();
         }
         BTSeClassConfig config = BTSeClassConfig.builder()
             .index(index)
@@ -131,16 +150,10 @@ public class ModelConfig {
     }
 
     /**
-     * extract <code>eclass</code> from {@link BTSeClass} annotation of given model class
+     * extract <code>eclass</code> from {@link BTSeClass} or {@link TLADTO} annotation of given model class
      */
     public static String getEclass(Class<? extends BaseEntity> modelClass) {
-        for (Annotation annotation : modelClass.getAnnotations()) {
-            if (annotation instanceof BTSeClass) {
-                return ((BTSeClass) annotation).value();
-            }
-        }
-        log.warn("class {} seems to have no BTSeClass annotation!", modelClass.getName());
-        return null;
+        return tla.domain.model.meta.Util.extractEclass(modelClass);
     }
 
     /**
@@ -261,6 +274,34 @@ public class ModelConfig {
                 Token::getTranslations, SentenceToken::setTranslations
             )
         );
+        // patches for search-command-to-query-adapter mappings, which for the most part don't require excplicit mappings
+        modelMapper.createTypeMap(PassportSpec.class, PassportSpec.class);
+        modelMapper.createTypeMap(TextSearch.class, TextSearchQueryBuilder.class).addMappings(
+            m -> m.using(
+                new PassportSpecConverter()
+            ).map(
+                TextSearch::getPassport, TextSearchQueryBuilder::setPassport
+            )
+        );
+        modelMapper.createTypeMap(SentenceSearch.class, SentenceSearchQueryBuilder.class).addMappings(
+            m -> m.using(
+                new PassportSpecConverter()
+            ).map(
+                SentenceSearch::getPassport, SentenceSearchQueryBuilder::setPassport
+            )
+        );
+        modelMapper.createTypeMap(TranslationSpec.class, TranslationSpec.class);
+        modelMapper.createTypeMap(LemmaSearch.class, LemmaSearchQueryBuilder.class).addMappings(
+            m -> m.using(new TranslationSpecConverter()).map(
+                LemmaSearch::getTranslation, LemmaSearchQueryBuilder::setTranslation
+            )
+        );
+        modelMapper.getTypeMap(SentenceSearch.class, SentenceSearchQueryBuilder.class).addMappings(
+            m -> m.using(new TranslationSpecConverter()).map(
+                SentenceSearch::getTranslation, SentenceSearchQueryBuilder::setTranslation
+            )
+        );
+        modelMapper.createTypeMap(SentenceSearch.TokenSpec.class, TokenSearchQueryBuilder.class);
         return modelMapper;
     }
 

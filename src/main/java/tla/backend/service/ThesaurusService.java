@@ -1,19 +1,23 @@
 package tla.backend.service;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.ThsEntryEntity;
-import tla.backend.es.query.AbstractEntityQueryBuilder;
+import tla.backend.es.model.meta.Indexable;
+import tla.backend.es.model.meta.TLAEntity;
+import tla.backend.es.query.ESQueryBuilder;
+import tla.backend.es.query.ThsSearchQueryBuilder;
 import tla.backend.es.repo.ThesaurusRepo;
 import tla.backend.es.repo.custom.UserFriendlyEntityRepo;
+import tla.backend.service.component.EntityRetrieval;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.ThsEntryDto;
-import tla.domain.model.ObjectReference;
 import tla.domain.model.Passport;
+import tla.domain.model.meta.Resolvable;
 
 @Service
 @ModelClass(value = ThsEntryEntity.class, path = "ths")
@@ -37,24 +41,38 @@ public class ThesaurusService extends UserFriendlyEntityService<ThsEntryEntity, 
      */
     public List<ThsEntryEntity> extractThsEntriesFromPassport(Passport passport, String path) {
         List<Passport> leafNodes = passport.extractProperty(path);
-        List<ThsEntryEntity> terms = new LinkedList<>();
-        leafNodes.stream().forEach(
-            node -> {
-                if (node.get() instanceof ObjectReference) {
-                    terms.add(
-                        this.retrieve(
-                            ((ObjectReference) node.get()).getId()
-                        )
-                    );
-                }
-        });
-        return terms;
+        return EntityRetrieval.BulkEntityResolver.of(
+            leafNodes.stream().filter(
+                node -> node.get() instanceof Resolvable
+            ).map(
+                node -> (Resolvable) node.get()
+            ).collect(
+                Collectors.toList()
+            )
+        ).resolve().stream().map(
+            term -> (ThsEntryEntity) term
+        ).collect(
+            Collectors.toList()
+        );
+    }
+
+    /**
+     * Creates a bulk entity retriever with all thesaurus entries referenced from within a document's
+     * passport in its retrieval queue.
+     */
+    public static EntityRetrieval.BulkEntityResolver extractThsEntriesFromPassport(Indexable document) {
+        if (document instanceof TLAEntity) {
+            return EntityRetrieval.BulkEntityResolver.of(
+                ((TLAEntity) document).getPassport() != null ?
+                ((TLAEntity) document).getPassport().extractObjectReferences() : null
+            );
+        }
+        return new EntityRetrieval.BulkEntityResolver();
     }
 
     @Override
-    protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
-        // TODO Auto-generated method stub
-        return null;
+    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<ThsEntryDto> command) {
+        return this.getModelMapper().map(command, ThsSearchQueryBuilder.class);
     }
 
 }

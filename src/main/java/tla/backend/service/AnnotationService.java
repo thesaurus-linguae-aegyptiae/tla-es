@@ -5,7 +5,7 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.AnnotationEntity;
-import tla.backend.es.query.AbstractEntityQueryBuilder;
+import tla.backend.es.query.ESQueryBuilder;
 import tla.backend.es.repo.AnnotationRepo;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.AnnotationDto;
@@ -23,8 +23,7 @@ public class AnnotationService extends EntityService<AnnotationEntity, Elasticse
     }
 
     @Override
-    protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
-        // TODO Auto-generated method stub
+    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<AnnotationDto> command) {
         return null;
     }
 

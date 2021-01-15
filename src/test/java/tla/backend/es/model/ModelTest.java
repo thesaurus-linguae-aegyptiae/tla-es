@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.Test;
+import org.modelmapper.AbstractConverter;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.elasticsearch.annotations.Document;
 
@@ -35,8 +37,11 @@ import tla.backend.es.model.parts.PartOfSpeech;
 import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Token.Flexion;
 import tla.backend.es.model.parts.Token.Lemmatization;
+import tla.backend.es.query.TextSearchQueryBuilder;
 import tla.backend.es.model.parts.Transcription;
 import tla.backend.es.model.parts.Translations;
+import tla.domain.command.PassportSpec;
+import tla.domain.command.TextSearch;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.LemmaDto;
@@ -256,6 +261,7 @@ public class ModelTest {
             () -> assertNotNull(l),
             () -> assertNotNull(l.getPassport()),
             () -> assertNotNull(l.getWords()),
+            () -> assertNotNull(l.getWords().get(0).getGlyphs().getMdc()),
             () -> assertNotNull(l.getWords().get(0).getFlexion().getBtsGloss(), "lemma word flexion bts glossing")
         );
     }
@@ -293,6 +299,7 @@ public class ModelTest {
             () -> assertEquals(-30, d.getTimeSpan().getEnd(), "last year"),
             () -> assertTrue(!d.getTranslations().isEmpty(), "translations should not be empty"),
             () -> assertEquals(1, l.getWords().size(), "expect 1 word"),
+            () -> assertEquals("N35:G47", l.getWords().get(0).getGlyphs().getMdc(), "hieroglyphs MdC mapped"),
             () -> assertNotNull(d.getWords().get(0).getTranscription(), "word should have transcription"),
             () -> assertTrue(!d.getPassport().isEmpty(), "passport not empty"),
             () -> assertEquals(List.of("key"), d.getPassport().getFields(), "passport key set")
@@ -561,6 +568,32 @@ public class ModelTest {
             () -> assertNotNull(tdto.getLemma().getPartOfSpeech().getType(), "lemma POS type"),
             () -> assertTrue(tdto.getAnnoTypes().contains("rubrum"), "token is rubrum")
         );
+    }
+
+    @Test
+    void passportSearchCommandMapping() {
+        var modelMapper = new ModelMapper();
+        PassportSpec pp = new PassportSpec();
+        pp.put("date", PassportSpec.ThsRefPassportValue.of(List.of("XX"), true));
+        var ppp = modelMapper.map(pp, PassportSpec.class);
+        assertNotNull(ppp);
+        modelMapper.createTypeMap(PassportSpec.class, PassportSpec.class);
+        modelMapper.createTypeMap(TextSearch.class, TextSearchQueryBuilder.class).addMappings(
+            m -> m.using(
+                new AbstractConverter<PassportSpec,PassportSpec>(){
+                    protected PassportSpec convert(PassportSpec source) {
+                        return source;
+                    }
+                }
+            ).map(
+                TextSearch::getPassport, TextSearchQueryBuilder::setPassport
+            )
+        );
+        TextSearch command = new TextSearch();
+        command.setPassport(pp);
+        var ttt = modelMapper.map(command, TextSearchQueryBuilder.class);
+        assertNotNull(ttt.getPassport());
+        assertEquals(1, ttt.getPassport().size());
     }
 
 }

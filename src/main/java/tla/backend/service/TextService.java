@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.TextEntity;
-import tla.backend.es.query.AbstractEntityQueryBuilder;
+import tla.backend.es.query.ESQueryBuilder;
+import tla.backend.es.query.TextSearchQueryBuilder;
 import tla.backend.es.repo.TextRepo;
 import tla.backend.es.repo.custom.UserFriendlyEntityRepo;
 import tla.domain.command.SearchCommand;
@@ -52,9 +53,8 @@ public class TextService extends UserFriendlyEntityService<TextEntity, UserFrien
     }
 
     @Override
-    protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
-        // TODO Auto-generated method stub
-        return null;
+    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<TextDto> command) {
+        return this.getModelMapper().map(command, TextSearchQueryBuilder.class);
     }
 
 }

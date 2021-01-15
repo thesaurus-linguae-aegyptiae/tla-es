@@ -1,17 +1,17 @@
 ![build](https://github.com/JKatzwinkel/tla-es/workflows/build/badge.svg)
-![LINE](https://img.shields.io/badge/line--coverage-59%25-orange.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-72%25-yellow.svg)
+![LINE](https://img.shields.io/badge/line--coverage-57%25-orange.svg)
+![METHOD](https://img.shields.io/badge/method--coverage-69%25-yellow.svg)
 
 Thesaurus Linguae Aegyptiae (TLA) backend.
 
 ## Overview
 
-The TLA backend server is a Spring Boot application using an Elasticsearch instance as a search engine.
+The TLA backend server is a Spring Boot application using Elasticsearch as a search engine.
 
 
 ## Installation
 
-> **TL;DR:** run `ES_PORT=9200 SAMPLE_URL=http://aaew64.bbaw.de/resources/sample/sample201111-5000t.tar.gz docker-compose up -d`
+> **TL;DR:** run `SAMPLE_URL=http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210113-1000t.tar.gz docker-compose up -d`
 
 There are two methods for getting this thing up and running.
 
@@ -31,10 +31,7 @@ Requirements:
    ```
    cp .env.template .env
    ```
-2. Choose values for the environment variables `ES_HOST` and `ES_PORT` to your liking, e.g. as `localhost` and `9200`
-   respectively (or wherever you desire to be able to connect to your Elasticsearch container).
-
-3. Specify the location where a TLA corpus data archive can be downloaded using the `SAMPLE_URL` environment variable, e.g.:
+2. Specify the location where a TLA corpus data archive can be downloaded using the `SAMPLE_URL` environment variable, e.g.:
    ```
    SAMPLE_URL=http://example.org/sample.tar.gz
    ```
@@ -62,7 +59,7 @@ You can check its progress by taking a look into its log output:
 Requirements:
 
 - Java 11
-- Elasticsearch 7.9.3 *or* Docker Compose
+- Elasticsearch 7.10.0 *or* Docker Compose
 
 #### 2.1. Prerequesites
 

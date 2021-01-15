@@ -7,6 +7,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -68,7 +72,10 @@ public class AutoCompleteSupport {
         }
     }
 
-    public MultiMatchQueryBuilder autocompleteQuery(String term) {
+    /**
+     * prepare multimatch query for autocomplete search.
+     */
+    protected MultiMatchQueryBuilder autoCompleteQueryBuilder(String term) {
         MultiMatchQueryBuilder query = new MultiMatchQueryBuilder(term)
             .type(MultiMatchQueryBuilder.Type.BOOL_PREFIX);
         for (Entry<String, Float> e : this.queryFields.entrySet()) {
@@ -78,6 +85,23 @@ public class AutoCompleteSupport {
             );
         }
         return query;
+    }
+
+    /**
+     * create native ES search query.
+     */
+    public NativeSearchQuery autoCompleteQuery(String term, String type) {
+        return new NativeSearchQueryBuilder().withFields(
+            this.getResponseFields()
+        ).withFilter(
+            (type != null && !type.isBlank()) ?
+            QueryBuilders.termQuery("type", type) :
+            QueryBuilders.boolQuery()
+        ).withQuery(
+            this.autoCompleteQueryBuilder(term)
+        ).withPageable(
+            PageRequest.of(0, 15)
+        ).build();
     }
  
 }

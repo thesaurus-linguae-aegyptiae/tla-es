@@ -3,7 +3,6 @@ package tla.backend.service;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -17,9 +16,10 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.stereotype.Service;
 
 import tla.backend.es.model.SentenceEntity;
-import tla.backend.es.model.meta.Indexable;
-import tla.backend.es.query.AbstractEntityQueryBuilder;
+import tla.backend.es.query.ESQueryBuilder;
+import tla.backend.es.query.SentenceSearchQueryBuilder;
 import tla.backend.es.repo.SentenceRepo;
+import tla.backend.service.component.EntityRetrieval;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.SentenceDto;
 
@@ -41,12 +41,12 @@ public class SentenceService extends EntityService<SentenceEntity, Elasticsearch
      * make sure containing text gets included.
      */
     @Override
-    protected Collection<Indexable> retrieveRelatedDocs(SentenceEntity document) {
-        Collection<Indexable> relatedDocuments = super.retrieveRelatedDocs(document);
+    protected EntityRetrieval.BulkEntityResolver retrieveRelatedDocs(SentenceEntity document) {
+        EntityRetrieval.BulkEntityResolver relatedDocuments = super.retrieveRelatedDocs(document);
         var text = this.retrieveSingleBTSDoc(
             "BTSText", document.getContext().getTextId()
         );
-        relatedDocuments.addAll(
+        relatedDocuments.merge(
             super.retrieveReferencedThesaurusEntries(text)
         );
         return relatedDocuments;
@@ -80,9 +80,8 @@ public class SentenceService extends EntityService<SentenceEntity, Elasticsearch
     }
 
     @Override
-    protected AbstractEntityQueryBuilder<?, ?> getEntityQueryBuilder(SearchCommand<?> search) {
-        // TODO Auto-generated method stub
-        return null;
+    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<SentenceDto> command) {
+        return this.getModelMapper().map(command, SentenceSearchQueryBuilder.class);
     }
 
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import tla.backend.es.model.AnnotationEntity;
 import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.TextEntity;
+import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.ModelConfig;
 
@@ -14,7 +15,8 @@ public class Util {
     static final Map<Class<? extends Indexable>, String> ENTITY_SAMPLE_PATHS = Map.of(
         SentenceEntity.class, "sentence",
         AnnotationEntity.class, "annotation",
-        TextEntity.class, "text"
+        TextEntity.class, "text",
+        ThsEntryEntity.class, "ths"
     );
 
     public static <E extends Indexable> E loadSampleFile(Class<E> entityClass, String id) throws Exception {

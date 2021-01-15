@@ -130,7 +130,7 @@
         "lingGloss": "\u2014",
         "numeric": 0
       },
-      "glyphs": "M17:O34-D21:M1",
+      "glyphs": {"mdc": "M17:O34-D21:M1"},
       "id": "IBUBd4ZvJZI7qkj5mGSsN5q5OX0",
       "label": "jzr",
       "lemma": {
