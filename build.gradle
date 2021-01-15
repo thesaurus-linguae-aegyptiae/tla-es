@@ -52,7 +52,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.16'
     annotationProcessor 'org.projectlombok:lombok:1.18.16'
 
-    implementation 'com.github.jkatzwinkel:tla-common:query-expansion-SNAPSHOT'
+    implementation 'com.github.thesaurus-linguae-aegyptiae:tla-common:master-SNAPSHOT'
     implementation 'org.modelmapper:modelmapper:2.3.9'
     implementation 'org.apache.commons:commons-compress:1.20'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.35'
@@ -61,8 +61,8 @@ dependencies {
     implementation 'org.springframework.data:spring-data-elasticsearch:4.2.0-M1'
     implementation 'org.springframework.boot:spring-boot:2.4.1'
     implementation 'org.springframework.boot:spring-boot-autoconfigure:2.4.1'
-    implementation 'org.springframework:spring-web:5.3.2'
-    implementation 'org.springframework:spring-webmvc:5.3.2'
+    implementation 'org.springframework:spring-web:5.3.3'
+    implementation 'org.springframework:spring-webmvc:5.3.3'
     implementation 'org.slf4j:slf4j-simple:2.0.0-alpha1'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.4.1'

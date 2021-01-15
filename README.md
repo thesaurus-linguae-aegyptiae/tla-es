@@ -11,7 +11,7 @@ The TLA backend server is a Spring Boot application using Elasticsearch as a sea
 
 ## Installation
 
-> **TL;DR:** run `SAMPLE_URL=http://aaew64.bbaw.de/resources/tla-data/tla-sample-20201229-1000t.tar.gz docker-compose up -d`
+> **TL;DR:** run `SAMPLE_URL=http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210113-1000t.tar.gz docker-compose up -d`
 
 There are two methods for getting this thing up and running.
 
@@ -31,10 +31,7 @@ Requirements:
    ```
    cp .env.template .env
    ```
-2. (Optional) Choose values for the environment variables `ES_HOST` and `ES_PORT` to your liking, e.g. as `localhost` and `9200`
-   respectively (or wherever you desire to be able to connect to your Elasticsearch container).
-
-3. Specify the location where a TLA corpus data archive can be downloaded using the `SAMPLE_URL` environment variable, e.g.:
+2. Specify the location where a TLA corpus data archive can be downloaded using the `SAMPLE_URL` environment variable, e.g.:
    ```
    SAMPLE_URL=http://example.org/sample.tar.gz
    ```
