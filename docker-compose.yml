@@ -35,12 +35,11 @@ services:
         build:
             context: .
         environment:
-            - ES_HOST=${ES_HOST:-localhost}
-            - ES_PORT=${ES_PORT:-9200}
+            - ES_HOST=es
+            - ES_PORT=9200
         ports:
             - 8090:8090
         tty: true
-        network_mode: host
         restart: unless-stopped
 
 ...
