@@ -17,15 +17,17 @@ import tla.domain.command.PassportSpec;
 public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiLingQueryBuilder {
 
     public void setTokens(Collection<TokenSearchQueryBuilder> tokenQueries) {
-        tokenQueries.forEach(
-            query -> this.filter(
-                QueryBuilders.nestedQuery(
-                    "tokens",
-                    query.getNativeRootQueryBuilder(),
-                    ScoreMode.None
+        if (tokenQueries != null) {
+            tokenQueries.forEach(
+                query -> this.filter(
+                    QueryBuilders.nestedQuery(
+                        "tokens",
+                        query.getNativeRootQueryBuilder(),
+                        ScoreMode.None
+                    )
                 )
-            )
-        );
+            );
+        }
     }
 
     public void setPassport(PassportSpec spec) {

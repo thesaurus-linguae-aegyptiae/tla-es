@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.Test;
-import org.modelmapper.AbstractConverter;
-import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.elasticsearch.annotations.Document;
 
@@ -37,11 +35,8 @@ import tla.backend.es.model.parts.PartOfSpeech;
 import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Token.Flexion;
 import tla.backend.es.model.parts.Token.Lemmatization;
-import tla.backend.es.query.TextSearchQueryBuilder;
 import tla.backend.es.model.parts.Transcription;
 import tla.backend.es.model.parts.Translations;
-import tla.domain.command.PassportSpec;
-import tla.domain.command.TextSearch;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.LemmaDto;
@@ -568,32 +563,6 @@ public class ModelTest {
             () -> assertNotNull(tdto.getLemma().getPartOfSpeech().getType(), "lemma POS type"),
             () -> assertTrue(tdto.getAnnoTypes().contains("rubrum"), "token is rubrum")
         );
-    }
-
-    @Test
-    void passportSearchCommandMapping() {
-        var modelMapper = new ModelMapper();
-        PassportSpec pp = new PassportSpec();
-        pp.put("date", PassportSpec.ThsRefPassportValue.of(List.of("XX"), true));
-        var ppp = modelMapper.map(pp, PassportSpec.class);
-        assertNotNull(ppp);
-        modelMapper.createTypeMap(PassportSpec.class, PassportSpec.class);
-        modelMapper.createTypeMap(TextSearch.class, TextSearchQueryBuilder.class).addMappings(
-            m -> m.using(
-                new AbstractConverter<PassportSpec,PassportSpec>(){
-                    protected PassportSpec convert(PassportSpec source) {
-                        return source;
-                    }
-                }
-            ).map(
-                TextSearch::getPassport, TextSearchQueryBuilder::setPassport
-            )
-        );
-        TextSearch command = new TextSearch();
-        command.setPassport(pp);
-        var ttt = modelMapper.map(command, TextSearchQueryBuilder.class);
-        assertNotNull(ttt.getPassport());
-        assertEquals(1, ttt.getPassport().size());
     }
 
 }
