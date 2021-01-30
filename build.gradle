@@ -87,6 +87,10 @@ jacocoTestReport {
     finalizedBy 'generateJacocoBadge'
 }
 
+springBoot {
+    buildInfo()
+}
+
 bootRun {
     if (project.hasProperty('args')) {
         args project.args.split(',')
