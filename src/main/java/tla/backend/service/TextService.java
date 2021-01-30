@@ -53,8 +53,8 @@ public class TextService extends UserFriendlyEntityService<TextEntity, UserFrien
     }
 
     @Override
-    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<TextDto> command) {
-        return this.getModelMapper().map(command, TextSearchQueryBuilder.class);
+    public Class<? extends ESQueryBuilder> getSearchCommandAdapterClass(SearchCommand<TextDto> command) {
+        return TextSearchQueryBuilder.class;
     }
 
 }

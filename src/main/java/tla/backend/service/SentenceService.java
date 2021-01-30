@@ -80,8 +80,8 @@ public class SentenceService extends EntityService<SentenceEntity, Elasticsearch
     }
 
     @Override
-    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<SentenceDto> command) {
-        return this.getModelMapper().map(command, SentenceSearchQueryBuilder.class);
+    public Class<? extends ESQueryBuilder> getSearchCommandAdapterClass(SearchCommand<SentenceDto> command) {
+        return SentenceSearchQueryBuilder.class;
     }
 
 }

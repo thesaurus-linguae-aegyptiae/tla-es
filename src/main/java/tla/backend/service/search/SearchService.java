@@ -75,6 +75,11 @@ public class SearchService {
     @Autowired
     protected RestHighLevelClient restClient;
 
+    /**
+     * Creates a new {@link QueryExecutor} for a given query.
+     *
+     * TODO: actual registry?
+     */
     public QueryExecutor register(ESQueryBuilder query) {
         return new QueryExecutor(query);
     }

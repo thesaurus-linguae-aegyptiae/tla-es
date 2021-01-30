@@ -46,6 +46,10 @@ import tla.error.ObjectNotFoundException;
  * Implementing subclasses must be annotated with {@link ModelClass} and be instantiated
  * using the no-args default constructor.
  * They should also be annotated with {@link Service} for component scanning / dependency injection.
+ *
+ * For handling of an incoming search command DTO, use {@link #runSearchCommand(SearchCommand, Pageable)}.
+ *
+ * @see SearchService
  */
 @Slf4j
 public abstract class EntityService<T extends Indexable, R extends ElasticsearchRepository<T, String>, D extends AbstractDto> {
@@ -377,10 +381,23 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     }
 
     /**
-     * subclasses should implement this by using {@link #getModelMapper()} to convert command into native query builder/adapter.
+     * map incoming search command DTO to an elasticsearch query builder adapter.
      */
-    public abstract ESQueryBuilder getSearchCommandAdapter(SearchCommand<D> command);
+    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<D> command) {
+        return this.getModelMapper().map(
+            command, this.getSearchCommandAdapterClass(command)
+        );
+    }
 
+    /**
+     * subclasses should implement this and return
+     * the class to be used to convert command into native query builder/adapter.
+     */
+    public abstract Class<? extends ESQueryBuilder> getSearchCommandAdapterClass(SearchCommand<D> command);
+
+    /**
+     * TODO: doc
+     */
     public Optional<SearchResultsWrapper<? extends D>> runSearchCommand(SearchCommand<D> command, Pageable page) {
         log.info("page: {}", page);
         var queryAdapter = this.getSearchCommandAdapter(command);

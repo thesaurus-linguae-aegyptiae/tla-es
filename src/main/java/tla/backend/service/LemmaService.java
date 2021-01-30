@@ -154,10 +154,8 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
     }
 
     @Override
-    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<LemmaDto> command) {
-        return this.getModelMapper().map(
-            command, LemmaSearchQueryBuilder.class
-        );
+    public Class<? extends ESQueryBuilder> getSearchCommandAdapterClass(SearchCommand<LemmaDto> command) {
+        return LemmaSearchQueryBuilder.class;
     }
 
 }

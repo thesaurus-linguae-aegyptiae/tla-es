@@ -23,9 +23,8 @@ public class CommentService extends EntityService<CommentEntity, ElasticsearchRe
     }
 
     @Override
-    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<CommentDto> command) {
-        // TODO Auto-generated method stub
+    public Class<? extends ESQueryBuilder> getSearchCommandAdapterClass(SearchCommand<CommentDto> command) {
+        // TODO
         return null;
     }
-    
 }
