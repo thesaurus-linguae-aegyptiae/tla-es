@@ -1,0 +1,30 @@
+---
+
+name: deploy
+
+on: [pull_request, push]
+
+jobs:
+
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: "actions/checkout@v2"
+
+    - name: start TLA containers
+      run: docker-compose up -d --force-recreate --build
+      env:
+        SAMPLE_URL: http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210115-1000t.tar.gz
+
+    - name: show container status
+      run: docker-compose ps
+
+    - name: show ingest container logs
+      run: docker-compose logs -f populate
+
+    - name: show backend container logs
+      run: docker-compose logs backend
+
+...
