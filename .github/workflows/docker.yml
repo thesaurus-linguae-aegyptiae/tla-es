@@ -27,4 +27,18 @@ jobs:
     - name: show backend container logs
       run: docker-compose logs backend
 
+    - name: wait for backend to be populated with corpus data
+      uses: "cygnetdigital/wait_for_response@v2.0.0"
+      with:
+        url: http://localhost:8090/lemma/get/100690
+        responseCode: 200
+        interval: 5000
+        timeout: 100000
+
+    - name: query backend version
+      run: curl -s http://localhost:8090/version
+
+    - name: query backend endpoints
+      run: curl -s http://localhost:8090/
+
 ...
