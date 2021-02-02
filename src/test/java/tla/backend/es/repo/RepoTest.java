@@ -56,15 +56,15 @@ public class RepoTest {
         assertAll(
             () -> assertFalse(repoPopulator.repoIngestors.isEmpty(), "repo populator has registry"),
             () -> assertEquals(
-                ModelConfig.getModelClasses().size(), EntityService.getRegisteredModelClasses().size(),
+                expectedKeys.size(), EntityService.getRegisteredModelClasses().size(),
                 "all model classes have been registered by service"
             ),
             () -> assertEquals(
-                ModelConfig.getModelClasses().size(), repoPopulator.repoIngestors.size(),
+                expectedKeys.size(), repoPopulator.repoIngestors.size(),
                 "all model classes have been registered by repo ingestor"
             ),
             () -> assertAll(
-                ModelConfig.getModelClasses().stream().map(
+                EntityService.getRegisteredModelClasses().stream().map(
                     modelClass -> () -> {
                         assertTrue(
                             Indexable.class.isAssignableFrom(modelClass),
