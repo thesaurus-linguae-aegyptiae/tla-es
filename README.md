@@ -1,4 +1,5 @@
 ![build](https://github.com/JKatzwinkel/tla-es/workflows/build/badge.svg)
+![deploy](https://github.com/JKatzwinkel/tla-es/workflows/deploy/badge.svg)
 ![LINE](https://img.shields.io/badge/line--coverage-57%25-orange.svg)
 ![METHOD](https://img.shields.io/badge/method--coverage-69%25-yellow.svg)
 
