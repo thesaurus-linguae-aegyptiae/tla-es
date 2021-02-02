@@ -1,11 +1,12 @@
 #!/bin/bash
 
+ES_PORT="${ES_PORT}:-9200}"
 ES_HOST="${ES_HOST:-localhost}"
 ES_URL="${ES_HOST}:${ES_PORT}"
 CMD=runserver
 
 if [ $# -ge 1 ]; then
-    if [[ "$1" = "ingest" ]]; then
+    if [ "$1" = "ingest" ]; then
         echo "download corpus data from ${SAMPLE_URL}..."
         wget "${SAMPLE_URL}" -O sample.tar.gz
         if [ ! $? -eq 0 ]; then
@@ -23,7 +24,7 @@ while true; do
         sleep 4
 done
 
-if [[ "${CMD}" = "populate" ]]; then
+if [ "${CMD}" = "populate" ]; then
     echo "populate database..."
     java -jar tla-backend.jar --data-file=sample.tar.gz --shutdown
 else
