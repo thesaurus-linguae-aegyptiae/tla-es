@@ -1,8 +1,10 @@
 package tla.backend.es.repo;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -16,8 +18,10 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 
 import tla.backend.App;
 import tla.backend.es.model.CorpusObjectEntity;
+import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.es.model.parts.EditDate;
+import tla.backend.service.EntityService;
 
 @SpringBootTest(classes = {App.class})
 public class RepoTest {
@@ -46,12 +50,44 @@ public class RepoTest {
 
     @Test
     void repoPopulatorHasRegistry() {
+        final var expectedKeys = List.of("lemma", "ths", "text", "comment", "annotation", "object", "sentence");
         assertTrue(ModelConfig.isInitialized(), "entity model registered");
         repoPopulator.init();
         assertAll(
             () -> assertFalse(repoPopulator.repoIngestors.isEmpty(), "repo populator has registry"),
-            () -> assertEquals(ModelConfig.getModelClasses().size(), repoPopulator.repoIngestors.size()),
-            () -> assertNotNull(repoPopulator.selectBatchIngestor("lemma"), "lemma batch ingestor registered"),
+            () -> assertEquals(
+                ModelConfig.getModelClasses().size(), EntityService.getRegisteredModelClasses().size(),
+                "all model classes have been registered by service"
+            ),
+            () -> assertEquals(
+                ModelConfig.getModelClasses().size(), repoPopulator.repoIngestors.size(),
+                "all model classes have been registered by repo ingestor"
+            ),
+            () -> assertAll(
+                ModelConfig.getModelClasses().stream().map(
+                    modelClass -> () -> {
+                        assertTrue(
+                            Indexable.class.isAssignableFrom(modelClass),
+                            modelClass.getName() + " is an Indexable"
+                        );
+                        assumingThat(
+                            Indexable.class.isAssignableFrom(modelClass),
+                            () -> {
+                                var key = ModelConfig.getIndexName(modelClass.asSubclass(Indexable.class));
+                                assertTrue(
+                                    expectedKeys.contains(key),
+                                    key + " among expected keys"
+                                );
+                            }
+                        );
+                    }
+                )
+            ),
+            () -> assertAll(
+                expectedKeys.stream().map(
+                    key -> () -> assertNotNull(repoPopulator.selectBatchIngestor(key), key + " batch ingestor registered")
+                )
+            ),
             () -> assertNull(repoPopulator.selectBatchIngestor("xxx"), "bogus batch ingestor not registered")
         );
     }
