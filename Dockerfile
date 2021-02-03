@@ -7,7 +7,7 @@ RUN gradle bootJar --no-daemon && \
     mv build/libs/*.jar bin/run/tla-backend.jar
 
 
-FROM openjdk:16-jdk-alpine3.12
+FROM openjdk:11.0.10-jdk-buster
 
 RUN mkdir /app
 WORKDIR /app/

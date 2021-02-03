@@ -1,8 +1,14 @@
-![build](https://github.com/JKatzwinkel/tla-es/workflows/build/badge.svg)
-![LINE](https://img.shields.io/badge/line--coverage-58%25-orange.svg)
+![build](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/build/badge.svg)
+![deploy](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/deploy/badge.svg)
+![LINE](https://img.shields.io/badge/line--coverage-57%25-orange.svg)
 ![METHOD](https://img.shields.io/badge/method--coverage-69%25-yellow.svg)
 
+# tla-es
+
 Thesaurus Linguae Aegyptiae (TLA) backend.
+
+Copyright (C) 2019-2021 Berlin-Brandenburgische Akademie der Wissenschaften
+
 
 ## Overview
 
