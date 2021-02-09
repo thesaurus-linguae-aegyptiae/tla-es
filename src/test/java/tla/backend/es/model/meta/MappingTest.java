@@ -5,8 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.modelmapper.ModelMapper;
 
 import tla.backend.es.query.SentenceSearchQueryBuilder;
 import tla.backend.es.query.TextSearchQueryBuilder;
@@ -14,16 +17,25 @@ import tla.domain.command.PassportSpec;
 import tla.domain.command.SentenceSearch;
 import tla.domain.command.TextSearch;
 
+@TestInstance(Lifecycle.PER_CLASS)
 public class MappingTest {
 
-    @BeforeEach
-    void initModelMapper() {
-        ModelConfig.initModelMapper();
+    private ModelMapper modelMapper;
+
+    public ModelMapper getModelMapper() {
+        if (modelMapper == null) {
+            modelMapper = ModelConfig.initModelMapper();
+        }
+        return modelMapper;
+    }
+
+    @BeforeAll
+    void init() {
+        getModelMapper();
     }
 
     @Test
     void passportSearchCommandMapping() {
-        var modelMapper = ModelConfig.modelMapper;
         PassportSpec pp = new PassportSpec();
         pp.put("date", PassportSpec.ThsRefPassportValue.of(List.of("XX"), true));
         var ppp = modelMapper.map(pp, PassportSpec.class);
@@ -38,7 +50,6 @@ public class MappingTest {
     @Test
     void sentenceSearchCommandMapping() {
         SentenceSearch cmd = new SentenceSearch();
-        var modelMapper = ModelConfig.modelMapper;
         var qb = modelMapper.map(cmd, SentenceSearchQueryBuilder.class);
         assertNotNull(qb);
     }
