@@ -301,7 +301,11 @@ public class ModelConfig {
                 SentenceSearch::getTranslation, SentenceSearchQueryBuilder::setTranslation
             )
         );
-        modelMapper.createTypeMap(SentenceSearch.TokenSpec.class, TokenSearchQueryBuilder.class);
+        modelMapper.createTypeMap(SentenceSearch.TokenSpec.class, TokenSearchQueryBuilder.class).addMappings(
+            m -> m.using(new TranslationSpecConverter()).map(
+                SentenceSearch.TokenSpec::getTranslation, TokenSearchQueryBuilder::setTranslation
+            )
+        );
         return modelMapper;
     }
 

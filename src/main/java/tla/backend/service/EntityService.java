@@ -227,7 +227,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     }
 
     /**
-     * If a document if an instance of {@link LinkedEntity}, go through its
+     * If a document is an instance of {@link LinkedEntity}, go through its
      * {@link LinkedEntity#getRelations()} data structure and
      * try to look up all objects referenced in their respective Elasticsearch indices based on
      * their <code>eclass</code> value.
@@ -401,7 +401,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     public Optional<SearchResultsWrapper<? extends D>> runSearchCommand(SearchCommand<D> command, Pageable page) {
         log.info("page: {}", page);
         var queryAdapter = this.getSearchCommandAdapter(command);
-        var result = searchService.register(queryAdapter).run(page);
+        ESQueryResult<?> result = searchService.register(queryAdapter).run(page);
         try {
             var wrapper = new SearchResultsWrapper<D>(
                 hitsToDTO(result.getHits(), this.getDtoClass()),

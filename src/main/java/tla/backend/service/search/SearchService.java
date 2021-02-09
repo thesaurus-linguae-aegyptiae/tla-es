@@ -43,6 +43,9 @@ public class SearchService {
             this.query = query;
         }
 
+        /**
+         * execute query after updating it with the results of executing its dependencies.
+         */
         public ESQueryResult<?> run(Pageable page) {
             log.info("run query for page {}", page);
             log.info("dependency: {}", this.query.getDependencies());
