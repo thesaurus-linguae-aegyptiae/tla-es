@@ -30,6 +30,11 @@ public class EntityRetrieval {
             this.refs = new HashMap<>();
         }
 
+        /**
+         * creates a new bulk entity resolver instance and initialize it
+         * with given collection of object reference items to be resolved to actual
+         * entities.
+         */
         public static BulkEntityResolver of(Collection<? extends Resolvable> references) {
             return new BulkEntityResolver().addAll(references);
         }
@@ -45,6 +50,30 @@ public class EntityRetrieval {
                     e -> bulk.addAll(e.getValue())
                 );
             }
+            return bulk;
+        }
+
+        /**
+         * creates a bulk entity resolver and initialize it with the object references
+         * from all given entities' relations.
+         */
+        public static BulkEntityResolver from(Collection<LinkedEntity> entities) {
+            return BulkEntityResolver.from(entities.stream());
+        }
+
+        /**
+         * creates a bulk entity resolver and initialize it with all object references
+         * found inside a stream of entities' relations.
+         */
+        public static BulkEntityResolver from(Stream<LinkedEntity> entities) {
+            var bulk = new BulkEntityResolver();
+            entities.forEach(
+                entity -> {
+                    entity.getRelations().entrySet().stream().forEach(
+                        entry -> bulk.addAll(entry.getValue())
+                    );
+                }
+            );
             return bulk;
         }
 

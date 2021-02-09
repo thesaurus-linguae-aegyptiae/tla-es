@@ -52,7 +52,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.18'
     annotationProcessor 'org.projectlombok:lombok:1.18.18'
 
-    implementation 'com.github.thesaurus-linguae-aegyptiae:tla-common:master-SNAPSHOT'
+    implementation 'com.github.jkatzwinkel:tla-common:query-expansion-SNAPSHOT'
     implementation 'org.modelmapper:modelmapper:2.3.9'
     implementation 'org.apache.commons:commons-compress:1.20'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.35'

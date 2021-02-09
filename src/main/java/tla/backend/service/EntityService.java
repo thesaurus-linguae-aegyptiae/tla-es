@@ -350,6 +350,8 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * Takes an Elasticsearch search result and the original page information and search
      * command, and puts it all into a serializable container ready for return
      * to the requesting client.
+     * 
+     * TODO: to search service
      */
     public SearchResultsWrapper<D> wrapSearchResults(
         SearchHits<?> hits, Pageable pageable, SearchCommand<D> command
@@ -409,10 +411,27 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
                 result.getPageInfo(),
                 facets(result.getHits())
             );
+            retrieveRelatedDocs(result).resolve().forEach(
+                relatedObject -> wrapper.addRelated(
+                    (DocumentDto) ModelConfig.toDTO(relatedObject)
+                )
+            );
             return Optional.of(wrapper);
         } catch (Exception e) {
             return Optional.empty();
         }
+    }
+
+    /**
+     * initializes a bulk entity resolver with all object references (inside relations element) found in the
+     * entities from a given search result.
+     */
+    protected EntityRetrieval.BulkEntityResolver retrieveRelatedDocs(ESQueryResult<?> searchResult) {
+        return EntityRetrieval.BulkEntityResolver.from(
+            searchResult.getHits().getSearchHits().stream().<LinkedEntity>map(
+                hit -> (LinkedEntity) hit.getContent()
+            )
+        );
     }
 
 }
