@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import tla.backend.es.model.Metadata;
+import tla.backend.service.MetadataService;
+
 @RestController
 @RequestMapping("/")
 public class ApiController {
@@ -21,6 +24,9 @@ public class ApiController {
 
     @Autowired
     private BuildProperties buildProperties;
+
+    @Autowired
+    private MetadataService metadataService;
 
     /**
      * list all registered endpoints
@@ -45,9 +51,16 @@ public class ApiController {
      */
     @RequestMapping(value = "/version", method = RequestMethod.GET)
     public ResponseEntity<?> getVersionInfo() {
+        Metadata info = this.metadataService.getInfo();
         return new ResponseEntity<>(
             Map.of(
-                "version", buildProperties.getVersion()
+                "version", buildProperties.getVersion(),
+                "DOI", info.getDOI(),
+                "date", info.getDate(),
+                "release", info.getId(),
+                "modelVersion", info.getModelVersion(),
+                "etlVersion", info.getEtlVersion(),
+                "lingglossVersion", info.getLingglossVersion()
             ),
             HttpStatus.OK
         );
