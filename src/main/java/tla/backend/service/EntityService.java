@@ -9,17 +9,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.meta.Indexable;
@@ -55,10 +51,7 @@ import tla.error.ObjectNotFoundException;
 public abstract class EntityService<T extends Indexable, R extends ElasticsearchRepository<T, String>, D extends AbstractDto> {
 
     @Autowired
-    private ElasticsearchOperations operations;
-
-    @Autowired
-    private SearchService searchService;
+    protected SearchService searchService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -254,20 +247,6 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     }
 
     /**
-     * Creates and executes native query from an Elasticsearch query builder against whatever index
-     * is known for storing documents of the type specified via the <code>entityClass</code> parameter.
-     *
-     * @Deprecated
-     */
-    public SearchResponse query(
-        Class<? extends Indexable> entityClass,
-        QueryBuilder queryBuilder,
-        AggregationBuilder aggsBuilder
-    ) {
-        return searchService.query(entityClass, queryBuilder, aggsBuilder);
-    }
-
-    /**
      * Tries to find the ES document identified by eclass and ID.
      */
     public Indexable retrieveSingleBTSDoc(String eclass, String id) {
@@ -300,19 +279,6 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
         return entities.stream().map(
             ModelConfig::toDTO
         ).collect(Collectors.toList());
-    }
-
-    /**
-     * Try to find a bunch of domain objects in an ES index by running a query.
-     * @Deprecated
-     */
-    public SearchHits<T> search(Query query) {
-        log.info("query: {}", tla.domain.util.IO.json(query));
-        return operations.search(
-            query,
-            getModelClass(),
-            operations.getIndexCoordinatesFor(getModelClass())
-        );
     }
 
     /**
@@ -401,6 +367,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
      * TODO: doc
      */
     public Optional<SearchResultsWrapper<? extends D>> runSearchCommand(SearchCommand<D> command, Pageable page) {
+        Assert.notNull(page, "pageable must be specified");
         log.info("page: {}", page);
         var queryAdapter = this.getSearchCommandAdapter(command);
         ESQueryResult<?> result = searchService.register(queryAdapter).run(page);
