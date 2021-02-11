@@ -185,7 +185,8 @@ public class ModelTest {
         assertAll("thesaurus entry instances should be equal regardless of creation method",
             () -> assertNotEquals(t_built, t_read, "deserialized instance should not be the same as built instance"),
             () -> assertEquals(t_built, t_round, "built instance should remain the same after serialization and deserialization via ES entity mapper"),
-            () -> assertEquals(t_built.getEditors(), t_read.getEditors(), "edit infos should be equal")
+            () -> assertEquals(t_built.getEditors(), t_read.getEditors(), "edit infos should be equal"),
+            () -> assertEquals(t_built.hashCode(), t_round.hashCode(), "hashcode same after deserializing serialization")
         );
     }
 
@@ -242,7 +243,8 @@ public class ModelTest {
             () -> assertEquals("BTSLemmaEntry", l_built.getEclass(), "superclass getEclass() method should return registered eClass value"),
             () -> assertEquals(IO.json(l_built), IO.json(l_round)),
             () -> assertEquals(l_built, l_read, "deserialized lemma instance should be equal to built instance with the same properties"),
-            () -> assertEquals(l_built, l_round, "lemma instance serialized and then deserialized should equal itself")
+            () -> assertEquals(l_built, l_round, "lemma instance serialized and then deserialized should equal itself"),
+            () -> assertEquals(l_built.hashCode(), l_round.hashCode(), "hashcode stays the same after deserializing serialization")
         );
     }
 
