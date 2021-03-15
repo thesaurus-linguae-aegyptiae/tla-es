@@ -128,7 +128,7 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
     }
 
     public Map<String, Long> getMostFrequent(int limit) {
-        SearchResponse response = query(SentenceEntity.class, matchAllQuery(),
+        SearchResponse response = this.searchService.query(SentenceEntity.class, matchAllQuery(),
                 AggregationBuilders.nested("aggs", "tokens").subAggregation(AggregationBuilders.terms("lemmata")
                         .field("tokens.lemma.id").order(BucketOrder.count(false)).size(limit)));
         Nested aggs = response.getAggregations().get("aggs");
@@ -154,10 +154,8 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
     }
 
     @Override
-    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<LemmaDto> command) {
-        return this.getModelMapper().map(
-            command, LemmaSearchQueryBuilder.class
-        );
+    public Class<? extends ESQueryBuilder> getSearchCommandAdapterClass(SearchCommand<LemmaDto> command) {
+        return LemmaSearchQueryBuilder.class;
     }
 
 }

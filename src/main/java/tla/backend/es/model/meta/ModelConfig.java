@@ -93,7 +93,7 @@ public class ModelConfig {
         DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
-    private static ModelMapper modelMapper;
+    protected static ModelMapper modelMapper;
 
     @Getter
     private static List<Class<? extends AbstractBTSBaseClass>> modelClasses = new LinkedList<>();
@@ -222,7 +222,7 @@ public class ModelConfig {
         return modelMapper;
     }
 
-    private static ModelMapper initModelMapper() {
+    protected static ModelMapper initModelMapper() {
         log.debug("initializing model mapper");
         modelMapper = new ModelMapper();
         Translations.ToMapConverter translationsToMapConverter = new Translations.ToMapConverter();
@@ -301,7 +301,11 @@ public class ModelConfig {
                 SentenceSearch::getTranslation, SentenceSearchQueryBuilder::setTranslation
             )
         );
-        modelMapper.createTypeMap(SentenceSearch.TokenSpec.class, TokenSearchQueryBuilder.class);
+        modelMapper.createTypeMap(SentenceSearch.TokenSpec.class, TokenSearchQueryBuilder.class).addMappings(
+            m -> m.using(new TranslationSpecConverter()).map(
+                SentenceSearch.TokenSpec::getTranslation, TokenSearchQueryBuilder::setTranslation
+            )
+        );
         return modelMapper;
     }
 

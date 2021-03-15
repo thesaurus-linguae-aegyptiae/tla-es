@@ -43,6 +43,9 @@ public class SearchService {
             this.query = query;
         }
 
+        /**
+         * execute query after updating it with the results of executing its dependencies.
+         */
         public ESQueryResult<?> run(Pageable page) {
             log.info("run query for page {}", page);
             log.info("dependency: {}", this.query.getDependencies());
@@ -75,6 +78,11 @@ public class SearchService {
     @Autowired
     protected RestHighLevelClient restClient;
 
+    /**
+     * Creates a new {@link QueryExecutor} for a given query.
+     *
+     * TODO: actual registry?
+     */
     public QueryExecutor register(ESQueryBuilder query) {
         return new QueryExecutor(query);
     }
@@ -189,6 +197,5 @@ public class SearchService {
             return null;
         }
     }
-
 
 }

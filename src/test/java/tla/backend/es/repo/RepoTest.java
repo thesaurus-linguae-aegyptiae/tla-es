@@ -50,7 +50,7 @@ public class RepoTest {
 
     @Test
     void repoPopulatorHasRegistry() {
-        final var expectedKeys = List.of("lemma", "ths", "text", "comment", "annotation", "object", "sentence");
+        final var expectedKeys = List.of("lemma", "ths", "text", "comment", "annotation", "object", "sentence", "meta");
         assertTrue(ModelConfig.isInitialized(), "entity model registered");
         repoPopulator.init();
         assertAll(

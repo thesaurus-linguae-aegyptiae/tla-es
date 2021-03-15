@@ -1,11 +1,14 @@
-![build](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/build/badge.svg)
-![deploy](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/deploy/badge.svg)
-![LINE](https://img.shields.io/badge/line--coverage-57%25-orange.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-69%25-yellow.svg)
+![build](https://github.com/jkatzwinkel/tla-es/workflows/build/badge.svg)
+![deploy](https://github.com/jkatzwinkel/tla-es/workflows/deploy/badge.svg)
+![LINE](https://img.shields.io/badge/line--coverage-68%25-yellow.svg)
+![METHOD](https://img.shields.io/badge/method--coverage-76%25-yellow.svg)
+
+# tla-es
 
 Thesaurus Linguae Aegyptiae (TLA) backend.
 
 Copyright (C) 2019-2021 Berlin-Brandenburgische Akademie der Wissenschaften
+
 
 ## Overview
 
@@ -14,7 +17,7 @@ The TLA backend server is a Spring Boot application using Elasticsearch as a sea
 
 ## Installation
 
-> **TL;DR:** run `SAMPLE_URL=http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210113-1000t.tar.gz docker-compose up -d`
+> **TL;DR:** run `SAMPLE_URL=http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210115-1000t.tar.gz docker-compose up -d`
 
 There are two methods for getting this thing up and running.
 

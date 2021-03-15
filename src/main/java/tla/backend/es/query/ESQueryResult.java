@@ -13,6 +13,11 @@ import lombok.Setter;
 import tla.backend.es.model.meta.Indexable;
 import tla.domain.dto.extern.PageInfo;
 
+/**
+ * ES search hits container with paging information.
+ *
+ * <code>&lt;T&gt;</code>: an {@link Indexable} entity class
+ */
 @Getter
 @Setter
 @NoArgsConstructor

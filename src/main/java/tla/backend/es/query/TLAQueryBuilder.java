@@ -92,26 +92,39 @@ public interface TLAQueryBuilder {
         return deps;
     }
 
+    /**
+     * ES root query builder which queries for individual properties get added to
+     * either as <code>must</code> or <code>should</code> clause, or as a <code>filter</code>.
+     */
     public BoolQueryBuilder getNativeRootQueryBuilder();
+
+    /**
+     * Create JSON string representation of native ES query.
+     */
+    public default String toJson() {
+        return this.getNativeRootQueryBuilder().toString();
+    }
 
     public List<AbstractAggregationBuilder<?>> getNativeAggregationBuilders();
 
+    /**
+     * returns ES search hits and page information wrapped together into one object.
+     */
     public ESQueryResult<?> getResult();
     public void setResult(ESQueryResult<?> result);
 
     /**
-     * Conjunct criterion with bool query's <code>must</code> clause list.
+     * Add criterion to root query's <code>must</code> clause list.
      */
     default BoolQueryBuilder must(QueryBuilder clause) {
         return this.getNativeRootQueryBuilder().must(clause);
     }
     /**
-     * Disjunct criterion with bool query's <code>should</code> clause list.
+     * Add criterion to root query's <code>should</code> clause list.
      */
     default BoolQueryBuilder should(QueryBuilder clause) {
         return this.getNativeRootQueryBuilder().should(clause);
     }
-
     /**
      * add filter
      */
@@ -132,6 +145,14 @@ public interface TLAQueryBuilder {
             return ((ModelClass) a).value();
         }
         return null;
+    }
+
+    /**
+     * queries for elements with a nested mapping should override this and
+     * return the actual path where they are nested (ending with the <code>"."</code> path delimiter).
+     */
+    default String nestedPath() {
+        return "";
     }
 
 }

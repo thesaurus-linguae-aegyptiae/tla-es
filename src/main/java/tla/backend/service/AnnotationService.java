@@ -23,7 +23,8 @@ public class AnnotationService extends EntityService<AnnotationEntity, Elasticse
     }
 
     @Override
-    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<AnnotationDto> command) {
+    public Class<? extends ESQueryBuilder> getSearchCommandAdapterClass(SearchCommand<AnnotationDto> command) {
+        // TODO
         return null;
     }
 

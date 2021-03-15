@@ -56,7 +56,7 @@ public class SentenceService extends EntityService<SentenceEntity, Elasticsearch
      * Count occurrences of the specified lemma in each text.
      */
     public Map<String, Long> lemmaFrequencyPerText(String lemmaId) {
-        SearchResponse response = query(
+        SearchResponse response = this.searchService.query(
             SentenceEntity.class,
             nestedQuery(
                 "tokens",
@@ -80,8 +80,8 @@ public class SentenceService extends EntityService<SentenceEntity, Elasticsearch
     }
 
     @Override
-    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<SentenceDto> command) {
-        return this.getModelMapper().map(command, SentenceSearchQueryBuilder.class);
+    public Class<? extends ESQueryBuilder> getSearchCommandAdapterClass(SearchCommand<SentenceDto> command) {
+        return SentenceSearchQueryBuilder.class;
     }
 
 }
