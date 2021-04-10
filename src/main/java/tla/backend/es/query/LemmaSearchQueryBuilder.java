@@ -47,7 +47,7 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 
     public void setTranscription(String transcription) {
         if (transcription != null) {
-            this.must(matchQuery("name", transcription));
+            this.must(matchQuery("words.transcription.unicode", transcription));
         }
     }
 
