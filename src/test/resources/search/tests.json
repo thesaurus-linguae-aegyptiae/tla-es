@@ -1,0 +1,84 @@
+[
+  {
+    "name": "lemma - transcription: parenthesis ('()') should be ignored",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "(j)bkꜥ"
+    },
+    "valid": [
+      "709902"
+    ],
+    "invalid": [
+      "500024"
+    ]
+  },
+  {
+    "name": "lemma - transcription: plus sign ('+') shouldn't be ignored",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "1000+"
+    },
+    "valid": [
+      "dm5964"
+    ],
+    "invalid": [
+      "dm879"
+    ]
+  },
+  {
+    "name": "lemma - transcription: forward slash ('/') shouldn't be ignored",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "1/2"
+    },
+    "valid": [
+      "99026"
+    ],
+    "invalid": [
+      "600014",
+      "600017"
+    ]
+  },
+  {
+    "name": "lemma - transcription: hyphen ('-') should not be used by tokenizer",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "zp-nfr"
+    },
+    "valid": [
+      "132560"
+    ],
+    "invalid": [
+      "136212",
+      "859569"
+    ]
+  },
+  {
+    "name": "lemma - transcription: hyphen ('-') should not be used by tokenizer, ḥm(.t)-ntr(.t) should be indexed correctly",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "ḥm-ntr"
+    },
+    "valid": [
+      "d4073"
+    ],
+    "invalid": [
+      "98390",
+      "869552",
+      "dm2190",
+      "98380",
+      "500881"
+    ]
+  },
+  {
+    "name": "lemma - transcription: asterisk ('*') should not be ignored",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "*ꜥpš"
+    },
+    "valid": [
+      "dm4619"
+    ]
+  }
+]
+

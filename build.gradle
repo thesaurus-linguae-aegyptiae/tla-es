@@ -49,14 +49,15 @@ configurations {
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.18'
-    annotationProcessor 'org.projectlombok:lombok:1.18.18'
+    implementation 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 
     implementation 'com.github.jkatzwinkel:tla-common:query-expansion-SNAPSHOT'
-    implementation 'org.modelmapper:modelmapper:2.3.9'
+    implementation 'org.modelmapper:modelmapper:2.4.0'
     implementation 'org.apache.commons:commons-compress:1.20'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.35'
-    implementation 'org.yaml:snakeyaml:1.27'
+    implementation 'org.yaml:snakeyaml:1.28'
 
     implementation 'org.springframework.data:spring-data-elasticsearch:4.2.0-M1'
     implementation 'org.springframework.boot:spring-boot:2.5.0-M1'
@@ -65,8 +66,9 @@ dependencies {
     implementation 'org.springframework:spring-webmvc:5.3.3'
     implementation 'org.slf4j:slf4j-simple:2.0.0-alpha1'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.0-M1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.0-M3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.0-M1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0-M1'
 }
 
 application {
@@ -74,9 +76,21 @@ application {
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform{
+      includeTags '!search'
+    }
     environment "ES_PORT", env.fetch("ES_PORT", "9200")
     finalizedBy 'jacocoTestReport'
+}
+
+task searchTest(type: Test) {
+    group = 'Verification'
+    description = 'Runs search integration tests against populated ES instance.'
+    systemProperty 'spring.profiles.active', 'search'
+    environment "ES_PORT", env.fetch("ES_PORT", "9200")
+    useJUnitPlatform {
+      includeTags 'search'
+    }
 }
 
 jacocoTestReport {
