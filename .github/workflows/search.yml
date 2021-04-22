@@ -1,0 +1,46 @@
+name: searchtest
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+
+    - name: Set up Elasticsearch container
+      run: docker-compose up -d es
+      env:
+        ES_PORT: 9200
+
+    - name: Wait for ES to respond
+      uses: cygnetdigital/wait_for_response@v2.0.0
+      with:
+        url: 'http://localhost:9200'
+        responseCode: '200'
+        timeout: 30000
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Ingest corpus data
+      run: ./gradlew populate
+      env:
+        ES_PORT: 9200
+        SAMPLE_URL: http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210115-1000t.tar.gz
+
+    - name: Run search tests
+      run: ./gradlew searchTest
+      env:
+        ES_PORT: 9200
+
+    - uses: ashley-taylor/junit-report-annotations-action@master
+      with:
+        access-token: ${{ secrets.GITHUB_TOKEN }}
+      if: always()
