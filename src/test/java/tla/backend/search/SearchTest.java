@@ -5,32 +5,51 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import tla.backend.App;
 import tla.backend.es.model.LemmaEntity;
-import tla.backend.es.model.meta.Indexable;
 import tla.backend.es.model.meta.ModelConfig;
 import tla.backend.service.EntityService;
+import tla.backend.service.LemmaService;
 import tla.domain.command.SearchCommand;
+import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SearchResultsWrapper;
+import tla.domain.dto.meta.AbstractDto;
 import tla.domain.model.meta.AbstractBTSBaseClass;
 
 @Tag("search")
 @SpringBootTest(classes = {App.class})
+@TestInstance(Lifecycle.PER_CLASS)
 public class SearchTest {
 
+    @Autowired
+    private LemmaService lemmaService;
+
     public static final Pageable PAGE_1 = PageRequest.of(0, 20);
+    private Map<Class<? extends AbstractDto>, EntityService<?,?,?>> services;
+
+    @BeforeAll
+    void init() {
+        this.services = Map.of(
+            LemmaDto.class, lemmaService
+        );
+    }
 
     private static Stream<Arguments> testSpecs() throws Exception {
         SearchTestSpecs[] scenarios = tla.domain.util.IO.loadFromFile(
@@ -43,16 +62,7 @@ public class SearchTest {
     }
 
     public EntityService<?,?,?> getService(Class<? extends AbstractBTSBaseClass> dtoClass) {
-        for (Class<? extends Indexable> modelClass : EntityService.getRegisteredModelClasses()) {
-            if (ModelConfig.getModelClassDTO(modelClass).equals(dtoClass)) {
-                if (AbstractBTSBaseClass.class.isAssignableFrom(modelClass)) {
-                    return EntityService.getService(
-                        modelClass.asSubclass(AbstractBTSBaseClass.class)
-                    );
-                }
-            }
-        }
-        return null;
+        return this.services.getOrDefault(dtoClass, lemmaService);
     }
 
     @Test
