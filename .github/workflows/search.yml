@@ -3,7 +3,7 @@ name: searchtest
 on: [push, pull_request]
 
 jobs:
-  build:
+  search:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,6 +26,16 @@ jobs:
         responseCode: '200'
         timeout: 30000
 
+    - name: Cache sample corpus data
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-corpus-data
+      with:
+        path: sample.tar.gz
+        key: ${{ runner.os }}-searchtest-${{ env.cache-name }}-${{ hashFiles('sample.tar.gz') }}
+        restore-keys: |
+          ${{ runner.os }}-searchtest-${{ env.cache-name }}-
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
@@ -33,7 +43,7 @@ jobs:
       run: ./gradlew populate
       env:
         ES_PORT: 9200
-        SAMPLE_URL: http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210115-1000t.tar.gz
+        SAMPLE_URL: http://aaew64.bbaw.de/resources/tla-data/tla-data-20210115.tar.gz
 
     - name: Run search tests
       run: ./gradlew searchTest
