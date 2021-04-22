@@ -27,7 +27,7 @@
         "char_filter": {
           "transcription_brackets_filter": {
             "type": "pattern_replace",
-            "pattern": "\\.\\S+|[\\(\\)\\[\\]⸢⸮?⸣]|\\{\\S*\\}",
+            "pattern": "\\.[^- ]*|[\\(\\)\\[\\]⸢⸮?⸣]|\\{\\S*\\}",
             "replacement": ""
           },
           "transcription_suffix_filter": {
