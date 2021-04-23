@@ -63,11 +63,22 @@
       "d4073"
     ],
     "invalid": [
+      "855724",
       "98390",
       "869552",
       "dm2190",
       "98380",
       "500881"
+    ]
+  },
+  {
+    "name": "lemma - transcription: search for ḥm-nṯr should not find ḥm-ntr",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "ḥm-nṯr"
+    },
+    "invalid": [
+      "d4073"
     ]
   },
   {
