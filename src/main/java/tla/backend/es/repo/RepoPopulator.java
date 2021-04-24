@@ -16,6 +16,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.service.ModelClass;
@@ -65,19 +66,17 @@ public class RepoPopulator {
         final static int MAX_BATCH_SIZE = 750;
 
         private List<S> batch;
+        @Getter private EntityService<S,?,?> service;
         private Class<S> modelClass;
         private String path;
         private int count;
 
         private ObjectMapper jsonMapper = new ObjectMapper();
 
-        public RepoBatchIngestor(Class<S> modelClass) {
-            this.modelClass = modelClass;
-            this.path = getModelClassServicePath(
-                EntityService.getService(
-                    modelClass.asSubclass(AbstractBTSBaseClass.class)
-                )
-            );
+        public RepoBatchIngestor(EntityService<S,?,?> service) {
+            this.service = service;
+            this.modelClass = service.getModelClass();
+            this.path = getModelClassServicePath(service);
             this.batch = new ArrayList<>();
             this.count = 0;
             log.info("set up batch ingestor for model class {}", modelClass.getName());
@@ -120,13 +119,10 @@ public class RepoPopulator {
          * same model class as this batch indexer is typed for, and uses that service's {@link ElasticsearchRepository}
          * to batch-index all entities currently in the cache.
          */
-        @SuppressWarnings("unchecked")
         public void ingest() {
             try {
                 (
-                    (ElasticsearchRepository<S, String>) EntityService.getService(
-                        modelClass.asSubclass(AbstractBTSBaseClass.class)
-                    ).getRepo()
+                    (ElasticsearchRepository<S, String>) service.getRepo()
                 ).saveAll(this.batch);
                 this.count += this.batch.size();
                 this.batch.clear();
@@ -169,6 +165,15 @@ public class RepoPopulator {
     }
 
     /**
+     * Find the entity service whose {@link ModelClass} annotation's <code>path</code> value equals
+     * the given <code>modelPath</code> parameter.
+     */
+    public EntityService<?,?,?> getService(String modelPath) {
+        return this.selectBatchIngestor(modelPath).getService();
+    }
+
+
+    /**
      * Registers {@link RepoBatchIngestor} instances for each model class for which an {@link EntityService}
      * subclass has been registered with the {@link ModelClass} annotation.
      * @return populator instance
@@ -176,16 +181,15 @@ public class RepoPopulator {
      */
     public RepoPopulator init() {
         for (Class<? extends Indexable> modelClass : EntityService.getRegisteredModelClasses()) {
+            var service = EntityService.getService(
+                modelClass.asSubclass(AbstractBTSBaseClass.class)
+            );
             if (AbstractBTSBaseClass.class.isAssignableFrom(modelClass)) {
-                String modelPath = getModelClassServicePath(
-                    EntityService.getService(
-                        modelClass.asSubclass(AbstractBTSBaseClass.class)
-                    )
-                );
+                String modelPath = getModelClassServicePath(service);
                 if (modelPath != null && !modelPath.isEmpty()) {
                     this.repoIngestors.put(
                         modelPath,
-                        new RepoBatchIngestor<>(modelClass)
+                        new RepoBatchIngestor<>(service)
                     );
                 }
             }
