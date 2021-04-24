@@ -82,13 +82,63 @@
     ]
   },
   {
-    "name": "lemma - transcription: asterisk ('*') should not be ignored",
+    "name": "lemma - transcription: asterisk ('*') should not be ignored (find *ꜥpš)",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "*ꜥpš"
     },
     "valid": [
       "dm4619"
+    ]
+  },
+  {
+    "name": "lemma - transcription: underscore ('_') should not be ignored",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "_rw"
+    },
+    "valid": [
+      "dm4228"
+    ],
+    "invalid": [
+      "dm5769",
+      "d3454",
+      "500396",
+      "860603",
+      "871109"
+    ]
+  },
+  {
+    "name": "lemma - transcription: question marks ('⸮?') should be ignored",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "Pa-⸮tꜣ?-gš"
+    },
+    "valid": [
+      "dm5732"
+    ],
+    "invalid": [
+      "dm2818",
+      "dm2550",
+      "dm2551",
+      "858492",
+      "d1931"
+    ]
+  },
+  {
+    "name": "lemma - transcription: asterisk ('*') should not be ignored (find *Pꜣ-ḏbꜣ)",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "*Pꜣ-ḏbꜣ"
+    },
+    "valid": [
+      "dm1651"
+    ],
+    "invalid": [
+      "851446",
+      "d7182",
+      "183280",
+      "dm4617"
     ]
   }
 ]
