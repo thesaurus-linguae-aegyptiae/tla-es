@@ -1,6 +1,6 @@
 [
   {
-    "name": "lemma - transcription: parenthesis ('()') should be ignored",
+    "name": "transcription: parenthesis ('()') should be ignored",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "(j)bkꜥ"
@@ -13,7 +13,7 @@
     ]
   },
   {
-    "name": "lemma - transcription: plus sign ('+') shouldn't be ignored",
+    "name": "transcription: plus sign ('+') shouldn't be ignored",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "1000+"
@@ -26,7 +26,7 @@
     ]
   },
   {
-    "name": "lemma - transcription: forward slash ('/') shouldn't be ignored",
+    "name": "transcription: forward slash ('/') shouldn't be ignored",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "1/2"
@@ -40,7 +40,7 @@
     ]
   },
   {
-    "name": "lemma - transcription: hyphen ('-') should not be used by tokenizer",
+    "name": "transcription: hyphen ('-') should not be used by tokenizer",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "zp-nfr"
@@ -54,7 +54,7 @@
     ]
   },
   {
-    "name": "lemma - transcription: hyphen ('-') should not be used by tokenizer, ḥm(.t)-ntr(.t) should be indexed correctly",
+    "name": "transcription: hyphen ('-') should not be used by tokenizer, ḥm(.t)-ntr(.t) should be indexed correctly",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "ḥm-ntr"
@@ -72,7 +72,7 @@
     ]
   },
   {
-    "name": "lemma - transcription: search for ḥm-nṯr should not find ḥm-ntr",
+    "name": "transcription: search for ḥm-nṯr should not find ḥm-ntr",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "ḥm-nṯr"
@@ -82,7 +82,7 @@
     ]
   },
   {
-    "name": "lemma - transcription: asterisk ('*') should not be ignored (find *ꜥpš)",
+    "name": "transcription: asterisk ('*') should not be ignored (find *ꜥpš)",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "*ꜥpš"
@@ -92,7 +92,7 @@
     ]
   },
   {
-    "name": "lemma - transcription: underscore ('_') should not be ignored",
+    "name": "transcription: underscore ('_') should not be ignored",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "_rw"
@@ -109,7 +109,7 @@
     ]
   },
   {
-    "name": "lemma - transcription: question marks ('⸮?') should be ignored",
+    "name": "transcription: question marks ('⸮?') should be ignored",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "Pa-⸮tꜣ?-gš"
@@ -126,7 +126,7 @@
     ]
   },
   {
-    "name": "lemma - transcription: asterisk ('*') should not be ignored (find *Pꜣ-ḏbꜣ)",
+    "name": "transcription: asterisk ('*') should not be ignored (find *Pꜣ-ḏbꜣ)",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "*Pꜣ-ḏbꜣ"

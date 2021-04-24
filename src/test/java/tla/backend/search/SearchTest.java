@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -18,9 +19,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 
 import tla.backend.App;
 import tla.backend.es.model.LemmaEntity;
@@ -35,8 +39,12 @@ import tla.domain.model.meta.AbstractBTSBaseClass;
 
 @Tag("search")
 @SpringBootTest(classes = {App.class})
+@ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
 public class SearchTest {
+
+    @Value("classpath:${tla.searchtest.path}/**/*.json")
+    private Resource[] testSpecFiles;
 
     @Autowired
     private LemmaService lemmaService;
@@ -51,13 +59,9 @@ public class SearchTest {
         );
     }
 
-    private static Stream<Arguments> testSpecs() throws Exception {
-        SearchTestSpecs[] scenarios = tla.domain.util.IO.loadFromFile(
-            "src/test/resources/search/tests.json",
-            SearchTestSpecs[].class
-        );
-        return Arrays.stream(scenarios).map(
-            specs -> Arguments.of(Named.of(specs.getName(), specs))
+    private Stream<Arguments> testSpecs() throws Exception {
+        return Arrays.stream(this.testSpecFiles).flatMap(
+            specsFile -> this.readTestSpecsFile(specsFile)
         );
     }
 
@@ -65,17 +69,36 @@ public class SearchTest {
         return this.services.getOrDefault(dtoClass, lemmaService);
     }
 
+    private Stream<Arguments> readTestSpecsFile(Resource specsFile) {
+        try {
+            var path = Paths.get(specsFile.getURI());
+            var objectType = path.subpath(
+                path.getNameCount() - 2, path.getNameCount() -1
+            ).toString();
+                return Arrays.stream(
+                tla.domain.util.IO.getMapper().readValue(
+                    specsFile.getFile(),
+                    SearchTestSpecs[].class
+                )
+            ).map(
+                specs -> Arguments.of(Named.of(specs.getName(), specs), objectType)
+            );
+        } catch (Exception e) {
+            return Stream.empty();
+        }
+    }
+
     @Test
-    void registryReady() {
+    void registryReady() throws Exception {
         assertTrue(ModelConfig.isInitialized(), "model class registry is initialized");
         assertTrue(ModelConfig.getModelClasses().contains(LemmaEntity.class), "lemma model registered");
         assertTrue(EntityService.getRegisteredModelClasses().size() > 3, "service registry ready");
     }
 
-    @ParameterizedTest(name = "{index}: {0}")
+    @ParameterizedTest(name = "{1} - {0}")
     @MethodSource("testSpecs")
     @SuppressWarnings({"unchecked", "rawtypes"})
-    void searchTest(SearchTestSpecs testSpecs) throws Exception {
+    void searchTest(SearchTestSpecs testSpecs, String objectType) throws Exception {
         SearchCommand cmd = testSpecs.getCmd();
         EntityService<?,?,?> service = getService(cmd.getDTOClass());
         assertNotNull(cmd);
