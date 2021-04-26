@@ -12,12 +12,21 @@ import tla.domain.dto.meta.AbstractDto;
 @Setter
 public class SearchTestSpecs {
 
+    /**
+     * test displayname
+     */
     String name;
 
     SearchCommand<? extends AbstractDto> cmd;
 
+    /**
+     * IDs of expected search results.
+     */
     Collection<String> valid;
 
+    /**
+     * IDs of false positives.
+     */
     Collection<String> invalid;
 
     public SearchTestSpecs() {

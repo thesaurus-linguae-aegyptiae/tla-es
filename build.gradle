@@ -83,7 +83,7 @@ test {
     finalizedBy 'jacocoTestReport'
 }
 
-task searchTest(type: Test) {
+task testSearch(type: Test) {
     group = 'Verification'
     description = 'Runs search integration tests against populated ES instance.'
     systemProperty 'spring.profiles.active', 'search'
@@ -91,6 +91,14 @@ task searchTest(type: Test) {
     useJUnitPlatform {
       includeTags 'search'
     }
+}
+
+task testAll(type: Test) {
+    group = 'Verification'
+		description = 'Runs both search integration and unit tests.'
+    useJUnitPlatform()
+    environment "ES_PORT", env.fetch("ES_PORT", "9200")
+    finalizedBy 'jacocoTestReport'
 }
 
 jacocoTestReport {
