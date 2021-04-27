@@ -79,17 +79,20 @@ public class SearchTest {
      */
     private Stream<Arguments> readTestSpecsFile(Resource specsFile) {
         try {
+            var filename = specsFile.getFilename().replaceAll(
+                "\\.json$", ""
+            );
             var path = Paths.get(specsFile.getURI());
             var objectType = path.subpath(
                 path.getNameCount() - 2, path.getNameCount() -1
             ).toString();
-                return Arrays.stream(
+            return Arrays.stream(
                 tla.domain.util.IO.getMapper().readValue(
                     specsFile.getFile(),
                     SearchTestSpecs[].class
                 )
             ).map(
-                specs -> Arguments.of(Named.of(specs.getName(), specs), objectType)
+                specs -> Arguments.of(Named.of(specs.getName(), specs), objectType, filename)
             );
         } catch (Exception e) {
             return Stream.empty();
@@ -103,10 +106,15 @@ public class SearchTest {
         assertTrue(EntityService.getRegisteredModelClasses().size() > 3, "service registry ready");
     }
 
-    @ParameterizedTest(name = "{1} - {0}")
+    /**
+     * Takes a test specification object (consisting of at least a name, a {@link SearchCommand}, and
+     * some basic assumptions), and executes it against the entity service responsible for the specified
+     * object type.
+     */
+    @ParameterizedTest(name = "{1} - {2}: {0}")
     @MethodSource("testSpecs")
     @SuppressWarnings({"unchecked", "rawtypes"})
-    void searchTest(SearchTestSpecs testSpecs, String objectType) throws Exception {
+    void searchTest(SearchTestSpecs testSpecs, String objectType, String filename) throws Exception {
         SearchCommand cmd = testSpecs.getCmd();
         EntityService<?,?,?> service = registry.getService(objectType);
         SearchResultsWrapper<?> result = (SearchResultsWrapper) service.runSearchCommand(cmd, PAGE_1).get();
