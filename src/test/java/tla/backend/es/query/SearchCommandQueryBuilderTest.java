@@ -54,7 +54,7 @@ public class SearchCommandQueryBuilderTest {
 
     @Test
     @SuppressWarnings("rawtypes")
-    void sentenceSeachQueryTest() throws Exception {
+    void sentenceSearchQueryTest() throws Exception {
         SentenceSearch cmd = new SentenceSearch();
         cmd.setTranslation(new TranslationSpec());
         cmd.getTranslation().setText("horse");
@@ -67,11 +67,17 @@ public class SearchCommandQueryBuilderTest {
         var query = modelMapper.map(cmd, SentenceSearchQueryBuilder.class);
         var json = toJson(query);
         assertAll("sentence search ES query",
-            //() -> assertEquals("", query.toJson()),
-            () -> assertEquals(2, ((List)read(json, "$.bool.should[*].bool.should[*].match.keys()")).size()),
+            () -> assertEquals(
+                2, ((List)read(json, "$.bool.filter[*].bool.should[*].match.keys()")).size(),
+                "2 query clauses for sentence translation"
+            ),
             () -> assertEquals(
                 List.of("pferd"),
-                read(json, "$.bool.filter[*].nested.query.bool.should[*].bool.should[*].match['tokens.translations.de'].query")
+                read(
+                    json,
+                    "$.bool.filter[*].bool.must[*].nested.query.bool.filter[*].bool.should[*].match['tokens.translations.de'].query"
+                ),
+                "nested token translation filter query clause"
             )
         );
     }
