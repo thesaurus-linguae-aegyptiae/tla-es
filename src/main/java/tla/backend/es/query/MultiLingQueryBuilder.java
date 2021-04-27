@@ -26,7 +26,7 @@ public interface MultiLingQueryBuilder extends TLAQueryBuilder {
                 );
             }
         }
-        this.should(translationsQuery);
+        this.filter(translationsQuery);
     }
 
 }
