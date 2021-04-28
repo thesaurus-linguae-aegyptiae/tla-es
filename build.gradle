@@ -6,13 +6,13 @@ plugins {
     id 'maven-publish'
     id 'co.uzzu.dotenv.gradle' version '1.1.0'
     id 'de.undercouch.download' version '4.1.1'
-    id 'org.springframework.boot' version '2.4.2'
-    id 'com.github.ben-manes.versions' version '0.36.0'
+    id 'org.springframework.boot' version '2.4.5'
+    id 'com.github.ben-manes.versions' version '0.38.0'
     id 'com.github.dawnwords.jacoco.badge' version '0.2.0'
 }
 
 group = 'org.bbaw.aaew.tla'
-version = '0.0.830'
+version = '0.0.833'
 sourceCompatibility = '11'
 
 publishing {
@@ -49,24 +49,27 @@ configurations {
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.18'
-    annotationProcessor 'org.projectlombok:lombok:1.18.18'
+    implementation 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 
     implementation 'com.github.jkatzwinkel:tla-common:query-expansion-SNAPSHOT'
-    implementation 'org.modelmapper:modelmapper:2.3.9'
+    implementation 'org.modelmapper:modelmapper:2.4.1'
     implementation 'org.apache.commons:commons-compress:1.20'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.35'
-    implementation 'org.yaml:snakeyaml:1.27'
+    implementation 'org.yaml:snakeyaml:1.28'
 
-    implementation 'org.springframework.data:spring-data-elasticsearch:4.2.0-M1'
     implementation 'org.springframework.boot:spring-boot:2.5.0-M1'
     implementation 'org.springframework.boot:spring-boot-autoconfigure:2.5.0-M1'
-    implementation 'org.springframework:spring-web:5.3.3'
-    implementation 'org.springframework:spring-webmvc:5.3.3'
+    implementation 'org.springframework.data:spring-data-elasticsearch:4.2.0-M1'
+    implementation 'org.springframework:spring-web:5.3.6'
+    implementation 'org.springframework:spring-webmvc:5.3.6'
+    implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
     implementation 'org.slf4j:slf4j-simple:2.0.0-alpha1'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.0-M1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.0-M3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.0-M1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0-M1'
 }
 
 application {
@@ -74,6 +77,26 @@ application {
 }
 
 test {
+    useJUnitPlatform{
+      includeTags '!search'
+    }
+    environment "ES_PORT", env.fetch("ES_PORT", "9200")
+    finalizedBy 'jacocoTestReport'
+}
+
+task testSearch(type: Test) {
+    group = 'Verification'
+    description = 'Runs search integration tests against populated ES instance.'
+    systemProperty 'spring.profiles.active', 'search'
+    environment "ES_PORT", env.fetch("ES_PORT", "9200")
+    useJUnitPlatform {
+      includeTags 'search'
+    }
+}
+
+task testAll(type: Test) {
+    group = 'Verification'
+		description = 'Runs both search integration and unit tests.'
     useJUnitPlatform()
     environment "ES_PORT", env.fetch("ES_PORT", "9200")
     finalizedBy 'jacocoTestReport'

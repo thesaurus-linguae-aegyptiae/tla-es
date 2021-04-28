@@ -114,7 +114,7 @@ public class Token {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Glyphs {
-        @Field(type = FieldType.Text, analyzer = "hieroglyph_analyzer")
+        @Field(type = FieldType.Text, analyzer = "hieroglyph_analyzer", searchAnalyzer = "hieroglyph_analyzer")
         private String mdc;
 
         @Field(type = FieldType.Text)

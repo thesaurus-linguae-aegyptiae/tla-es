@@ -1,7 +1,8 @@
 ![build](https://github.com/jkatzwinkel/tla-es/workflows/build/badge.svg)
 ![deploy](https://github.com/jkatzwinkel/tla-es/workflows/deploy/badge.svg)
+![search](https://github.com/jkatzwinkel/tla-es/workflows/searchtest/badge.svg)
 ![LINE](https://img.shields.io/badge/line--coverage-68%25-yellow.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-76%25-yellow.svg)
+![METHOD](https://img.shields.io/badge/method--coverage-75%25-yellow.svg)
 
 # tla-es
 
@@ -101,6 +102,30 @@ Run the app using the `bootRun` task:
     ./gradlew bootrun
 
 > If you are on a Windows machine, you need to execute the `gradlew.bat` wrapper shipped with this repository.
+
+
+## Tests
+
+There are 3 Gradle tasks for running tests:
+
+- `:test`: run unit tests
+- `:testSearch`: run search tests against live Elasticsearch instance
+- `:testAll`: run all of those tests
+
+Note that due to the way Spring-Data works, there is an Elasticsearch instance required even for the unit tests,
+although it may well be entirely empty. For the search tests however, the Elasticsearch instance must be fully
+populated so that search results can actually be verified against the specified expectations. This means you must
+have executed the `:populate` task (`./gradlew populate`) prior executing `:testSearch` or `:testAll`.
+
+Search tests are being performed based on search scenarios specified in JSON files. The specification model can be
+found in [`SearchTestSpecs.java`](src/test/java/tla/backend/search/SearchTestSpecs.java). Individual specification
+instances consist of at least a name and a search command. JSON files containing a list of several search test
+specifications have to be located within the classpath directory set via the
+[application property](src/test/resources/application-test.yml) `tla.searchtest.path`, each under a sub-directory
+whose name can be used to identify the entity service to be used to execute the contained search commands.
+The paths used to identify the entity services can be found in the `@ModelClass` annotations of the entity services.
+
+Test runs create JUnit and Jacoco reports at the usual output locations.
 
 
 ## Misc
