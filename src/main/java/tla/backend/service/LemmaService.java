@@ -1,14 +1,12 @@
 package tla.backend.service;
 
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.elasticsearch.action.search.SearchResponse;
@@ -28,13 +26,15 @@ import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.query.ESQueryBuilder;
 import tla.backend.es.query.LemmaSearchQueryBuilder;
 import tla.backend.es.repo.LemmaRepo;
+import tla.backend.service.component.EntityRetrieval;
 import tla.backend.service.search.AutoCompleteSupport;
+import tla.backend.service.search.SearchService;
 import tla.domain.command.SearchCommand;
 import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.dto.meta.AbstractDto;
 import tla.domain.model.Language;
-import tla.domain.model.Passport;
+import tla.domain.model.ObjectReference;
 import tla.domain.model.extern.AttestedTimespan;
 
 @Slf4j
@@ -46,13 +46,7 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
     private LemmaRepo repo;
 
     @Autowired
-    private TextService textService;
-
-    @Autowired
     private SentenceService sentenceService;
-
-    @Autowired
-    private ThesaurusService thsService;
 
     private AutoCompleteSupport autoComplete;
 
@@ -90,41 +84,43 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
      */
     public Collection<AttestedTimespan> computeAttestedTimespans(String lemmaId) {
         Map<String, Long> freqPerText = sentenceService.lemmaFrequencyPerText(lemmaId);
-        Map<String, AttestedTimespan> periodCounts = new HashMap<>();
-        for (Entry<String, Long> e : freqPerText.entrySet()) {
-            TextEntity t = textService.retrieve(e.getKey());
-            Passport p = t.getPassport();
-            List<ThsEntryEntity> dateTerms = thsService.extractThsEntriesFromPassport(
-                p, "date.date.date"
-            );
-            if (dateTerms.size() > 0) {
-                if (dateTerms.size() != 1) {
-                    log.error("text {} has not exactly 1 date term assigned to it (rather {})", e.getKey(), dateTerms.size());
-                } else {
-                    ThsEntryEntity term = dateTerms.get(0);
-                    if (periodCounts.containsKey(term.getId())) {
-                        AttestedTimespan timespan = periodCounts.get(term.getId());
-                        timespan.getAttestations().add(
-                            AttestedTimespan.AttestationStats.builder()
-                                .count(e.getValue())
-                                .texts(1)
-                                .build()
-                        );
-                    } else {
-                        AttestedTimespan timespan = AttestedTimespan.builder()
-                            .attestations(
-                                AttestedTimespan.AttestationStats.builder()
-                                    .count(e.getValue())
-                                    .texts(1)
-                                    .build()
-                            ).period(term.toAttestedPeriod())
-                            .build();
-                        periodCounts.put(term.getId(), timespan);
-                    }
-                }
+        SearchResponse textDatesResponse = this.searchService.query(
+            TextEntity.class,
+            termsQuery("id", freqPerText.keySet()),
+            AggregationBuilders.terms(SearchService.AGG_ID_DATES).field(
+                "passport.date.date.date.id.keyword"
+            ).order(
+                BucketOrder.count(false)
+            ).size(1000000)
+        );
+        Map<String, Long> dateCounts = (
+            (Terms) textDatesResponse.getAggregations().asMap().get(
+                SearchService.AGG_ID_DATES
+            )
+        ).getBuckets().stream().collect(
+            Collectors.toMap(Terms.Bucket::getKeyAsString, Terms.Bucket::getDocCount)
+        );
+        String thsEntryEclass = ThsEntryEntity.getTypesEclass(ThsEntryEntity.class);
+        return EntityRetrieval.BulkEntityResolver.of(
+            dateCounts.keySet().stream().map(
+                id -> ObjectReference.builder().id(id).eclass(thsEntryEclass).build()
+            )
+        ).stream().map(entity -> (ThsEntryEntity) entity).map(
+            term -> {
+                var docCount = dateCounts.get(term.getId());
+                log.info("{}: {}", term.getName(), docCount);
+                return AttestedTimespan.builder().attestations(
+                    AttestedTimespan.AttestationStats.builder()
+                    .count(docCount)
+                    .texts(docCount)
+                    .build()
+                ).period(
+                    term.toAttestedPeriod()
+                ).build();
             }
-        }
-        return periodCounts.values();
+        ).collect(
+            Collectors.toList()
+        );
     }
 
     public Map<String, Long> getMostFrequent(int limit) {

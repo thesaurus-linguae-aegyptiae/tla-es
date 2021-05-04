@@ -32,6 +32,8 @@ import tla.backend.es.query.TLAQueryBuilder.QueryDependency;
 @Service
 public class SearchService {
 
+    public final static String AGG_ID_DATES = "date.date.date";
+
     /**
      * Execute search command query adapter and its dependencies.
      */
@@ -124,25 +126,17 @@ public class SearchService {
         AggregationBuilder aggsBuilder
     ) {
         String index = operations.getIndexCoordinatesFor(entityClass).getIndexName();
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-            .query(queryBuilder);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder().query(queryBuilder);
         if (aggsBuilder != null) {
             searchSourceBuilder = searchSourceBuilder.aggregation(aggsBuilder);
         }
-        SearchRequest request = new SearchRequest()
-            .indices(
-                index
-            )
-            .source(
-                searchSourceBuilder
-            );
-        SearchResponse response = null;
+        SearchRequest request = new SearchRequest().indices(index).source(
+            searchSourceBuilder
+        );
         try {
-            response = restClient
-                .search(
-                    request,
-                    RequestOptions.DEFAULT
-                );
+            return restClient.search(
+                request, RequestOptions.DEFAULT
+            );
         } catch (Exception e) {
             log.error(
                 String.format(
@@ -152,7 +146,7 @@ public class SearchService {
                 e
             );
         }
-        return response;
+        return null;
     }
 
     /**
