@@ -29,6 +29,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.meta.ModelConfig;
+import tla.backend.es.query.ESQueryResult;
 import tla.backend.es.repo.RepoConfig;
 import tla.backend.es.repo.RepoPopulator;
 import tla.backend.service.EntityService;
@@ -42,7 +43,7 @@ import tla.domain.dto.extern.SearchResultsWrapper;
 @TestInstance(Lifecycle.PER_CLASS)
 public class SearchTest {
 
-    public static final Pageable PAGE_1 = PageRequest.of(0, 20);
+    public static final Pageable PAGE_1 = PageRequest.of(0, ESQueryResult.SEARCH_RESULT_PAGE_SIZE);
 
     @Configuration
     @Import({RepoConfig.class, ModelConfig.class})

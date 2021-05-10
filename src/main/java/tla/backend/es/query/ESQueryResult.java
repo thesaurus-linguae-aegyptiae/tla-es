@@ -69,7 +69,9 @@ public class ESQueryResult<T extends Indexable> {
                     hits.getSearchHits().size()
                 )
             ).totalPages(
-                (int) hits.getTotalHits() / SEARCH_RESULT_PAGE_SIZE + 1 // TODO
+                (int) hits.getTotalHits() / SEARCH_RESULT_PAGE_SIZE + (
+                    hits.getTotalHits() % SEARCH_RESULT_PAGE_SIZE < 1 ? 0 : 1
+                )
             ).build();
     }
 
