@@ -54,20 +54,20 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 
     implementation 'com.github.jkatzwinkel:tla-common:query-expansion-SNAPSHOT'
-    implementation 'org.modelmapper:modelmapper:2.4.1'
+    implementation 'org.modelmapper:modelmapper:2.4.3'
     implementation 'org.apache.commons:commons-compress:1.20'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:9.0.35'
     implementation 'org.yaml:snakeyaml:1.28'
 
-    implementation 'org.springframework.boot:spring-boot:2.5.0-M1'
-    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.5.0-M1'
+    implementation 'org.springframework.boot:spring-boot:2.5.0-RC1'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.5.0-RC1'
     implementation 'org.springframework.data:spring-data-elasticsearch:4.2.0-M1'
-    implementation 'org.springframework:spring-web:5.3.6'
-    implementation 'org.springframework:spring-webmvc:5.3.6'
+    implementation 'org.springframework:spring-web:5.3.7'
+    implementation 'org.springframework:spring-webmvc:5.3.7'
     implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
     implementation 'org.slf4j:slf4j-simple:2.0.0-alpha1'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.0-M3'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.0-RC1'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.0-M1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0-M1'
 }
@@ -96,7 +96,7 @@ task testSearch(type: Test) {
 
 task testAll(type: Test) {
     group = 'Verification'
-		description = 'Runs both search integration and unit tests.'
+    description = 'Runs both search integration and unit tests.'
     useJUnitPlatform()
     environment "ES_PORT", env.fetch("ES_PORT", "9200")
     finalizedBy 'jacocoTestReport'
