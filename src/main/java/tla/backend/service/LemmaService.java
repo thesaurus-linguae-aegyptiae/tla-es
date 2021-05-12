@@ -1,7 +1,6 @@
 package tla.backend.service;
 
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,13 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
-import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.SentenceEntity;
-import tla.backend.es.model.TextEntity;
 import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.query.ESQueryBuilder;
+import tla.backend.es.query.ESQueryResult;
 import tla.backend.es.query.LemmaSearchQueryBuilder;
+import tla.backend.es.query.OccurrenceSearchQueryBuilder;
+import tla.backend.es.query.TextSearchQueryBuilder;
 import tla.backend.es.repo.LemmaRepo;
 import tla.backend.service.component.EntityRetrieval;
 import tla.backend.service.search.AutoCompleteSupport;
@@ -37,7 +37,6 @@ import tla.domain.model.Language;
 import tla.domain.model.ObjectReference;
 import tla.domain.model.extern.AttestedTimespan;
 
-@Slf4j
 @Service
 @ModelClass(value = LemmaEntity.class, path = "lemma")
 public class LemmaService extends EntityService<LemmaEntity, ElasticsearchRepository<LemmaEntity, String>, LemmaDto> {
@@ -46,7 +45,7 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
     private LemmaRepo repo;
 
     @Autowired
-    private SentenceService sentenceService;
+    private SearchService searchService;
 
     private AutoCompleteSupport autoComplete;
 
@@ -83,22 +82,11 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
      * total occurrences for each one.
      */
     public Collection<AttestedTimespan> computeAttestedTimespans(String lemmaId) {
-        Map<String, Long> freqPerText = sentenceService.lemmaFrequencyPerText(lemmaId);
-        SearchResponse textDatesResponse = this.searchService.query(
-            TextEntity.class,
-            termsQuery("id", freqPerText.keySet()),
-            AggregationBuilders.terms(SearchService.AGG_ID_DATES).field(
-                "passport.date.date.date.id.keyword"
-            ).order(
-                BucketOrder.count(false)
-            ).size(1000000)
-        );
-        Map<String, Long> dateCounts = (
-            (Terms) textDatesResponse.getAggregations().asMap().get(
-                SearchService.AGG_ID_DATES
-            )
-        ).getBuckets().stream().collect(
-            Collectors.toMap(Terms.Bucket::getKeyAsString, Terms.Bucket::getDocCount)
+        ESQueryResult<?> occurrenceSearch = searchService.register(
+            new OccurrenceSearchQueryBuilder(lemmaId)
+        ).run(SearchService.UNPAGED);
+        Map<String, Long> dateCounts = occurrenceSearch.getAggregation(
+            TextSearchQueryBuilder.AGG_ID_DATE
         );
         String thsEntryEclass = ThsEntryEntity.getTypesEclass(ThsEntryEntity.class);
         return EntityRetrieval.BulkEntityResolver.of(
@@ -108,7 +96,6 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
         ).stream().map(entity -> (ThsEntryEntity) entity).map(
             term -> {
                 var docCount = dateCounts.get(term.getId());
-                log.info("{}: {}", term.getName(), docCount);
                 return AttestedTimespan.builder().attestations(
                     AttestedTimespan.AttestationStats.builder()
                     .count(docCount)
