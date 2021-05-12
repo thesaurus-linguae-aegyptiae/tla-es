@@ -372,11 +372,12 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
         var queryAdapter = this.getSearchCommandAdapter(command);
         ESQueryResult<?> result = searchService.register(queryAdapter).run(page);
         try {
+            result.getAggregations().remove(ESQueryResult.AGGS_ID_IDS);
             var wrapper = new SearchResultsWrapper<D>(
                 hitsToDTO(result.getHits(), this.getDtoClass()),
                 command,
                 result.getPageInfo(),
-                facets(result.getHits())
+                result.getAggregations()
             );
             retrieveRelatedDocs(result).resolve().forEach(
                 relatedObject -> wrapper.addRelated(

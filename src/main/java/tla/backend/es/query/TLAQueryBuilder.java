@@ -1,6 +1,7 @@
 package tla.backend.es.query;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -78,6 +79,7 @@ public interface TLAQueryBuilder {
     }
 
     public List<QueryDependency<?>> getDependencies();
+
     /**
      * Resolve dependencies and return list of native query builders in a sequence 
      */
