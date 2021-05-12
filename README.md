@@ -127,6 +127,12 @@ The paths used to identify the entity services can be found in the `@ModelClass`
 
 Test runs create JUnit and Jacoco reports at the usual output locations.
 
+Limit test runs to single classes by using the `--test` option:
+
+```bash
+  ./gradlew test --tests=QueryResultTest
+```
+
 
 ## Misc
 

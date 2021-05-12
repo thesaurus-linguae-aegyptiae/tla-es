@@ -11,8 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.SearchHits;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import tla.backend.es.model.meta.Indexable;
 import tla.domain.dto.extern.PageInfo;
 
@@ -76,6 +74,9 @@ public class ESQueryResult<T extends Indexable> {
         return Collections.emptyMap();
     }
 
+    /**
+     * save terms aggregation results.
+     */
     public void addAggregations(Map<String, Map<String, Long>> aggs) {
         this.aggregations.putAll(aggs);
     }
