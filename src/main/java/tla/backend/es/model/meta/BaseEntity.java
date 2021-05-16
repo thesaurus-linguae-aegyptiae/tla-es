@@ -8,6 +8,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import tla.backend.es.model.parts.EditorInfo;
@@ -31,6 +32,7 @@ import tla.domain.model.meta.TLADTO;
  */
 @Data
 @SuperBuilder
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @EqualsAndHashCode(callSuper = true)
 public abstract class BaseEntity extends LinkedEntity implements Indexable {
@@ -58,13 +60,6 @@ public abstract class BaseEntity extends LinkedEntity implements Indexable {
      */
     @Field(type = FieldType.Object)
     private EditorInfo editors;
-
-    /**
-     * Default constructor initializing the relations map as an empty object.
-     */
-    public BaseEntity() {
-
-    }
 
     /**
      * Converts an instance to a DTO of the type specified via {@link TLADTO} annotation

@@ -20,6 +20,7 @@ import lombok.Singular;
 import lombok.experimental.SuperBuilder;
 import tla.backend.es.model.parts.ObjectReference;
 import tla.domain.model.meta.AbstractBTSBaseClass;
+import tla.domain.model.meta.Relatable;
 import tla.domain.model.meta.Resolvable;
 
 @Getter
@@ -27,22 +28,7 @@ import tla.domain.model.meta.Resolvable;
 @SuperBuilder
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @EqualsAndHashCode(callSuper = true, exclude = {"relations"})
-public abstract class LinkedEntity extends AbstractBTSBaseClass {
-
-    /**
-     * References to related objects grouped by relationship name (<code>partOf</code>,
-     * <code>predecessor</code>, ...).
-     */
-    @Singular
-    @Field(type = FieldType.Object)
-    private Map<String, Relations> relations;
-
-    /**
-     * Default constructor initializing the relations map as an empty object.
-     */
-    public LinkedEntity() {
-        this.relations = Collections.emptyMap();
-    }
+public abstract class LinkedEntity extends AbstractBTSBaseClass implements Relatable<LinkedEntity.Relations> {
 
     /**
      * A collection of references to other entity objects.
@@ -64,6 +50,21 @@ public abstract class LinkedEntity extends AbstractBTSBaseClass {
                 Arrays.asList(sources)
             );
         }
+    }
+
+    /**
+     * References to related objects grouped by relationship name (<code>partOf</code>,
+     * <code>predecessor</code>, ...).
+     */
+    @Singular
+    @Field(type = FieldType.Object)
+    private Map<String, Relations> relations;
+
+    /**
+     * Default constructor initializing the relations map as an empty object.
+     */
+    public LinkedEntity() {
+        this.relations = Collections.emptyMap();
     }
 
 }
