@@ -1,0 +1,147 @@
+{
+	"editors": {
+			"author": "L. Popko",
+			"created": "2020-06-12",
+			"updated": "2020-06-12"
+	},
+	"externalReferences": {
+			"thot": [
+					{
+							"id": "thot-141"
+					}
+			]
+	},
+	"hash": "ch0sql",
+	"id": "N673TBXEGJDDBO6B6DZXKT64YQ",
+	"name": "Pharaonische Zeit",
+	"passport": {
+			"synonyms": [
+					{
+							"synonym_group": [
+									{
+											"language": [
+													"en"
+											],
+											"synonym": [
+													"Pharaonic Period"
+											]
+									},
+									{
+											"language": [
+													"fr"
+											],
+											"synonym": [
+													"Période Pharaonique"
+											]
+									}
+							]
+					}
+			],
+			"thesaurus_date": [
+					{
+							"main_group": [
+									{
+											"beginning": [
+													"-3150"
+											],
+											"end": [
+													"-332"
+											]
+									}
+							]
+					}
+			]
+	},
+	"paths": [
+			[
+					{
+							"eclass": "BTSThsEntry",
+							"id": "MXWX4WG43ZHI7D4RLTGK3IBGXY",
+							"name": "9 = Datierungen",
+							"type": "date"
+					},
+					{
+							"eclass": "BTSThsEntry",
+							"id": "DUVGWT7GSRCKDM5LFTGU6MZ3GY",
+							"name": "(Epochen und Dynastien)",
+							"type": "date"
+					}
+			]
+	],
+	"relations": {
+			"contains": [
+					{
+							"eclass": "BTSThsEntry",
+							"id": "3GGZCLNRQVF6PAEQA6LCFBNE6M",
+							"name": "Zweite Zwischenzeit",
+							"type": "date"
+					},
+					{
+							"eclass": "BTSThsEntry",
+							"id": "7G4I7VLRZFCZFBDWXWJBCSPIPI",
+							"name": "11. Dynastie (Gesamtzeitraum)",
+							"type": "date"
+					},
+					{
+							"eclass": "BTSThsEntry",
+							"id": "BILVGTX4DVEERA2TQ2DFPYYTK4",
+							"name": "Frühdynastische Zeit",
+							"type": "date"
+					},
+					{
+							"eclass": "BTSThsEntry",
+							"id": "DBDBZEFDGZGGBMERHVKJ6PMPHQ",
+							"name": "Altes Reich",
+							"type": "date"
+					},
+					{
+							"eclass": "BTSThsEntry",
+							"id": "JS32JKX2CNG25GZ3B6MGYMDU4I",
+							"name": "Dritte Zwischenzeit",
+							"type": "date"
+					},
+					{
+							"eclass": "BTSThsEntry",
+							"id": "MM4QYACJOJCCLJWBD6VAX2FLKE",
+							"name": "Mittleres Reich",
+							"type": "date"
+					},
+					{
+							"eclass": "BTSThsEntry",
+							"id": "QBN55U2GTFA27GHK3IACBTMK2U",
+							"name": "Erste Zwischenzeit",
+							"type": "date"
+					},
+					{
+							"eclass": "BTSThsEntry",
+							"id": "UGTUTKXZHBDYLG7YJZ5AGOJXQY",
+							"name": "Spätzeit",
+							"type": "date"
+					},
+					{
+							"eclass": "BTSThsEntry",
+							"id": "WX32K2TQTRETLDX2IO6SL5DDBU",
+							"name": "Neues Reich",
+							"type": "date"
+					}
+			],
+			"partOf": [
+					{
+							"eclass": "BTSThsEntry",
+							"id": "DUVGWT7GSRCKDM5LFTGU6MZ3GY",
+							"name": "(Epochen und Dynastien)",
+							"type": "date"
+					}
+			]
+	},
+	"revisionState": "published",
+	"translations": {
+			"en": [
+					"Pharaonic Period"
+			],
+			"fr": [
+					"Période Pharaonique"
+			]
+	},
+	"type": "date"
+}
