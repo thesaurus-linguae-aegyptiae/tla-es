@@ -1,21 +1,24 @@
 package tla.backend.service.component;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.Getter;
+import tla.backend.es.model.ThsEntryEntity;
 import tla.backend.es.model.Util;
 import tla.backend.es.model.meta.BaseEntity;
 import tla.backend.es.model.meta.Recursable;
 import tla.backend.es.model.parts.ObjectPath;
+import tla.domain.model.extern.AttestedTimespan;
 import tla.domain.model.meta.Resolvable;
 
 public class AttestationTreeBuilder {
 
-    static class Node {
+    protected class Node {
         private Set<Node> parents;
         private Set<Node> children;
         @Getter
@@ -39,9 +42,27 @@ public class AttestationTreeBuilder {
             return this.parents.isEmpty();
         }
 
+        public AttestedTimespan toNestedAttestation() {
+            return AttestedTimespan.builder().attestations(
+                AttestedTimespan.AttestationStats.builder()
+                .count(
+                    counts.getOrDefault(((BaseEntity) this.entity).getId(), 0L)
+                ).build()
+            ).period(
+                ((ThsEntryEntity) this.entity).toAttestedPeriod()
+            ).contains(
+                this.children.stream().map(
+                    Node::toNestedAttestation
+                ).collect(
+                    Collectors.toList()
+                )
+            ).build();
+        }
+
     }
 
     private Map<String, Node> nodes;
+    protected Map<String, Long> counts;
 
     public AttestationTreeBuilder(Stream<Recursable> stream) {
         this.nodes = stream.collect(
@@ -92,6 +113,19 @@ public class AttestationTreeBuilder {
     public Stream<Node> getRoots() {
         return this.nodes.values().stream().filter(
             Node::isRoot
+        );
+    }
+
+    public AttestationTreeBuilder counts(Map<String, Long> counts) {
+        this.counts = counts;
+        return this;
+    }
+
+    public List<AttestedTimespan> resolve() {
+        return this.getRoots().map(
+            Node::toNestedAttestation
+        ).collect(
+            Collectors.toList()
         );
     }
 

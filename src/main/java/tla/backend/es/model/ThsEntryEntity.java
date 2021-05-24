@@ -152,7 +152,7 @@ public class ThsEntryEntity extends UserFriendlyEntity implements Recursable {
         return AttestedTimespan.Period.builder()
             .begin(years.get(0))
             .end(years.get(1))
-            .ths(this.toDTOReference())
+            .ref(this.toDTOReference())
             .build();
     }
 }

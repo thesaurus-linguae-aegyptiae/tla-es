@@ -10,6 +10,9 @@
  * Furthermore, there is a kinda clumsy abstraction for query dependency tree execution which to at
  * least some degree is capable of emulating JOIN queries.
  *
+ * @see tla.backend.es.query.ESQueryBuilder
+ * @see tla.backend.es.query.ESQueryResult
+ *
  * @author jhoeper
  */
 package tla.backend.es.query;

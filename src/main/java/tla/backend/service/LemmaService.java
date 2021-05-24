@@ -3,8 +3,7 @@ package tla.backend.service;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -20,12 +19,13 @@ import org.springframework.stereotype.Service;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.ThsEntryEntity;
+import tla.backend.es.model.meta.Recursable;
 import tla.backend.es.query.ESQueryBuilder;
-import tla.backend.es.query.ESQueryResult;
 import tla.backend.es.query.LemmaSearchQueryBuilder;
 import tla.backend.es.query.OccurrenceSearchQueryBuilder;
 import tla.backend.es.query.TextSearchQueryBuilder;
 import tla.backend.es.repo.LemmaRepo;
+import tla.backend.service.component.AttestationTreeBuilder;
 import tla.backend.service.component.EntityRetrieval;
 import tla.backend.service.search.AutoCompleteSupport;
 import tla.backend.service.search.SearchService;
@@ -40,6 +40,8 @@ import tla.domain.model.extern.AttestedTimespan;
 @Service
 @ModelClass(value = LemmaEntity.class, path = "lemma")
 public class LemmaService extends EntityService<LemmaEntity, ElasticsearchRepository<LemmaEntity, String>, LemmaDto> {
+
+    static final String THS_ENTITY_ECLASS = ThsEntryEntity.getTypesEclass(ThsEntryEntity.class);
 
     @Autowired
     private LemmaRepo repo;
@@ -69,9 +71,7 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
         }
         SingleDocumentWrapper<?> wrapper = super.getDetails(id);
         ((LemmaDto) wrapper.getDoc()).setAttestations(
-            new LinkedList<>(
-                this.computeAttestedTimespans(id)
-            )
+            this.computeAttestedTimespans(id)
         );
         return wrapper;
     }
@@ -81,33 +81,20 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
      * in texts containing the specified lemma, and counts the number of texts and
      * total occurrences for each one.
      */
-    public Collection<AttestedTimespan> computeAttestedTimespans(String lemmaId) {
-        ESQueryResult<?> occurrenceSearch = searchService.register(
+    public List<AttestedTimespan> computeAttestedTimespans(String lemmaId) {
+        Map<String, Long> dateCounts = searchService.register(
             new OccurrenceSearchQueryBuilder(lemmaId)
-        ).run(SearchService.UNPAGED);
-        Map<String, Long> dateCounts = occurrenceSearch.getAggregation(
+        ).run(SearchService.UNPAGED).getAggregation(
             TextSearchQueryBuilder.AGG_ID_DATE
         );
-        String thsEntryEclass = ThsEntryEntity.getTypesEclass(ThsEntryEntity.class);
-        return EntityRetrieval.BulkEntityResolver.of(
+        var terms = EntityRetrieval.BulkEntityResolver.of(
             dateCounts.keySet().stream().map(
-                id -> ObjectReference.builder().id(id).eclass(thsEntryEclass).build()
+                id -> ObjectReference.builder().id(id).eclass(THS_ENTITY_ECLASS).build()
             )
-        ).stream().map(entity -> (ThsEntryEntity) entity).map(
-            term -> {
-                var docCount = dateCounts.get(term.getId());
-                return AttestedTimespan.builder().attestations(
-                    AttestedTimespan.AttestationStats.builder()
-                    .count(docCount)
-                    .texts(docCount)
-                    .build()
-                ).period(
-                    term.toAttestedPeriod()
-                ).build();
-            }
-        ).collect(
-            Collectors.toList()
-        );
+        ).stream();
+        return AttestationTreeBuilder.of(
+            terms.map(entity -> (Recursable) entity)
+        ).counts(dateCounts).resolve();
     }
 
     public Map<String, Long> getMostFrequent(int limit) {

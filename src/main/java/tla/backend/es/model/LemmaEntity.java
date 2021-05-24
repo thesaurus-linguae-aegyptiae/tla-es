@@ -63,7 +63,6 @@ public class LemmaEntity extends TLAEntity {
 
     @Getter
     @Setter
-    @EqualsAndHashCode
     @NoArgsConstructor
     @AllArgsConstructor
     @JsonInclude(Include.NON_NULL)
