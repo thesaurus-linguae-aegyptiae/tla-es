@@ -1,8 +1,8 @@
 ![build](https://github.com/jkatzwinkel/tla-es/workflows/build/badge.svg)
 ![deploy](https://github.com/jkatzwinkel/tla-es/workflows/deploy/badge.svg)
 ![search](https://github.com/jkatzwinkel/tla-es/workflows/searchtest/badge.svg)
-![LINE](https://img.shields.io/badge/line--coverage-68%25-yellow.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-75%25-yellow.svg)
+![LINE](https://img.shields.io/badge/line--coverage-76%25-yellow.svg)
+![METHOD](https://img.shields.io/badge/method--coverage-78%25-yellow.svg)
 
 # tla-es
 
@@ -126,6 +126,12 @@ whose name can be used to identify the entity service to be used to execute the 
 The paths used to identify the entity services can be found in the `@ModelClass` annotations of the entity services.
 
 Test runs create JUnit and Jacoco reports at the usual output locations.
+
+Limit test runs to single classes by using the `--test` option:
+
+```bash
+  ./gradlew test --tests=QueryResultTest
+```
 
 
 ## Misc

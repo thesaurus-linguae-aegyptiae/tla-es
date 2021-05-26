@@ -32,15 +32,21 @@ import tla.backend.es.query.TLAQueryBuilder.QueryDependency;
 @Service
 public class SearchService {
 
+    public final static Pageable UNPAGED = Pageable.unpaged();
+
+    public final static String AGG_ID_DATES = "date.date.date";
+
     /**
      * Execute search command query adapter and its dependencies.
      */
     public class QueryExecutor {
 
         private ESQueryBuilder query;
+        private Map<String, Map<String, Long>> aggregations;
 
         public QueryExecutor(ESQueryBuilder query) {
             this.query = query;
+            this.aggregations = new HashMap<>();
         }
 
         /**
@@ -56,18 +62,23 @@ public class SearchService {
                 dependency.getQuery().setResult(
                     executeSearchQuery(
                         ((ESQueryBuilder) dependency.getQuery()).buildNativeSearchQuery(
-                            Pageable.unpaged() // TODO size=0
+                            UNPAGED // TODO size=0
                         ),
                         dependency.getQuery().getModelClass()
                     )
                 );
                 dependency.resolve();
+                this.aggregations.putAll(
+                    extractAggregations(dependency.getQuery().getResult().getHits())
+                );
             }
             log.info("run head query");
-            return executeSearchQuery(
+            ESQueryResult<?> result = executeSearchQuery(
                 this.query.buildNativeSearchQuery(page),
                 this.query.getModelClass()
             );
+            result.addAggregations(this.aggregations);
+            return result;
         }
 
     }
@@ -124,25 +135,17 @@ public class SearchService {
         AggregationBuilder aggsBuilder
     ) {
         String index = operations.getIndexCoordinatesFor(entityClass).getIndexName();
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-            .query(queryBuilder);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder().query(queryBuilder);
         if (aggsBuilder != null) {
             searchSourceBuilder = searchSourceBuilder.aggregation(aggsBuilder);
         }
-        SearchRequest request = new SearchRequest()
-            .indices(
-                index
-            )
-            .source(
-                searchSourceBuilder
-            );
-        SearchResponse response = null;
+        SearchRequest request = new SearchRequest().indices(index).source(
+            searchSourceBuilder
+        );
         try {
-            response = restClient
-                .search(
-                    request,
-                    RequestOptions.DEFAULT
-                );
+            return restClient.search(
+                request, RequestOptions.DEFAULT
+            );
         } catch (Exception e) {
             log.error(
                 String.format(
@@ -152,14 +155,14 @@ public class SearchService {
                 e
             );
         }
-        return response;
+        return null;
     }
 
     /**
      * extract a simple map of terms and their counts from
      * a bucketed aggregation's buckets.
      */
-    private Map<String, Long> getFacetsFromBuckets(Terms agg) {
+    private static Map<String, Long> getFacetsFromBuckets(Terms agg) {
         return ((Terms) agg).getBuckets().stream().collect(
             Collectors.toMap(
                 Terms.Bucket::getKeyAsString,
@@ -172,12 +175,12 @@ public class SearchService {
      * Converts terms aggregations in an Elasticsearch search response to a map of field
      * value counts.
      */
-    public Map<String, Map<String, Long>> extractFacets(SearchHits<?> hits) {
+    public static Map<String, Map<String, Long>> extractAggregations(SearchHits<?> hits) {
         if (hits.hasAggregations()) {
-            Map<String, Map<String, Long>> facets = new HashMap<>();
+            Map<String, Map<String, Long>> aggregations = new HashMap<>();
             for (Aggregation agg : hits.getAggregations().asList()) {
                 if (agg instanceof Terms) {
-                    facets.put(
+                    aggregations.put(
                         agg.getName(),
                         getFacetsFromBuckets((Terms) agg)
                     );
@@ -185,16 +188,16 @@ public class SearchService {
                     ((Filter) agg).getAggregations().asList().stream().filter(
                         sub -> sub instanceof Terms
                     ).forEach(
-                        sub -> facets.put(
+                        sub -> aggregations.put(
                             agg.getName(),
                             getFacetsFromBuckets((Terms) sub)
                         )
                     );
                 }
             }
-            return facets;
+            return aggregations;
         } else {
-            return null;
+            return Map.of();
         }
     }
 

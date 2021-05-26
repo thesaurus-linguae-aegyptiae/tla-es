@@ -40,6 +40,15 @@ public class EntityRetrieval {
         }
 
         /**
+         * creates a new bulk entity resolver instance and initialize it
+         * with given stream of object reference items to be resolved to actual
+         * entities.
+         */
+        public static BulkEntityResolver of(Stream<? extends Resolvable> references) {
+            return BulkEntityResolver.of(references.collect(Collectors.toList()));
+        }
+
+        /**
          * Take all objectreferences in an entity's <code>relations</code> map and feeds them into
          * a new {@link BulkEntityResolver} instance.
          */
@@ -126,13 +135,22 @@ public class EntityRetrieval {
         }
 
         /**
-         * Retrieve referenced object from respective ES repositories.
+         * Retrieve referenced object from respective ES indices.
          */
         public Collection<Indexable> resolve() {
+            return this.stream().collect(
+                Collectors.toList()
+            );
+        }
+
+        /**
+         * Resolve as stream, i.e. retrieve all queued objects from respective ES indices.
+         *
+         * @see #resolve()
+         */
+        public Stream<Indexable> stream() {
             return this.refs.entrySet().stream().flatMap(
                 e -> this.resolve(e.getKey(), e.getValue())
-            ).collect(
-                Collectors.toList()
             );
         }
 

@@ -1,6 +1,9 @@
 package tla.backend.es.query;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -8,8 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.SearchHits;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import tla.backend.es.model.meta.Indexable;
 import tla.domain.dto.extern.PageInfo;
 
@@ -19,8 +20,6 @@ import tla.domain.dto.extern.PageInfo;
  * <code>&lt;T&gt;</code>: an {@link Indexable} entity class
  */
 @Getter
-@Setter
-@NoArgsConstructor
 public class ESQueryResult<T extends Indexable> {
 
     /**
@@ -28,30 +27,58 @@ public class ESQueryResult<T extends Indexable> {
      */
     public static final int SEARCH_RESULT_PAGE_SIZE = 20;
 
+    /**
+     * IDs aggregation identifier
+     */
+    public static final String AGGS_ID_IDS = "ids";
+
+    private Map<String, Map<String, Long>> aggregations;
+
     private SearchHits<T> hits;
 
     private PageInfo pageInfo;
 
+    public ESQueryResult() {
+        this.aggregations = new HashMap<>();
+    }
+
     public ESQueryResult(SearchHits<T> hits, Pageable page) {
+        this();
         this.hits = hits;
         this.pageInfo = page.isUnpaged() ? null : pageInfo(hits, page);
     }
 
     /**
      * if there is an IDs aggregation, extract IDs from it.
-     * @return
      */
-    public List<String> getIDAggValues() {
-        if (this.hits.getAggregations() != null && this.hits.getAggregations().get("ids") != null) {
+    public Collection<String> getIDAggValues() {
+        return this.getAggregation(AGGS_ID_IDS).keySet();
+    }
+
+    /**
+     * extract a terms aggregation of the specified name.
+     *
+     * @return map of aggregated terms and corresponding document counts, or an empty map if the
+     * aggregation doesn't exist
+     */
+    public Map<String, Long> getAggregation(String agg) {
+        if (this.hits.getAggregations() != null && this.hits.getAggregations().get(agg) != null) {
             return (
-                (Terms) this.hits.getAggregations().get("ids")
-            ).getBuckets().stream().map(
-                Terms.Bucket::getKeyAsString
-            ).collect(
-                Collectors.toList()
+                (Terms) this.hits.getAggregations().get(agg)
+            ).getBuckets().stream().collect(
+                Collectors.toMap(
+                    Terms.Bucket::getKeyAsString, Terms.Bucket::getDocCount
+                )
             );
         }
-        return null;
+        return Collections.emptyMap();
+    }
+
+    /**
+     * save terms aggregation results.
+     */
+    public void addAggregations(Map<String, Map<String, Long>> aggs) {
+        this.aggregations.putAll(aggs);
     }
 
     /**
@@ -69,7 +96,9 @@ public class ESQueryResult<T extends Indexable> {
                     hits.getSearchHits().size()
                 )
             ).totalPages(
-                (int) hits.getTotalHits() / SEARCH_RESULT_PAGE_SIZE + 1 // TODO
+                (int) hits.getTotalHits() / SEARCH_RESULT_PAGE_SIZE + (
+                    hits.getTotalHits() % SEARCH_RESULT_PAGE_SIZE < 1 ? 0 : 1
+                )
             ).build();
     }
 

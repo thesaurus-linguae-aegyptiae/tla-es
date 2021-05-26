@@ -292,15 +292,6 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     }
 
     /**
-     * Converts terms aggregations to a map of field value counts.
-     *
-     * @Deprecated
-     */
-    public Map<String, Map<String, Long>> facets(SearchHits<?> hits) {
-        return searchService.extractFacets(hits);
-    }
-
-    /**
      * Extract DTO objects out of a list of searchresults of an entity type.
      */
     public List<D> hitsToDTO(SearchHits<?> hits, Class<D> dtoClass) {
@@ -310,24 +301,6 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
                 dtoClass
             )
         ).collect(Collectors.toList());
-    }
-
-    /**
-     * Takes an Elasticsearch search result and the original page information and search
-     * command, and puts it all into a serializable container ready for return
-     * to the requesting client.
-     * 
-     * TODO: to search service
-     */
-    public SearchResultsWrapper<D> wrapSearchResults(
-        SearchHits<?> hits, Pageable pageable, SearchCommand<D> command
-    ) throws Exception {
-        return new SearchResultsWrapper<D>(
-            hitsToDTO(hits, getDtoClass()),
-            command,
-            pageInfo(hits, pageable),
-            facets(hits)
-        );
     }
 
     /**
@@ -372,11 +345,12 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
         var queryAdapter = this.getSearchCommandAdapter(command);
         ESQueryResult<?> result = searchService.register(queryAdapter).run(page);
         try {
+            result.getAggregations().remove(ESQueryResult.AGGS_ID_IDS);
             var wrapper = new SearchResultsWrapper<D>(
                 hitsToDTO(result.getHits(), this.getDtoClass()),
                 command,
                 result.getPageInfo(),
-                facets(result.getHits())
+                result.getAggregations()
             );
             retrieveRelatedDocs(result).resolve().forEach(
                 relatedObject -> wrapper.addRelated(

@@ -44,8 +44,7 @@ public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiL
             textSearchQuery.setPassport(spec);
             this.dependsOn(
                 textSearchQuery,
-                this::setTextIds,
-                query -> query.getResult().getIDAggValues()
+                this::setTextIds
             );
         }
     }
