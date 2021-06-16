@@ -1,6 +1,6 @@
-![build](https://github.com/jkatzwinkel/tla-es/workflows/build/badge.svg)
-![deploy](https://github.com/jkatzwinkel/tla-es/workflows/deploy/badge.svg)
-![search](https://github.com/jkatzwinkel/tla-es/workflows/searchtest/badge.svg)
+![build](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/build/badge.svg)
+![deploy](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/deploy/badge.svg)
+![search](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/searchtest/badge.svg)
 ![LINE](https://img.shields.io/badge/line--coverage-76.83%25-yellow.svg)
 ![METHOD](https://img.shields.io/badge/method--coverage-78.99%25-yellow.svg)
 
