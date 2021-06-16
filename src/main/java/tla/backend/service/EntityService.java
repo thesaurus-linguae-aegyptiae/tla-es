@@ -282,16 +282,6 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     }
 
     /**
-     * Create a serializable transfer object containing page information
-     * about an ES search result.
-     *
-     * @Deprecated
-     */
-    public PageInfo pageInfo(SearchHits<?> hits, Pageable pageable) {
-        return ESQueryResult.pageInfo(hits, pageable);
-    }
-
-    /**
      * Extract DTO objects out of a list of searchresults of an entity type.
      */
     public List<D> hitsToDTO(SearchHits<?> hits, Class<D> dtoClass) {

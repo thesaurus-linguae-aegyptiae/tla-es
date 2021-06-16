@@ -29,29 +29,6 @@ public class TextService extends UserFriendlyEntityService<TextEntity, UserFrien
         return textRepo;
     }
 
-    /** 
-     * Returns first and last year of the time span a text has been attributed to. 
-     *
-    */
-    public int[] getTimespan(String textId) {
-        TextEntity text = textRepo.findById(textId).get();
-        SortedSet<Integer> years = new TreeSet<>();
-        thsService.extractThsEntriesFromPassport(
-            text.getPassport(),
-            "date.date.date"
-        ).stream().forEach(
-            term -> {
-                years.addAll(
-                    term.extractTimespan()
-                );
-            }
-        );
-        return new int[] {
-            years.first(),
-            years.last()
-        };
-    }
-
     @Override
     public Class<? extends ESQueryBuilder> getSearchCommandAdapterClass(SearchCommand<TextDto> command) {
         return TextSearchQueryBuilder.class;

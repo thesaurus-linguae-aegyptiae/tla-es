@@ -151,7 +151,9 @@ public class RepoPopulator {
     private RepoBatchIngestor<? extends Indexable> batchIngestor = null;
 
     /**
-     * Return the <code>path</code> value of a entity service's {@link ModelClass} annotation
+     * Return the <code>path</code> value of a entity service's {@link ModelClass} annotation,
+     * which might be used to specify e.g. from which subdirectory data for this specific model
+     * class can be imported.
      */
     private static String getModelClassServicePath(
         EntityService<? extends Indexable, ? extends ElasticsearchRepository<?, ?>, ?> service

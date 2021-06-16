@@ -42,7 +42,7 @@ public class QueryResultTest {
         );
         Pageable page = PageRequest.of(0, ESQueryResult.SEARCH_RESULT_PAGE_SIZE);
         assertEquals(
-            pages + 1, ESQueryResult.pageInfo(searchHits, page).getTotalPages(), "n times page size results fit in n + 1 pages"
+            pages + 1, ESQueryResult.pageInfo(searchHits, page).getTotalPages(), "n times page size plus 1 results fit in n + 1 pages"
         );
     }
 
