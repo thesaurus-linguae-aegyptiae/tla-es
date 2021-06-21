@@ -10,14 +10,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
-@EqualsAndHashCode
+@ToString
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -61,8 +61,8 @@ public class Token {
 
     @Getter
     @Setter
+    @ToString
     @NoArgsConstructor
-    @EqualsAndHashCode
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Flexion {
@@ -90,7 +90,7 @@ public class Token {
 
     @Getter
     @Setter
-    @EqualsAndHashCode
+    @ToString
     @NoArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Lemmatization {
@@ -109,12 +109,12 @@ public class Token {
 
     @Getter
     @Setter
-    @EqualsAndHashCode
+    @ToString
     @NoArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Glyphs {
-        @Field(type = FieldType.Text, analyzer = "hieroglyph_analyzer")
+        @Field(type = FieldType.Text, analyzer = "hieroglyph_analyzer", searchAnalyzer = "hieroglyph_analyzer")
         private String mdc;
 
         @Field(type = FieldType.Text)

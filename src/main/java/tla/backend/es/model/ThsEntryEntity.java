@@ -20,6 +20,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
+import tla.backend.es.model.meta.Recursable;
 import tla.backend.es.model.meta.UserFriendlyEntity;
 import tla.backend.es.model.parts.ObjectPath;
 import tla.backend.es.model.parts.Translations;
@@ -38,7 +39,7 @@ import tla.domain.model.meta.TLADTO;
 @EqualsAndHashCode(callSuper = true)
 @Document(indexName = "ths")
 @Setting(settingPath = "/elasticsearch/settings/indices/ths.json")
-public class ThsEntryEntity extends UserFriendlyEntity {
+public class ThsEntryEntity extends UserFriendlyEntity implements Recursable {
 
     private static ObjectMapper objectMapper = tla.domain.util.IO.getMapper();
 
@@ -151,7 +152,7 @@ public class ThsEntryEntity extends UserFriendlyEntity {
         return AttestedTimespan.Period.builder()
             .begin(years.get(0))
             .end(years.get(1))
-            .ths(this.toDTOReference())
+            .ref(this.toDTOReference())
             .build();
     }
 }

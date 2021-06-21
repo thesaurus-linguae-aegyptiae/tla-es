@@ -17,16 +17,16 @@ public interface MultiLingQueryBuilder extends TLAQueryBuilder {
                 translationsQuery.should(
                     termSpecified
                     ? matchQuery(
-                        String.format("translations.%s", lang),
+                        String.format("%stranslations.%s", this.nestedPath(), lang),
                         translation.getText()
                     )
                     : existsQuery(
-                        String.format("translations.%s", lang)
+                        String.format("%stranslations.%s", this.nestedPath(), lang)
                     )
                 );
             }
         }
-        this.must(translationsQuery);
+        this.filter(translationsQuery);
     }
 
 }

@@ -1,11 +1,15 @@
 ![build](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/build/badge.svg)
 ![deploy](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/deploy/badge.svg)
-![LINE](https://img.shields.io/badge/line--coverage-57%25-orange.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-69%25-yellow.svg)
+![search](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/searchtest/badge.svg)
+![LINE](https://img.shields.io/badge/line--coverage-76.83%25-yellow.svg)
+![METHOD](https://img.shields.io/badge/method--coverage-78.99%25-yellow.svg)
+
+# tla-es
 
 Thesaurus Linguae Aegyptiae (TLA) backend.
 
 Copyright (C) 2019-2021 Berlin-Brandenburgische Akademie der Wissenschaften
+
 
 ## Overview
 
@@ -14,7 +18,7 @@ The TLA backend server is a Spring Boot application using Elasticsearch as a sea
 
 ## Installation
 
-> **TL;DR:** run `SAMPLE_URL=http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210113-1000t.tar.gz docker-compose up -d`
+> **TL;DR:** run `SAMPLE_URL=http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210115-1000t.tar.gz docker-compose up -d`
 
 There are two methods for getting this thing up and running.
 
@@ -98,6 +102,36 @@ Run the app using the `bootRun` task:
     ./gradlew bootrun
 
 > If you are on a Windows machine, you need to execute the `gradlew.bat` wrapper shipped with this repository.
+
+
+## Tests
+
+There are 3 Gradle tasks for running tests:
+
+- `:test`: run unit tests
+- `:testSearch`: run search tests against live Elasticsearch instance
+- `:testAll`: run all of those tests
+
+Note that due to the way Spring-Data works, there is an Elasticsearch instance required even for the unit tests,
+although it may well be entirely empty. For the search tests however, the Elasticsearch instance must be fully
+populated so that search results can actually be verified against the specified expectations. This means you must
+have executed the `:populate` task (`./gradlew populate`) prior executing `:testSearch` or `:testAll`.
+
+Search tests are being performed based on search scenarios specified in JSON files. The specification model can be
+found in [`SearchTestSpecs.java`](src/test/java/tla/backend/search/SearchTestSpecs.java). Individual specification
+instances consist of at least a name and a search command. JSON files containing a list of several search test
+specifications have to be located within the classpath directory set via the
+[application property](src/test/resources/application-test.yml) `tla.searchtest.path`, each under a sub-directory
+whose name can be used to identify the entity service to be used to execute the contained search commands.
+The paths used to identify the entity services can be found in the `@ModelClass` annotations of the entity services.
+
+Test runs create JUnit and Jacoco reports at the usual output locations.
+
+Limit test runs to single classes by using the `--test` option:
+
+```bash
+  ./gradlew test --tests=QueryResultTest
+```
 
 
 ## Misc

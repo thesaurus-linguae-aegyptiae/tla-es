@@ -1,5 +1,9 @@
 package tla.backend.es.model;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -37,5 +41,14 @@ public class Util {
             return entity.getId();
         }
     }
-    
+
+    /**
+     * return list elements in inverse order.
+     */
+    public static <E> List<E> reverse(List<E> list) {
+        var tmp = new LinkedList<>(list);
+        Collections.reverse(tmp);
+        return tmp;
+    }
+
 }
