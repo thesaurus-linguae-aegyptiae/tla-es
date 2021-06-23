@@ -66,7 +66,9 @@ Requirements:
 
 #### 2.1. Prerequesites
 
-1. This method requires you to provide a running Elasticsearch instance. If you have Docker Compose, you can simply start one in a
+1. This method requires you to provide a running Elasticsearch instance. Either you install it as an independent application from 
+https://www.elastic.co/de/downloads/past-releases/elasticsearch-7-10-0 (e.g., as MSI)
+   or, if you have Docker Compose, you can simply start one in a
    container by using the configuration coming with this repository:
    ```
    docker-compose up -d es
@@ -82,8 +84,9 @@ you must set the `SAMPLE_URL` environment variable to a URL pointing to a tar-co
 file. One way to do this is to create a `.env` file in the directory containing this README, and setting
 the variable `SAMPLE_URL` in there:
    ```
-   SAMPLE_URL=http://example.org/sample.tar.gz
+   SAMPLE_URL=http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210113-1000t.tar.gz
    ```
+Make sure that the lines with ES_HOST and ES_PORT are either deleted or filled with values, but not left empty.
 
 4. Finally, download and store TLA corpus data from the specified source by running the `populate` gradle task:
    ```
