@@ -71,8 +71,8 @@ public class ThesaurusService extends UserFriendlyEntityService<ThsEntryEntity, 
     }
 
     @Override
-    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<ThsEntryDto> command) {
-        return this.getModelMapper().map(command, ThsSearchQueryBuilder.class);
+    public Class<? extends ESQueryBuilder> getSearchCommandAdapterClass(SearchCommand<ThsEntryDto> command) {
+        return ThsSearchQueryBuilder.class;
     }
 
 }

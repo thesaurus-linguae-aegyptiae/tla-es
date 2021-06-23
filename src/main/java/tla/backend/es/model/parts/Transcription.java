@@ -19,11 +19,10 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Transcription {
 
-    @Field(type = FieldType.Text, analyzer = "transcription_analyzer")
+    @Field(type = FieldType.Text, analyzer = "transcription_analyzer", searchAnalyzer = "transcription_analyzer")
     private String unicode;
 
-    @Field(type = FieldType.Text, analyzer = "transcription_analyzer")
+    @Field(type = FieldType.Text, analyzer = "transcription_analyzer", searchAnalyzer = "transcription_analyzer")
     private String mdc;
 
-    //TODO hieroglyphs?
 }

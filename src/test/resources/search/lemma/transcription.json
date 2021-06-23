@@ -1,0 +1,145 @@
+[
+  {
+    "name": "parenthesis ('()') should be ignored",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "(j)bkꜥ"
+    },
+    "valid": [
+      "709902"
+    ],
+    "invalid": [
+      "500024"
+    ]
+  },
+  {
+    "name": "plus sign ('+') shouldn't be ignored",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "1000+"
+    },
+    "valid": [
+      "dm5964"
+    ],
+    "invalid": [
+      "dm879"
+    ]
+  },
+  {
+    "name": "forward slash ('/') shouldn't be ignored",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "1/2"
+    },
+    "valid": [
+      "99026"
+    ],
+    "invalid": [
+      "600014",
+      "600017"
+    ]
+  },
+  {
+    "name": "hyphen ('-') should not be used by tokenizer",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "zp-nfr"
+    },
+    "valid": [
+      "132560"
+    ],
+    "invalid": [
+      "136212",
+      "859569"
+    ]
+  },
+  {
+    "name": "hyphen ('-') should not be used by tokenizer, ḥm(.t)-ntr(.t) should be indexed correctly",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "ḥm-ntr"
+    },
+    "valid": [
+      "d4073"
+    ],
+    "invalid": [
+      "855724",
+      "98390",
+      "869552",
+      "dm2190",
+      "98380",
+      "500881"
+    ]
+  },
+  {
+    "name": "search for ḥm-nṯr should not find ḥm-ntr",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "ḥm-nṯr"
+    },
+    "invalid": [
+      "d4073"
+    ]
+  },
+  {
+    "name": "asterisk ('*') should not be ignored (find *ꜥpš)",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "*ꜥpš"
+    },
+    "valid": [
+      "dm4619"
+    ]
+  },
+  {
+    "name": "underscore ('_') should not be ignored",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "_rw"
+    },
+    "valid": [
+      "dm4228"
+    ],
+    "invalid": [
+      "dm5769",
+      "d3454",
+      "500396",
+      "860603",
+      "871109"
+    ]
+  },
+  {
+    "name": "question marks ('⸮?') should be ignored",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "Pa-⸮tꜣ?-gš"
+    },
+    "valid": [
+      "dm5732"
+    ],
+    "invalid": [
+      "dm2818",
+      "dm2550",
+      "dm2551",
+      "858492",
+      "d1931"
+    ]
+  },
+  {
+    "name": "asterisk ('*') should not be ignored (find *Pꜣ-ḏbꜣ)",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "*Pꜣ-ḏbꜣ"
+    },
+    "valid": [
+      "dm1651"
+    ],
+    "invalid": [
+      "851446",
+      "d7182",
+      "183280",
+      "dm4617"
+    ]
+  }
+]
+

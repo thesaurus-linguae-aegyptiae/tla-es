@@ -2,7 +2,10 @@ package tla.backend.es.query;
 
 import java.util.Collection;
 
+import static org.elasticsearch.index.query.QueryBuilders.*;
+
 import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 
 import lombok.Getter;
@@ -17,15 +20,19 @@ import tla.domain.command.PassportSpec;
 public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiLingQueryBuilder {
 
     public void setTokens(Collection<TokenSearchQueryBuilder> tokenQueries) {
-        tokenQueries.forEach(
-            query -> this.filter(
-                QueryBuilders.nestedQuery(
-                    "tokens",
-                    query.getNativeRootQueryBuilder(),
-                    ScoreMode.None
+        BoolQueryBuilder tokenQuery = boolQuery();
+        if (tokenQueries != null) {
+            tokenQueries.forEach(
+                query -> tokenQuery.must(
+                    QueryBuilders.nestedQuery(
+                        "tokens",
+                        query.getNativeRootQueryBuilder(),
+                        ScoreMode.None
+                    )
                 )
-            )
-        );
+            );
+        }
+        this.filter(tokenQuery);
     }
 
     public void setPassport(PassportSpec spec) {
@@ -37,8 +44,7 @@ public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiL
             textSearchQuery.setPassport(spec);
             this.dependsOn(
                 textSearchQuery,
-                this::setTextIds,
-                query -> query.getResult().getIDAggValues()
+                this::setTextIds
             );
         }
     }

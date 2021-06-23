@@ -1,0 +1,137 @@
+{
+ "editors": {
+   "author": "Altägyptisches Wörterbuch",
+   "contributors": [
+     "L. Popko"
+   ],
+   "created": "2015-06-26",
+   "updated": "2020-05-22"
+ },
+ "externalReferences": {
+   "aaew": [
+     {
+       "id": "9/54"
+     }
+   ],
+   "thot": [
+     {
+       "id": "thot-171"
+     }
+   ]
+ },
+ "hash": "q6z47t",
+ "id": "4SJRB25AURBUZMSZBBXRRHDO3A",
+ "name": "Djedefre",
+ "passport": {
+   "synonyms": [
+     {
+       "synonym_group": [
+         {
+           "language": [
+             "en"
+           ],
+           "synonym": [
+             "Djedefre"
+           ]
+         },
+         {
+           "language": [
+             "fr"
+           ],
+           "synonym": [
+             "Djedefrê"
+           ]
+         }
+       ]
+     }
+   ],
+   "thesaurus": [
+     {
+       "main_group": [
+         {
+           "old_id": [
+             "54"
+           ],
+           "old_thesaurus_number": [
+             "9"
+           ],
+           "termsort": [
+             "djedefre"
+           ]
+         }
+       ]
+     }
+   ],
+   "thesaurus_date": [
+     {
+       "main_group": [
+         {
+           "beginning": [
+             "-2566"
+           ],
+           "end": [
+             "-2558"
+           ],
+           "reference": [
+             "Shaw, I. (Hg.), The Oxford History of Ancient Egypt, Oxford 2000, 482."
+           ]
+         }
+       ]
+     }
+   ]
+ },
+ "paths": [
+   [
+     {
+       "eclass": "BTSThsEntry",
+       "id": "MXWX4WG43ZHI7D4RLTGK3IBGXY",
+       "name": "9 = Datierungen",
+       "type": "date"
+     },
+     {
+       "eclass": "BTSThsEntry",
+       "id": "DUVGWT7GSRCKDM5LFTGU6MZ3GY",
+       "name": "(Epochen und Dynastien)",
+       "type": "date"
+     },
+     {
+       "eclass": "BTSThsEntry",
+       "id": "N673TBXEGJDDBO6B6DZXKT64YQ",
+       "name": "Pharaonische Zeit",
+       "type": "date"
+     },
+     {
+       "eclass": "BTSThsEntry",
+       "id": "DBDBZEFDGZGGBMERHVKJ6PMPHQ",
+       "name": "Altes Reich",
+       "type": "date"
+     },
+     {
+       "eclass": "BTSThsEntry",
+       "id": "WCVSHAEC7ZA4FKQOWR4E2GC6OM",
+       "name": "4. Dynastie",
+       "type": "date"
+     }
+   ]
+ ],
+ "relations": {
+   "partOf": [
+     {
+       "eclass": "BTSThsEntry",
+       "id": "WCVSHAEC7ZA4FKQOWR4E2GC6OM",
+       "name": "4. Dynastie",
+       "type": "date"
+     }
+   ]
+ },
+ "revisionState": "published",
+ "translations": {
+   "en": [
+     "Djedefre"
+   ],
+   "fr": [
+     "Djedefrê"
+   ]
+ },
+ "type": "date"
+}

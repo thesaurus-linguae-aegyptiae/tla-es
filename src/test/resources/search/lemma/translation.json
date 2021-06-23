@@ -1,0 +1,71 @@
+[
+  {
+    "name": "german translation matches plural and genitive forms",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "translation": {
+        "lang": [
+          "de"
+        ],
+        "text": "gott"
+      },
+      "sort": "sortKey_desc"
+    },
+    "valid": [
+      "177970",
+      "178400",
+      "178740",
+      "181000",
+      "182180",
+      "182700",
+      "183250",
+      "184030",
+      "185210",
+      "185970",
+      "185970",
+      "500591",
+      "500954",
+      "858969",
+      "859709",
+      "861900",
+      "d7746"
+    ],
+    "invalid": [
+      "d5417"
+    ]
+  },
+  {
+    "name": "german translation matches umlauts",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "translation": {
+        "lang": [
+          "de"
+        ],
+        "text": "koenig"
+      },
+      "script": ["demotic"]
+    },
+    "valid": [
+      "dm2169",
+      "d3265",
+      "d3260",
+      "d444"
+    ]
+  },
+  {
+    "name": "french translation matches accents",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "translation": {
+        "lang": [
+          "fr"
+        ],
+        "text": "divinite"
+      }
+    },
+    "valid": [
+      "90260"
+    ]
+  }
+]

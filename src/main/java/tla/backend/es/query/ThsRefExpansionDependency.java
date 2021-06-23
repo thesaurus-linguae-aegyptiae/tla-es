@@ -18,6 +18,17 @@ public class ThsRefExpansionDependency extends TLAQueryBuilder.QueryDependency<P
         super(query, blockedMethod, blockingMethod);
     }
 
+    /**
+     * Queue a new query builder for retrieval of the IDs of all thesaurus entries descending from
+     * those specified.
+     *
+     * This adds a new expansion-mode {@link ThsSearchQueryBuilder} to the dependency list of the waiting
+     * {@link PassportIncludingQueryBuilder}. This dependency will retrieve the IDs of all thesaurus
+     * entries descending of any of the thesaurus entries specified (i.e. who are located within the
+     * subtrees under the specified thesaurus entries). The results are fed into the waiting query builder's
+     * {@link PassportIncludingQueryBuilder#setPassport(PassportSpec)} method.
+     *
+     */
     public static ThsRefExpansionDependency of(
         PassportIncludingQueryBuilder waitingQuery,
         String passportKey,

@@ -25,8 +25,8 @@ public class CorpusObjectService extends
     }
 
     @Override
-    public ESQueryBuilder getSearchCommandAdapter(SearchCommand<CorpusObjectDto> command) {
-        return this.getModelMapper().map(command, TextSearchQueryBuilder.class);
+    public Class<? extends ESQueryBuilder> getSearchCommandAdapterClass(SearchCommand<CorpusObjectDto> command) {
+        return TextSearchQueryBuilder.class;
     }
 
 }
