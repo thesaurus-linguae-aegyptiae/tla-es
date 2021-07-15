@@ -1,8 +1,8 @@
 ![build](https://github.com/jkatzwinkel/tla-es/workflows/build/badge.svg)
 ![deploy](https://github.com/jkatzwinkel/tla-es/workflows/deploy/badge.svg)
 ![search](https://github.com/jkatzwinkel/tla-es/workflows/searchtest/badge.svg)
-![LINE](https://img.shields.io/badge/line--coverage-76.83%25-yellow.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-78.99%25-yellow.svg)
+![LINE](https://img.shields.io/badge/line--coverage-76.76%25-yellow.svg)
+![METHOD](https://img.shields.io/badge/method--coverage-78.87%25-yellow.svg)
 
 # tla-es
 
@@ -66,7 +66,7 @@ You can check its progress by taking a look into its log output:
 Requirements:
 
 - Java 11
-- Elasticsearch 7.10.0 *or* Docker Compose
+- Elasticsearch 7.12.1 *or* Docker Compose
 
 #### 2.1. Prerequesites
 

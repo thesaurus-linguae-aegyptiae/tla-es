@@ -35,7 +35,7 @@ public class Metadata extends AbstractBTSBaseClass implements Indexable {
     @JsonAlias({"DOI"})
     private String DOI;
 
-    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd")
+    @Field(type = FieldType.Date, format = DateFormat.year_month_day)
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private EditDate date;
 

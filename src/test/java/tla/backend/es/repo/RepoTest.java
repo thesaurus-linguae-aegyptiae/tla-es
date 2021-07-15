@@ -115,9 +115,6 @@ public class RepoTest {
             () -> assertEquals("2019-12-18", localDate.toString())
         );
         assertDoesNotThrow(
-            () -> converter.parse("2019-12-18")
-        );
-        assertDoesNotThrow(
             () -> converter.parse("2019-12-18", LocalDate.class)
         );
     }
