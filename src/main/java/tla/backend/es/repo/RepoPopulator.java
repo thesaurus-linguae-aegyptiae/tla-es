@@ -62,7 +62,7 @@ public class RepoPopulator {
      * Batch indexer capable of deserializing JSON strings into instances of the
      * model class it typed for.
      */
-    private class RepoBatchIngestor<S extends Indexable> {
+    protected class RepoBatchIngestor<S extends Indexable> {
 
         final static int MAX_BATCH_SIZE = 750;
 
@@ -327,7 +327,7 @@ public class RepoPopulator {
         flushIngestors();
     }
 
-    private void flushIngestors() {
+    protected void flushIngestors() {
         this.batchIngestor = null;
         for (RepoBatchIngestor<? extends Indexable> batchIngestor : this.repoIngestors.values()) {
             batchIngestor.ingest();
