@@ -35,7 +35,7 @@ import tla.domain.model.meta.TLADTO;
 @ToString(callSuper = true)
 @JsonInclude(Include.NON_NULL)
 @EqualsAndHashCode(callSuper = true)
-@Document(indexName = "lemma")
+@Document(indexName = "lemma", createIndex = false)
 @Setting(settingPath = "/elasticsearch/settings/indices/lemma.json")
 public class LemmaEntity extends TLAEntity {
 

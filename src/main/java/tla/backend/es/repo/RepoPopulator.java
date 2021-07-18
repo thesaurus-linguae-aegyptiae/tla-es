@@ -14,14 +14,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.springframework.data.elasticsearch.UncategorizedElasticsearchException;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.meta.Indexable;
+import tla.backend.service.EntityService;
 import tla.backend.service.ModelClass;
 import tla.domain.model.meta.AbstractBTSBaseClass;
-import tla.backend.service.EntityService;
 
 /**
  * Repository populator batch-indexing documents read from <code>*.tar.gz</code> file.
@@ -139,7 +140,6 @@ public class RepoPopulator {
         }
     }
 
-
     /**
      * batch indexer registry
      */
@@ -196,6 +196,31 @@ public class RepoPopulator {
                 }
             }
         }
+        return this;
+    }
+
+    /**
+     * Creates Elasticsearch indices for all model classes with mappings and settings
+     * according to their {@code @Settings} and {@code @Mapping} annotations, and their
+     * member fields' object mapping annotations. If an index already exists, its creation
+     * fails silently.
+     */
+    public RepoPopulator createIndices() {
+        EntityService.getRegisteredModelClasses().stream().map(
+            modelClass -> EntityService.getService(
+                modelClass.asSubclass(AbstractBTSBaseClass.class)
+            )
+        ).forEach(
+            service -> {
+                try {
+                    service.createIndex();
+                } catch (UncategorizedElasticsearchException e) {
+                    log.warn("did not create index: {}", e.getRootCause().getMessage());
+                } catch (NullPointerException n) {
+                    log.error("could not retrieve index operations instance!", n);
+                }
+            }
+        );
         return this;
     }
 

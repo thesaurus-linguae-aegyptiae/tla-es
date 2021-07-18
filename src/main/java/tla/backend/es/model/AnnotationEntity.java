@@ -32,7 +32,7 @@ import tla.domain.model.meta.TLADTO;
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Document(indexName = "annotation")
+@Document(indexName = "annotation", createIndex = false)
 public class AnnotationEntity extends BaseEntity {
 
     /**

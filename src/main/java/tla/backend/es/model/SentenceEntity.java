@@ -40,7 +40,7 @@ import tla.domain.model.meta.TLADTO;
 @TLADTO(SentenceDto.class)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Document(indexName = "sentence")
+@Document(indexName = "sentence", createIndex = false)
 @Setting(settingPath = "/elasticsearch/settings/indices/sentence.json")
 public class SentenceEntity extends LinkedEntity implements Indexable {
 

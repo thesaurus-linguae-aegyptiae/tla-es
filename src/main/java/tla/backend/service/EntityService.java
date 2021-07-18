@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.UncategorizedElasticsearchException;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,6 @@ import tla.backend.service.component.EntityRetrieval;
 import tla.backend.service.search.AutoCompleteSupport;
 import tla.backend.service.search.SearchService;
 import tla.domain.command.SearchCommand;
-import tla.domain.dto.extern.PageInfo;
 import tla.domain.dto.extern.SearchResultsWrapper;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.dto.meta.AbstractDto;
@@ -99,6 +99,26 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     public Class<T> getModelClass() {
         return this.modelClass;
     }
+
+    /**
+     * Create the Elasticsearch index specified in the {@code @Document} annotation
+     * of this service's model class, and configure its settings and mappings according
+     * to {@code @Setting} and {@code @Mapping} annotations of the model class, and
+     * spring data elasticsearch object mapping annotations of the model class's attributes.
+     */
+    public void createIndex() throws UncategorizedElasticsearchException {
+        var index = searchService.getOperations().indexOps(modelClass);
+        index.create(
+            index.createSettings(modelClass),
+            index.createMapping(modelClass)
+        );
+        log.info(
+            "created index {} for model class {}.",
+            index.getIndexCoordinates().getIndexName(),
+            modelClass.getSimpleName()
+        );
+    }
+
 
     /**
      * Returns the entity service registered for a given model class, or null if no such model class have been

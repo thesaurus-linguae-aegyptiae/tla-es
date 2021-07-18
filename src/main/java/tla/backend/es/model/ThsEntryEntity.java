@@ -37,7 +37,7 @@ import tla.domain.model.meta.TLADTO;
 @BTSeClass("BTSThsEntry")
 @TLADTO(ThsEntryDto.class)
 @EqualsAndHashCode(callSuper = true)
-@Document(indexName = "ths")
+@Document(indexName = "ths", createIndex = false)
 @Setting(settingPath = "/elasticsearch/settings/indices/ths.json")
 public class ThsEntryEntity extends UserFriendlyEntity implements Recursable {
 
