@@ -1,6 +1,6 @@
-![build](https://github.com/jkatzwinkel/tla-es/workflows/build/badge.svg)
-![deploy](https://github.com/jkatzwinkel/tla-es/workflows/deploy/badge.svg)
-![search](https://github.com/jkatzwinkel/tla-es/workflows/searchtest/badge.svg)
+![build](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/build/badge.svg)
+![deploy](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/deploy/badge.svg)
+![search](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/searchtest/badge.svg)
 ![LINE](https://img.shields.io/badge/line--coverage-80.98%25-brightgreen.svg)
 ![METHOD](https://img.shields.io/badge/method--coverage-80.68%25-brightgreen.svg)
 
@@ -70,26 +70,30 @@ Requirements:
 
 #### 2.1. Prerequesites
 
-1. This method requires you to provide a running Elasticsearch instance. If you have Docker Compose, you can simply start one in a
+1. This method requires you to provide a running Elasticsearch instance. 
+   Either you install it as an independent application from 
+   https://www.elastic.co/downloads/elasticsearch (e.g., as MSI)
+   or, if you have Docker Compose, you can simply start one in a
    container by using the configuration coming with this repository:
-   ```
+   ```bash
    docker-compose up -d es
    ```
    Before continuing, make sure Elasticsearch is running by checking the output of `docker ps --all` or
    accessing [its REST interface](http://localhost:9200) in a browser (change `9200` in case that you
    set a different port via the `ES_PORT` environment variable).
+   
+   In case you have changed host name or default port, now follow [the instructions above](#11-prerequesites) to make sure you have set the correct environment variables `ES_HOST` and `ES_PORT` (for `SAMPLE_URL`, see next step).
 
-2. Nicely done! Now follow [the instructions above](#11-prerequesites) to make sure you have set the environment variables `ES_HOST`, `ES_PORT` and `SAMPLE_URL`.
-
-3. Once Elasticsearch is up and running, TLA corpus data needs to be loaded into it. In order to do so,
-you must set the `SAMPLE_URL` environment variable to a URL pointing to a tar-compressed TLA corpus data
-file. One way to do this is to create a `.env` file in the directory containing this README, and setting
-the variable `SAMPLE_URL` in there:
+2. Once Elasticsearch is up and running, TLA corpus data needs to be loaded into it. In order to do so,
+	 you at least need to set the `SAMPLE_URL` environment variable to a URL pointing to a tar-compressed TLA corpus data
+	 file. One way to do this is to create a `.env` file in the directory containing this README (cf. [the instructions above](#11-prerequesites)), and setting
+	 the variable `SAMPLE_URL` in there:
    ```
-   SAMPLE_URL=http://example.org/sample.tar.gz
+   SAMPLE_URL=http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210115-1000t.tar.gz
    ```
+   Make sure that the lines with ES_HOST and ES_PORT in `.env` are either deleted or filled with values, but not with values left empty.
 
-4. Finally, download and store TLA corpus data from the specified source by running the `populate` gradle task:
+3. Finally, download and store TLA corpus data from the specified source by running the `populate` gradle task:
    ```
    ./gradlew populate
    ```
