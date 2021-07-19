@@ -1,5 +1,6 @@
 package tla.backend.api;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -50,7 +51,7 @@ public class ApiController {
      * Returns version info.
      */
     @RequestMapping(value = "/version", method = RequestMethod.GET)
-    public ResponseEntity<?> getVersionInfo() {
+    public ResponseEntity<?> getVersionInfo() throws IOException {
         Metadata info = this.metadataService.getInfo();
         if (info == null) {
             info = Metadata.EMPTY;
@@ -63,7 +64,8 @@ public class ApiController {
                 "release", info.getId(),
                 "modelVersion", info.getModelVersion(),
                 "etlVersion", info.getEtlVersion(),
-                "lingglossVersion", info.getLingglossVersion()
+                "lingglossVersion", info.getLingglossVersion(),
+                "esVersion", this.metadataService.getESVersionNumber()
             ),
             HttpStatus.OK
         );
