@@ -75,7 +75,7 @@ Requirements:
    https://www.elastic.co/downloads/elasticsearch (e.g., as MSI)
    or, if you have Docker Compose, you can simply start one in a
    container by using the configuration coming with this repository:
-   ```bash
+   ```
    docker-compose up -d es
    ```
    Before continuing, make sure Elasticsearch is running by checking the output of `docker ps --all` or
@@ -85,9 +85,9 @@ Requirements:
    In case you have changed host name or default port, now follow [the instructions above](#11-prerequesites) to make sure you have set the correct environment variables `ES_HOST` and `ES_PORT` (for `SAMPLE_URL`, see next step).
 
 2. Once Elasticsearch is up and running, TLA corpus data needs to be loaded into it. In order to do so,
-	 you at least need to set the `SAMPLE_URL` environment variable to a URL pointing to a tar-compressed TLA corpus data
-	 file. One way to do this is to create a `.env` file in the directory containing this README (cf. [the instructions above](#11-prerequesites)), and setting
-	 the variable `SAMPLE_URL` in there:
+   you at least need to set the `SAMPLE_URL` environment variable to a URL pointing to a tar-compressed TLA corpus data
+   file. One way to do this is to create a `.env` file in the directory containing this README (cf. [the instructions above](#11-prerequesites)), and setting
+   the variable `SAMPLE_URL` in there:
    ```
    SAMPLE_URL=http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210115-1000t.tar.gz
    ```
