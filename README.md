@@ -1,8 +1,8 @@
 ![build](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/build/badge.svg)
 ![deploy](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/deploy/badge.svg)
 ![search](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/searchtest/badge.svg)
-![LINE](https://img.shields.io/badge/line--coverage-80.98%25-brightgreen.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-80.68%25-brightgreen.svg)
+![LINE](https://img.shields.io/badge/line--coverage-80.92%25-brightgreen.svg)
+![METHOD](https://img.shields.io/badge/method--coverage-80.85%25-brightgreen.svg)
 
 # tla-es
 

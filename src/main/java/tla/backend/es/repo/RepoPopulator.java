@@ -174,7 +174,6 @@ public class RepoPopulator {
         return this.selectBatchIngestor(modelPath).getService();
     }
 
-
     /**
      * Registers {@link RepoBatchIngestor} instances for each model class for which an {@link EntityService}
      * subclass has been registered with the {@link ModelClass} annotation.
