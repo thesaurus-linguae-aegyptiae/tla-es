@@ -2,7 +2,6 @@ package tla.backend.es.model.parts;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.chrono.ChronoLocalDate;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalField;
@@ -15,7 +14,7 @@ import org.springframework.data.elasticsearch.core.convert.ElasticsearchDateConv
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
-public class EditDate implements TemporalAccessor, Serializable, Comparable<ChronoLocalDate> {
+public class EditDate implements TemporalAccessor, Serializable, Comparable<EditDate> {
 
     public static ElasticsearchDateConverter DATE_CONVERTER = ElasticsearchDateConverter.of(
         "yyyy-MM-dd"
@@ -66,7 +65,7 @@ public class EditDate implements TemporalAccessor, Serializable, Comparable<Chro
 
     @Override
     public long getLong(TemporalField arg0) {
-        if (this.date.isSupported(arg0)) {
+        if (this.isSupported(arg0)) {
             return this.date.getLong(arg0);
         } else {
             return 0;
@@ -79,8 +78,8 @@ public class EditDate implements TemporalAccessor, Serializable, Comparable<Chro
     }
 
     @Override
-    public int compareTo(ChronoLocalDate arg0) {
-        return date.compareTo(arg0);
+    public int compareTo(EditDate arg0) {
+        return date.compareTo(arg0.date);
     }
 
 }

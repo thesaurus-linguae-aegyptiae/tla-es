@@ -31,7 +31,7 @@ import tla.domain.model.meta.TLADTO;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString(of = {"id", "body", "revisionState"}, callSuper = true)
-@Document(indexName = "comment")
+@Document(indexName = "comment", createIndex = false)
 public class CommentEntity extends LinkedEntity implements Indexable {
 
     @Id

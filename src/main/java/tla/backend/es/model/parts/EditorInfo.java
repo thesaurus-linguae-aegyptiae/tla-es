@@ -13,24 +13,28 @@ import org.springframework.lang.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(Include.NON_EMPTY)
+@EqualsAndHashCode(exclude = {"type"})
 public class EditorInfo {
 
     @Field(type = FieldType.Text)
     private String author;
 
-    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd")
+    @Field(type = FieldType.Date, format = DateFormat.year_month_day)
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private EditDate updated;
 
-    @Field(type = FieldType.Date, format = DateFormat.custom, pattern = "yyyy-MM-dd")
+    @Field(type = FieldType.Date, format = DateFormat.year_month_day)
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private EditDate created;
 

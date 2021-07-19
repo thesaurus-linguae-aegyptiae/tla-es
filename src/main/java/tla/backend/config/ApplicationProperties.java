@@ -14,7 +14,13 @@ public class ApplicationProperties {
 
     @Data
     public static class ElasticsearchProperties {
+        /**
+         * Elasticsearch port
+         */
         private int port;
+        /**
+         * Elasticsearch host address
+         */
         private String host;
     }
 }

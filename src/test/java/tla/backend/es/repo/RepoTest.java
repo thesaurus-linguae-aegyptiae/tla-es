@@ -50,7 +50,7 @@ public class RepoTest {
 
     @Test
     void repoPopulatorHasRegistry() {
-        final var expectedKeys = List.of("lemma", "ths", "text", "comment", "annotation", "object", "sentence", "meta");
+        final var expectedKeys = List.of("lemma", "ths", "text", "comment", "annotation", "object", "sentence", "meta", "test");
         assertTrue(ModelConfig.isInitialized(), "entity model registered");
         repoPopulator.init();
         assertAll(
@@ -113,9 +113,6 @@ public class RepoTest {
         assertAll("",
             () -> assertNotNull(localDate),
             () -> assertEquals("2019-12-18", localDate.toString())
-        );
-        assertDoesNotThrow(
-            () -> converter.parse("2019-12-18")
         );
         assertDoesNotThrow(
             () -> converter.parse("2019-12-18", LocalDate.class)

@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
@@ -44,6 +45,20 @@ public class ApiControllerTest extends AbstractMockMvcTest {
     }
 
     @Test
+    @DisplayName("request to version endpoint should be successful even with unpopulated search engine")
+    void queryVersionEndpointNotPopulated() throws Exception {
+        when(metadataRepo.findAll()).thenReturn(List.of());
+        mockMvc.perform(get("/version")).andExpect(
+            status().isOk()
+        ).andExpect(
+            jsonPath("$.version").value(buildProperties.getVersion())
+        ).andExpect(
+            jsonPath("$.release").value("n/a")
+        );
+    }
+
+    @Test
+    @DisplayName("version endpoint response should contain corpus data dump meta data info")
     void queryVersionEndpoint() throws Exception {
         var info = new Metadata();
         info.setDOI("10.5072/zenodo.716586");

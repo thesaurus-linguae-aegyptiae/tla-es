@@ -82,7 +82,9 @@ public class SentenceServiceTest {
             List.of(rubrum)
         );
         SentenceEntity s = Util.loadSampleFile(SentenceEntity.class, "IBUBd3QvPWhrgk50h3u3Wv5PmdA");
-        SearchHit<SentenceEntity> hit = new SearchHit<>(null, null, 1f, null, null, null, null, s);
+        SearchHit<SentenceEntity> hit = new SearchHit<>(
+            null, null, null, 1f, null, null, null, null, null, null, s
+        );
         SearchHits<SentenceEntity> hits = new SearchHitsImpl<>(1, TotalHitsRelation.EQUAL_TO, 1f, null, List.of(hit), null);
         SentenceSearch cmd = new SentenceSearch();
         TranslationSpec translation = new TranslationSpec();

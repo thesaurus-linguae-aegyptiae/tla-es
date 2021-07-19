@@ -1,3 +1,5 @@
+---
+
 name: searchtest
 
 on: [pull_request]
@@ -50,7 +52,4 @@ jobs:
       env:
         ES_PORT: 9200
 
-    - uses: ashley-taylor/junit-report-annotations-action@master
-      with:
-        access-token: ${{ secrets.GITHUB_TOKEN }}
-      if: always()
+...
