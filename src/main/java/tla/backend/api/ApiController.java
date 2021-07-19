@@ -52,6 +52,9 @@ public class ApiController {
     @RequestMapping(value = "/version", method = RequestMethod.GET)
     public ResponseEntity<?> getVersionInfo() {
         Metadata info = this.metadataService.getInfo();
+        if (info == null) {
+            info = Metadata.EMPTY;
+        }
         return new ResponseEntity<>(
             Map.of(
                 "version", buildProperties.getVersion(),
