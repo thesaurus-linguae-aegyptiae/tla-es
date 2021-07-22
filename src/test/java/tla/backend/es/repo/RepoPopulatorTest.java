@@ -45,7 +45,7 @@ public class RepoPopulatorTest {
     private TestService testService;
 
     @BTSeClass("TestEntity")
-    @Document(indexName = "test", createIndex = false)
+    @Document(indexName = "test")
     static class TestEntity extends TLAEntity {}
 
     @Service
