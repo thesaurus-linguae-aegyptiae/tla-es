@@ -55,8 +55,11 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
         BoolQueryBuilder query = boolQuery();
         if (wordClass != null) {
             if (wordClass.getType() != null) {
-                if (wordClass.getType().equals("excl_names")) { // TODO
-                    query.mustNot(termQuery("type", "entity_name")); // TODO
+                if (wordClass.getType().equals("excl_namestitlesepithets")) { // TODO
+                    query.mustNot(termQuery("type", "entity_name"));
+                    query.mustNot(termQuery("type", "epitheton_title"));
+                } else if (wordClass.getType().equals("excl_names")) { // TODO
+                    query.mustNot(termQuery("type", "entity_name"));
                 } else if (wordClass.getType().equals("any")) {
                 } else if (!wordClass.getType().isBlank()) {
                     query.must(termQuery("type", wordClass.getType()));
