@@ -4,6 +4,7 @@ import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.prefixQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
+import static org.elasticsearch.index.query.QueryBuilders.regexpQuery;
 
 import java.util.List;
 
@@ -47,8 +48,28 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 
     public void setTranscription(String transcription) {
         if (transcription != null) {
-            this.must(matchQuery("words.transcription.unicode", transcription));
+            //this.must(matchQuery("words.transcription.unicode", transcription));
+			this.must(regexpQuery("words.transcription.unicode", maskRegExTranscription(transcription)));
+			// works with Unicode only?
         }
+    }
+
+    public String maskRegExTranscription(String transcription) {
+        if (transcription != null) {
+			transcription = transcription.trim(); // cut whitespaces
+            transcription = transcription.replace(".", "\\."); // Maskieren
+            //transcription = transcription.replace("(", "\\("); // Maskieren
+            //transcription = transcription.replace(")", "\\)"); // Maskieren
+            transcription = transcription.replace("-", "\\-"); // Maskieren
+            transcription = transcription.replace("§", "."); // "§" in legacyTLA als "."-Wildcard
+            transcription = transcription.replace("*", "."); // "*" in newTLA als "."-Wildcard
+			if (transcription.endsWith("$")) { // "$": wirkliches String-Ende
+				transcription = transcription.replace("$", ""); // alle "$" entfernen
+			} else {
+				transcription = transcription + ".*"; // rechts beliebiger Anschluss
+			}
+        }
+		return transcription;
     }
 
     public void setWordClass(TypeSpec wordClass) {
@@ -74,7 +95,8 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 
     public void setRoot(String transcription) { // TODO spawn join query
         if (transcription != null) {
-            this.must(matchQuery("relations.root.name", transcription));
+            //this.must(matchQuery("relations.root.name", transcription));
+            this.must(regexpQuery("relations.root.name", maskRegExTranscription(transcription)));
         }
     }
 
