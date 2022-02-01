@@ -58,8 +58,10 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
         if (transcription != null) {
 			transcription = transcription.trim(); // cut whitespaces
             transcription = transcription.replace(".", "\\."); // Maskieren
-            //transcription = transcription.replace("(", "\\("); // Maskieren
-            //transcription = transcription.replace(")", "\\)"); // Maskieren
+            transcription = transcription.replace("(", "\\("); // Maskieren
+            transcription = transcription.replace(")", "\\)"); // Maskieren
+            transcription = transcription.replace("{", "\\("); // Maskieren
+            transcription = transcription.replace("}", "\\)"); // Maskieren
             transcription = transcription.replace("-", "\\-"); // Maskieren
             transcription = transcription.replace("§", "."); // "§" in legacyTLA als "."-Wildcard
             transcription = transcription.replace("*", "."); // "*" in newTLA als "."-Wildcard
@@ -130,6 +132,18 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
         if (sortSpec.field.equals("root")) {
             sortSpec.field = "relations.root.name";
         }
+		// nicht einheitlich/elegant gel?st: die anderen vier Suchf?lle sind so gel?st, 
+		// dass in der URL der Name der Variablen erscheint ("sortKey" bzw. "timeSpan.begin", 
+		// gefolgt von "_asc"/"_desc", aber nicht hier bei "relations.root.name"
+		// die Angaben in der URL sollten generell sprechend sein "transliteration_asc", ..., "timespan_asc", ...
+		// und hier decodiert werden:
+        //if (sortSpec.field.equals("transliteration")) {
+        //    sortSpec.field = "sortKey";
+        //}
+		//...
+        //if (sortSpec.field.equals("timespan_begin")) {
+        //    sortSpec.field = "timeSpan.begin";
+        //}
     }
 
 }
