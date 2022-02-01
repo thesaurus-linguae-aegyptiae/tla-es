@@ -28,18 +28,18 @@
       "char_filter": {
         "transcription_brackets_filter": {
           "type": "pattern_replace",
-          "pattern": "\\.[^- ]*|[\\(\\)\\[\\]⸢⸮?⸣]|\\{\\S*\\}",
+          "pattern": "[\\(\\)\\[\\]⸢⸮?⸣]|\\{\\S*\\}",
           "replacement": ""
         },
         "transcription_suffix_filter": {
           "type": "mapping",
           "mappings": [
-            "pl => w",
             ",t,pl => ,wt",
             ",tpl => ,wt",
             "t,du => ,tj",
             ",tdu => ,tj",
             "du => wj",
+            "pl => w",
             ",  => ."
           ]
         }
