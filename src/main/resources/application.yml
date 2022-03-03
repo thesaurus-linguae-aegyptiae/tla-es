@@ -5,6 +5,7 @@ logging:
         name: app.log
 
 server:
+    port: 9000
     error:
         whitelabel:
             enabled: false
