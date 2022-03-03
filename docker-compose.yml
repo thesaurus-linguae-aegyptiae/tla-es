@@ -24,7 +24,7 @@ services:
         environment:
             - ES_HOST=es
             - ES_PORT=9200
-            - SAMPLE_URL
+            - SAMPLE_URL = https://sandbox.zenodo.org/record/715217/files/tla-data.tar.gz
         tty: true
         command: "ingest"
 
@@ -38,7 +38,7 @@ services:
             - ES_HOST=es
             - ES_PORT=9200
         ports:
-            - 8090:8090
+            - 9000:9000
         tty: true
         restart: unless-stopped
 
