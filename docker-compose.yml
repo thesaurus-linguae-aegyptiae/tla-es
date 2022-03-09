@@ -10,7 +10,7 @@ services:
             ES_JAVA_OPTS: -Xms512m -Xmx512m
             discovery.type: single-node
         ports:
-            - ${ES_PORT:-9300}:9300
+            - ${ES_PORT:-9150}:9150
         stdin_open: true
         tty: true
         restart: unless-stopped
@@ -23,7 +23,7 @@ services:
             context: .
         environment:
             - ES_HOST=es
-            - ES_PORT=9300
+            - ES_PORT=9150
             - SAMPLE_URL = https://sandbox.zenodo.org/record/715217/files/tla-data.tar.gz
         tty: true
         command: "ingest"
@@ -36,7 +36,7 @@ services:
             context: .
         environment:
             - ES_HOST=es
-            - ES_PORT=9300
+            - ES_PORT=9150
         ports:
             - 9000:9000
         tty: true
