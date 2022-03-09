@@ -10,7 +10,7 @@ services:
             ES_JAVA_OPTS: -Xms512m -Xmx512m
             discovery.type: single-node
         ports:
-            - ${ES_PORT:-9201}:9201
+            - 9201:9201
         stdin_open: true
         tty: true
         restart: unless-stopped
