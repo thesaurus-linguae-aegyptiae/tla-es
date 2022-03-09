@@ -14,4 +14,5 @@ WORKDIR /app/
 COPY --from=build /home/gradle/tla/bin/run/ /app/
 
 EXPOSE 9000
+EXPOSE 9201
 ENTRYPOINT ["sh", "/app/entrypoint.sh"]
