@@ -9,6 +9,7 @@ services:
         environment:
             ES_JAVA_OPTS: -Xms512m -Xmx512m
             discovery.type: single-node
+            http.port: 9201
         ports:
             - 9201:9201
         stdin_open: true
