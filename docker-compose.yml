@@ -35,8 +35,8 @@ services:
         build:
             context: .
         environment:
-            - ES_HOST=prototype-es
-            - ES_PORT=9200
+            - ES_HOST=es
+            - ES_PORT=9201
         ports:
             - 9000:9000
         tty: true
