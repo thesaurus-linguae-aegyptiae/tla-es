@@ -12,5 +12,5 @@ server:
 
 tla:
     es:
-        port: ${ES_PORT:9200}
+        port: ${ES_PORT:9300}
         host: ${ES_HOST:localhost}
