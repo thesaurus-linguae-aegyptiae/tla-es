@@ -13,4 +13,4 @@ server:
 tla:
     es:
         port: ${ES_PORT:9201}
-        host: ${ES_HOST:localhost}
+        host: ${ES_HOST:tlapublic.bbaw.de}
