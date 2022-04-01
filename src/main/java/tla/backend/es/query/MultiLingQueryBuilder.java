@@ -12,7 +12,17 @@ public interface MultiLingQueryBuilder extends TLAQueryBuilder {
     public default void setTranslation(TranslationSpec translation) {
         BoolQueryBuilder translationsQuery = boolQuery();
         if (translation != null && translation.getLang() != null) {
-            var termSpecified = translation.getText() != null && !translation.getText().isBlank();
+            if (translation.getText() != null && !translation.getText().isBlank()) {
+                for (Language lang : translation.getLang()) {
+                    translationsQuery.should(
+                        matchQuery(
+                            String.format("%stranslations.%s", this.nestedPath(), lang),
+                            translation.getText()
+                        )
+                    );
+                }
+            }
+            /*var termSpecified = translation.getText() != null && !translation.getText().isBlank();
             for (Language lang : translation.getLang()) {
                 translationsQuery.should(
                     termSpecified
@@ -24,7 +34,7 @@ public interface MultiLingQueryBuilder extends TLAQueryBuilder {
                         String.format("%stranslations.%s", this.nestedPath(), lang)
                     )
                 );
-            }
+            }*/
         }
         this.filter(translationsQuery);
     }
