@@ -1,8 +1,8 @@
 ![build](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/build/badge.svg)
 ![deploy](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/deploy/badge.svg)
 ![search](https://github.com/thesaurus-linguae-aegyptiae/tla-es/workflows/searchtest/badge.svg)
-![LINE](https://img.shields.io/badge/line--coverage-76.83%25-yellow.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-78.99%25-yellow.svg)
+![LINE](https://img.shields.io/badge/line--coverage-80.83%25-brightgreen.svg)
+![METHOD](https://img.shields.io/badge/method--coverage-80.61%25-brightgreen.svg)
 
 # tla-es
 
@@ -66,13 +66,13 @@ You can check its progress by taking a look into its log output:
 Requirements:
 
 - Java 11
-- Elasticsearch 7.10.0 *or* Docker Compose
+- Elasticsearch 7.13.3 *or* Docker Compose
 
 #### 2.1. Prerequesites
 
 1. This method requires you to provide a running Elasticsearch instance. 
    Either you install it as an independent application from 
-   https://www.elastic.co/de/downloads/past-releases/elasticsearch-7-10-0 (e.g., as MSI)
+   https://www.elastic.co/downloads/elasticsearch (e.g., as MSI)
    or, if you have Docker Compose, you can simply start one in a
    container by using the configuration coming with this repository:
    ```
@@ -85,11 +85,11 @@ Requirements:
    In case you have changed host name or default port, now follow [the instructions above](#11-prerequesites) to make sure you have set the correct environment variables `ES_HOST` and `ES_PORT` (for `SAMPLE_URL`, see next step).
 
 2. Once Elasticsearch is up and running, TLA corpus data needs to be loaded into it. In order to do so,
-you at least need to set the `SAMPLE_URL` environment variable to a URL pointing to a tar-compressed TLA corpus data
-file. One way to do this is to create a `.env` file in the directory containing this README (cf. [the instructions above](#11-prerequesites)), and setting
-the variable `SAMPLE_URL` in there:
+   you at least need to set the `SAMPLE_URL` environment variable to a URL pointing to a tar-compressed TLA corpus data
+   file. One way to do this is to create a `.env` file in the directory containing this README (cf. [the instructions above](#11-prerequesites)), and setting
+   the variable `SAMPLE_URL` in there:
    ```
-   SAMPLE_URL=http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210113-1000t.tar.gz
+   SAMPLE_URL=http://aaew64.bbaw.de/resources/tla-data/tla-sample-20210115-1000t.tar.gz
    ```
    Make sure that the lines with ES_HOST and ES_PORT in `.env` are either deleted or filled with values, but not with values left empty.
 

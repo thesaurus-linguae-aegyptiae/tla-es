@@ -19,9 +19,9 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.meta.Indexable;
+import tla.backend.service.EntityService;
 import tla.backend.service.ModelClass;
 import tla.domain.model.meta.AbstractBTSBaseClass;
-import tla.backend.service.EntityService;
 
 /**
  * Repository populator batch-indexing documents read from <code>*.tar.gz</code> file.
@@ -61,7 +61,7 @@ public class RepoPopulator {
      * Batch indexer capable of deserializing JSON strings into instances of the
      * model class it typed for.
      */
-    private class RepoBatchIngestor<S extends Indexable> {
+    protected class RepoBatchIngestor<S extends Indexable> {
 
         final static int MAX_BATCH_SIZE = 750;
 
@@ -139,7 +139,6 @@ public class RepoPopulator {
         }
     }
 
-
     /**
      * batch indexer registry
      */
@@ -173,7 +172,6 @@ public class RepoPopulator {
     public EntityService<?,?,?> getService(String modelPath) {
         return this.selectBatchIngestor(modelPath).getService();
     }
-
 
     /**
      * Registers {@link RepoBatchIngestor} instances for each model class for which an {@link EntityService}
@@ -302,7 +300,7 @@ public class RepoPopulator {
         flushIngestors();
     }
 
-    private void flushIngestors() {
+    protected void flushIngestors() {
         this.batchIngestor = null;
         for (RepoBatchIngestor<? extends Indexable> batchIngestor : this.repoIngestors.values()) {
             batchIngestor.ingest();

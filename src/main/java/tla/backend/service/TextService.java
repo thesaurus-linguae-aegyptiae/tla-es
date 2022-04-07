@@ -1,8 +1,5 @@
 package tla.backend.service;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +17,6 @@ public class TextService extends UserFriendlyEntityService<TextEntity, UserFrien
 
     @Autowired
     private TextRepo textRepo;
-
-    @Autowired
-    private ThesaurusService thsService;
 
     @Override
     public UserFriendlyEntityRepo<TextEntity, String> getRepo() {

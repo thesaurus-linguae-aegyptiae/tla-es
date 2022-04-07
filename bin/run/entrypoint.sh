@@ -17,11 +17,9 @@ if [ $# -ge 1 ]; then
     fi
 fi
 
-while true; do
-        resp=$(wget -q --spider "${ES_URL}" 2>/dev/null)
-        [ $? -eq 0 ] && break
-        echo "waiting for connection to ES instance at ${ES_URL}..."
-        sleep 4
+until wget -q --spider "${ES_URL}" 2>/dev/null; do
+    echo "waiting for connection to ES instance at ${ES_URL}..."
+    sleep 4
 done
 
 if [ "${CMD}" = "populate" ]; then
