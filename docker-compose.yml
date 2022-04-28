@@ -12,8 +12,9 @@ services:
             discovery.type: single-node
             xpack.security.enabled: "false"
             ingest.geoip.downloader.enabled: "false"
+            http.port: 9201
         ports:
-            - ${ES_PORT:-9200}:9200
+            - 9201:9201
         stdin_open: true
         tty: true
         restart: unless-stopped
@@ -26,8 +27,8 @@ services:
             context: .
         environment:
             - ES_HOST=es
-            - ES_PORT=9200
-            - SAMPLE_URL
+            - ES_PORT=9201
+            - SAMPLE_URL = https://sandbox.zenodo.org/record/715217/files/tla-data.tar.gz
         tty: true
         command: "ingest"
 
@@ -39,9 +40,9 @@ services:
             context: .
         environment:
             - ES_HOST=es
-            - ES_PORT=9200
+            - ES_PORT=9201
         ports:
-            - 8090:8090
+            - 9000:9000
         tty: true
         restart: unless-stopped
 

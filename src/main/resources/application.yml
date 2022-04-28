@@ -5,13 +5,12 @@ logging:
         name: app.log
 
 server:
+    port: 9000
     error:
         whitelabel:
             enabled: false
 
 tla:
     es:
-        port: ${ES_PORT:9200}
-        host: ${ES_HOST:localhost}
-
-...
+        port: ${ES_PORT:9201}
+        host: ${ES_HOST:tlapublic.bbaw.de}

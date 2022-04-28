@@ -13,5 +13,6 @@ RUN mkdir /app
 WORKDIR /app/
 COPY --from=build /home/gradle/tla/bin/run/ /app/
 
-EXPOSE 8090
+EXPOSE 9000
+EXPOSE 9201
 ENTRYPOINT ["sh", "/app/entrypoint.sh"]
