@@ -19,14 +19,12 @@ import org.springframework.stereotype.Service;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.ThsEntryEntity;
-import tla.backend.es.model.meta.Recursable;
 import tla.backend.es.query.ESQueryBuilder;
+import tla.backend.es.query.ESQueryResult;
 import tla.backend.es.query.LemmaSearchQueryBuilder;
-import tla.backend.es.query.OccurrenceSearchQueryBuilder;
-import tla.backend.es.query.TextSearchQueryBuilder;
+import tla.backend.es.query.SentenceSearchQueryBuilder;
+import tla.backend.es.query.SentencesContainingLemmaOccurrenceQueryBuilder;
 import tla.backend.es.repo.LemmaRepo;
-import tla.backend.service.component.AttestationTreeBuilder;
-import tla.backend.service.component.EntityRetrieval;
 import tla.backend.service.search.AutoCompleteSupport;
 import tla.backend.service.search.SearchService;
 import tla.domain.command.SearchCommand;
@@ -34,8 +32,9 @@ import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.dto.meta.AbstractDto;
 import tla.domain.model.Language;
-import tla.domain.model.ObjectReference;
 import tla.domain.model.extern.AttestedTimespan;
+import tla.domain.model.extern.AttestedTimespan.AttestationStats;
+import tla.domain.model.extern.AttestedTimespan.Period;
 
 @Service
 @ModelClass(value = LemmaEntity.class, path = "lemma")
@@ -71,30 +70,29 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
         }
         SingleDocumentWrapper<?> wrapper = super.getDetails(id);
         ((LemmaDto) wrapper.getDoc()).setAttestations(
-            this.computeAttestedTimespans(id)
+            this.computeAttestedTimespans((LemmaDto) wrapper.getDoc())
         );
         return wrapper;
     }
 
     /**
-     * collects all thesaurus terms representing a time period and being referenced
-     * in texts containing the specified lemma, and counts the number of texts and
-     * total occurrences for each one.
+     * count sentences and texts containing the specified lemma.
      */
-    public List<AttestedTimespan> computeAttestedTimespans(String lemmaId) {
-        Map<String, Long> dateCounts = searchService.register(
-            new OccurrenceSearchQueryBuilder(lemmaId)
-        ).run(SearchService.UNPAGED).getAggregation(
-            TextSearchQueryBuilder.AGG_ID_DATE
+    public List<AttestedTimespan> computeAttestedTimespans(LemmaDto dto) {
+        ESQueryResult<?> sentenceSearchResult = searchService.register(
+            new SentencesContainingLemmaOccurrenceQueryBuilder(dto.getId())
+        ).run(SearchService.UNPAGED);
+        Period attestedPeriod = dto.getTimeSpan();
+        AttestationStats counts = AttestationStats.builder().count(
+            sentenceSearchResult.getAggregation(SentenceSearchQueryBuilder.AGG_ID_TEXT_IDS).size()
+        ).texts(
+            sentenceSearchResult.getAggregation(SentenceSearchQueryBuilder.AGG_ID_TEXT_IDS).size()
+        ).sentences(
+            sentenceSearchResult.getHitCount()
+        ).build();
+        return List.of(
+            AttestedTimespan.builder().period(attestedPeriod).attestations(counts).build()
         );
-        var terms = EntityRetrieval.BulkEntityResolver.of(
-            dateCounts.keySet().stream().map(
-                id -> ObjectReference.builder().id(id).eclass(THS_ENTITY_ECLASS).build()
-            )
-        ).stream();
-        return AttestationTreeBuilder.of(
-            terms.map(entity -> (Recursable) entity)
-        ).counts(dateCounts).resolve();
     }
 
     public Map<String, Long> getMostFrequent(int limit) {

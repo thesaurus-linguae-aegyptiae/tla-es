@@ -19,9 +19,9 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.meta.Indexable;
+import tla.backend.service.EntityService;
 import tla.backend.service.ModelClass;
 import tla.domain.model.meta.AbstractBTSBaseClass;
-import tla.backend.service.EntityService;
 
 /**
  * Repository populator batch-indexing documents read from <code>*.tar.gz</code> file.
@@ -61,7 +61,7 @@ public class RepoPopulator {
      * Batch indexer capable of deserializing JSON strings into instances of the
      * model class it typed for.
      */
-    private class RepoBatchIngestor<S extends Indexable> {
+    protected class RepoBatchIngestor<S extends Indexable> {
 
         final static int MAX_BATCH_SIZE = 750;
 
@@ -127,7 +127,7 @@ public class RepoPopulator {
                 this.count += this.batch.size();
                 this.batch.clear();
             } catch (Exception e) {
-                log.error(
+                log.warn(
                     String.format(
                         "%s ingestor could not save %d docs (%s)! Trying again...",
                         this.modelClass.getSimpleName(),
@@ -138,7 +138,6 @@ public class RepoPopulator {
             }
         }
     }
-
 
     /**
      * batch indexer registry
@@ -174,7 +173,6 @@ public class RepoPopulator {
         return this.selectBatchIngestor(modelPath).getService();
     }
 
-
     /**
      * Registers {@link RepoBatchIngestor} instances for each model class for which an {@link EntityService}
      * subclass has been registered with the {@link ModelClass} annotation.
@@ -205,7 +203,7 @@ public class RepoPopulator {
      * @throws IOException
      * @see {@link #init()}
      */
-    public void ingestTarFile(List<String> filenames) throws IOException {
+    public void ingestTarFile(List<String> filenames) throws Exception {
         log.info("process tar file {}", String.join(", ", filenames));
         if (filenames.size() == 1) {
             String filename = filenames.get(0);
@@ -222,6 +220,7 @@ public class RepoPopulator {
                     String.format("file not found: %s", filename),
                     e
                 );
+                throw e;
             } catch (IOException e) {
                 log.error(
                     String.format("error during processing tar archive %s", filename),
@@ -302,7 +301,7 @@ public class RepoPopulator {
         flushIngestors();
     }
 
-    private void flushIngestors() {
+    protected void flushIngestors() {
         this.batchIngestor = null;
         for (RepoBatchIngestor<? extends Indexable> batchIngestor : this.repoIngestors.values()) {
             batchIngestor.ingest();

@@ -53,21 +53,22 @@ public abstract class ESQueryBuilder implements TLAQueryBuilder {
             page
         ).withTrackTotalHits(
             page.isPaged()
-        ).withSort(
+        ).withSorts(
             this.getSortSpec().primary()
         );
         log.info("query: {}", this.getNativeRootQueryBuilder());
         this.getNativeAggregationBuilders().forEach(
             agg -> {
                 log.info("add aggregation to query: {}", agg);
-                qb.addAggregation(agg);
+                qb.withAggregations(agg);
             }
         );
         return qb.build();
     }
 
-    public void setResult(ESQueryResult<?> result) {
+    public ESQueryResult<?> setResult(ESQueryResult<?> result) {
         this.result = result;
+        return result;
     }
 
     public void setDTOClass(Class<? extends AbstractBTSBaseClass> dtoClass) {

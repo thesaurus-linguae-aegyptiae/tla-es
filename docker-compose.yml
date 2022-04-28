@@ -1,14 +1,17 @@
 ---
+
 version: '3.7'
 
 services:
 
     es:
         container_name: tla-es
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
         environment:
-            ES_JAVA_OPTS: -Xms512m -Xmx512m
+            ES_JAVA_OPTS: -Xms512m -Xmx512m -Dlog4j2.formatMsgNoLookups=true
             discovery.type: single-node
+            xpack.security.enabled: "false"
+            ingest.geoip.downloader.enabled: "false"
             http.port: 9201
         ports:
             - 9201:9201
