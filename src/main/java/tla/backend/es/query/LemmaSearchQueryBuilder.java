@@ -60,8 +60,8 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
             transcription = transcription.replace(".", "\\."); // Maskieren
             transcription = transcription.replace("(", "\\("); // Maskieren
             transcription = transcription.replace(")", "\\)"); // Maskieren
-            transcription = transcription.replace("{", "\\("); // Maskieren
-            transcription = transcription.replace("}", "\\)"); // Maskieren
+            transcription = transcription.replace("{", "\\{"); // Maskieren
+            transcription = transcription.replace("}", "\\}"); // Maskieren
             transcription = transcription.replace("-", "\\-"); // Maskieren
             transcription = transcription.replace("§", "."); // "§" in legacyTLA als "."-Wildcard
             transcription = transcription.replace("*", "."); // "*" in newTLA als "."-Wildcard
