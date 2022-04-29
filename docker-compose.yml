@@ -45,5 +45,3 @@ services:
             - 9000:9000
         tty: true
         restart: unless-stopped
-
-...
