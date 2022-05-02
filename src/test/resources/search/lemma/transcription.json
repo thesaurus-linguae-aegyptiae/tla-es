@@ -1,32 +1,78 @@
 [
   {
-    "name": "parenthesis ('()') should be ignored",
+    "name": "colon ('.') should not be ignored, 'sn.t' should be found, but not 'sr.t'",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
-      "transcription": "(j)bkꜥ"
+      "transcription": "sn.t"
     },
     "valid": [
-      "709902"
+      "136260",
+	  "136300"
+    ],
+    "invalid": [
+	  "d5390"
+    ]
+  },
+  {
+    "name": "parenthesis ('()') ignored, '(j)mn' should find 'jmn', but not 'j'",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "(j)mn"
+    },
+    "valid": [
+      "26020"
     ],
     "invalid": [
       "500024"
     ]
   },
   {
-    "name": "plus sign ('+') shouldn't be ignored",
+    "name": "parenthesis ('()') should be understood as option marker, '(j)mn' should find 'mn'",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
-      "transcription": "1000+"
+      "transcription": "(j)mn"
     },
     "valid": [
-      "dm5964"
-    ],
-    "invalid": [
-      "dm879"
+      "69720"
     ]
   },
   {
-    "name": "forward slash ('/') shouldn't be ignored",
+    "name": "question mark '?' should be understood as option marker, 'j?mn' should find 'mn' and 'jmn'",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "j?mn"
+    },
+    "valid": [
+      "26020",
+      "69600"
+   ],
+    "invalid": [
+      "70720"
+   ]
+  },
+  {
+    "name": "question marks ('⸮?') in lemma should be ignored, 'Pa-tꜣ-gš' should find (unsplit) 'Pa-⸮tꜣ?-gš'",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "Pa-tꜣ-gš"
+    },
+    "valid": [
+      "dm5732"
+    ]
+  },
+  {
+    "name": "square brackets ('[ ]') should be understood as char set marker, 'j[fw]n' should find 'jwn' and 'jfn'",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "j[fw]n"
+    },
+    "valid": [
+      "22590",
+      "24540"
+    ]
+  },
+  {
+    "name": "forward slash ('/') shouldn't be ignored, '1/2' should be found",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "1/2"
@@ -40,7 +86,7 @@
     ]
   },
   {
-    "name": "hyphen ('-') should not be used by tokenizer",
+    "name": "hyphen ('-') should not be used by tokenizer, unsplit lemma 'zp-nfr' should be found",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "zp-nfr"
@@ -54,25 +100,18 @@
     ]
   },
   {
-    "name": "hyphen ('-') should not be used by tokenizer, ḥm(.t)-ntr(.t) should be indexed correctly",
+    "name": "hyphen ('-') should not be used by tokenizer, split lemma 'ḥm-nṯr' should be found",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
-      "transcription": "ḥm-ntr"
+      "transcription": "ḥm-nṯr"
     },
     "valid": [
-      "d4073"
-    ],
-    "invalid": [
-      "855724",
-      "98390",
-      "869552",
-      "dm2190",
-      "98380",
-      "500881"
+      "104940",
+	  "852742"
     ]
   },
   {
-    "name": "search for ḥm-nṯr should not find ḥm-ntr",
+    "name": "search for 'ḥm-nṯr' should not find 'ḥm-ntr' (MdC mistake)",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "ḥm-nṯr"
@@ -82,17 +121,7 @@
     ]
   },
   {
-    "name": "asterisk ('*') should not be ignored (find *ꜥpš)",
-    "cmd": {
-      "@class": "tla.domain.command.LemmaSearch",
-      "transcription": "*ꜥpš"
-    },
-    "valid": [
-      "dm4619"
-    ]
-  },
-  {
-    "name": "underscore ('_') should not be ignored",
+    "name": "underscore ('_') should not be ignored, '_rw' should be found, but not 'rw'",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
       "transcription": "_rw"
@@ -101,45 +130,102 @@
       "dm4228"
     ],
     "invalid": [
-      "dm5769",
-      "d3454",
-      "500396",
-      "860603",
-      "871109"
+      "93390"
     ]
   },
   {
-    "name": "question marks ('⸮?') should be ignored",
+    "name": "plus sign ('+') in query/lemma should not be ignored, '1000+' should be found, but not '1000'",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
-      "transcription": "Pa-⸮tꜣ?-gš"
+      "transcription": "1000+"
     },
     "valid": [
-      "dm5732"
+      "dm5964"
     ],
     "invalid": [
-      "dm2818",
-      "dm2550",
-      "dm2551",
-      "858492",
-      "d1931"
+      "dm879"
     ]
   },
   {
-    "name": "asterisk ('*') should not be ignored (find *Pꜣ-ḏbꜣ)",
+    "name": "plus sign ('+') in query/lemma should not be ignored, individual '+' should find '1...n + 1/ 2...1/n', but not those with '+' only in lemma word tokens",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
-      "transcription": "*Pꜣ-ḏbꜣ"
+      "transcription": "+"
     },
     "valid": [
-      "dm1651"
+      "600569"
     ],
     "invalid": [
-      "851446",
-      "d7182",
-      "183280",
-      "dm4617"
+      "dm879",
+	  "880949"
     ]
+  },
+  {
+    "name": "asterisk ('*') in lemma should be ignored, 'ꜥpš' should find 'ꜥpš' and '*ꜥpš'",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "ꜥpš"
+    },
+    "valid": [
+      "dm4619",
+      "37210",
+      "866669"
+	  ]
+  },
+  {
+    "name": "sterisk ('*') in querry should be understood as wildcard, 'j*n' should find 'jwn' and 'jfn'",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "j*n"
+    },
+    "valid": [
+      "22590",
+      "24540"
+	  ]
+  },
+  {
+    "name": "paragraph sign ('§') in querry should be understood as wildcard, 'j*n' should find 'jwn' and 'jfn'",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "j§n"
+    },
+    "valid": [
+      "22590",
+      "24540"
+	  ]
+  },
+  {
+    "name": "question mark ('(?)') in lemma should be ignored, 'rwḏ$' should find 'rwḏ(?)-nj'",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "rwḏ$"
+    },
+    "valid": [
+      "704143"
+   ]
+  },
+  {
+    "name": "search for two words be understood as AND, 'jr sḫr' shoud find 'jri̯ (sḫr.w)'",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "jr sḫr"
+    },
+    "valid": [
+      "29380"
+   ]
+  },
+  {
+    "name": "'$' as word end marker, 'mn$' should not find 'mnmn'",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "transcription": "mn$"
+    },
+    "valid": [
+      "69600"
+   ],
+    "invalid": [
+      "70720"
+   ]
   }
 ]
 

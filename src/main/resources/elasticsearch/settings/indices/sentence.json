@@ -22,14 +22,16 @@
               "/",
               "*",
               "^",
-              "&"
+              "&",
+              "(",
+			  ")"
             ]
           }
         },
         "char_filter": {
           "transcription_brackets_filter": {
             "type": "pattern_replace",
-            "pattern": "[\\(\\)\\[\\]⸢⸮?⸣]|\\{\\S*\\}",
+            "pattern": "[\\[\\]\\(\\)?\\u2e2e\\u2e22\\u2e23\\u2329\\u232a]|\\{\\S*\\}",
             "replacement": ""
           },
           "transcription_suffix_filter": {

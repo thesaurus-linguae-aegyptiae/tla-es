@@ -57,16 +57,33 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
     public String maskRegExTranscription(String transcription) {
         if (transcription != null) {
 			transcription = transcription.trim(); // cut whitespaces
-            transcription = transcription.replace(".", "\\."); // Maskieren
-            transcription = transcription.replace("(", "\\("); // Maskieren
-            transcription = transcription.replace(")", "\\)"); // Maskieren
-            transcription = transcription.replace("{", "\\{"); // Maskieren
-            transcription = transcription.replace("}", "\\}"); // Maskieren
-            transcription = transcription.replace("-", "\\-"); // Maskieren
-            transcription = transcription.replace("§", "."); // "§" in legacyTLA als "."-Wildcard
-            transcription = transcription.replace("*", "."); // "*" in newTLA als "."-Wildcard
+			
+			// Maskieren (nicht ignorieren)
+            transcription = transcription.replace(".", "\\."); 
+            transcription = transcription.replace("-", "\\-"); 
+            transcription = transcription.replace("+", "\\+"); 
+						
+            // reatment of "(  )" als Options-Marker
+            // transcription = transcription.replace("(", ""); 
+            transcription = transcription.replace(")", ")?"); // ### to do: abfangen, wenn Klammern nicht ordentlich öffnen/schließen															
+
+            // ignorieren: query und ES-Indizierung
+            transcription = transcription.replace("{", ""); 
+            transcription = transcription.replace("}", ""); 
+            transcription = transcription.replace("⸢", ""); 
+            transcription = transcription.replace("⸣", ""); 
+            transcription = transcription.replace("〈", ""); 
+            transcription = transcription.replace("〉", ""); 
+            transcription = transcription.replace("⸮", ""); 
+            // "?", "[" , and "]" are part of allowed RegEx syntax
+			
+			// BTS wildcards (any sign)
+            transcription = transcription.replace("§", "."); // "§" in legacyTLA 
+            transcription = transcription.replace("*", "."); // "*" new in newTLA 
+			
+			// treatment of right end
 			if (transcription.endsWith("$")) { // "$": wirkliches String-Ende
-				transcription = transcription.replace("$", ""); // alle "$" entfernen
+				transcription = transcription.replace("$", ""); // remove "$" (all, just to be sure)
 			} else {
 				transcription = transcription + ".*"; // rechts beliebiger Anschluss
 			}
