@@ -57,6 +57,9 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
     public String maskRegExTranscription(String transcription) {
         if (transcription != null) {
 			transcription = transcription.trim(); // cut whitespaces
+
+			transcription = transcription.toLowerCase(); // case insensitive search (ES analyzer also indexes lowercase)
+			transcription = transcription.replace("h\u0331", "\u1e96"); // no atomic char in uppercase, merge in lowercase manually
 			
 			// Maskieren (nicht ignorieren)
             transcription = transcription.replace(".", "\\."); 
