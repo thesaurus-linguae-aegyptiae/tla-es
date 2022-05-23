@@ -67,6 +67,17 @@
             "h\\u0331 => \\u1e96",
             "H\\u0331 => \\u1e96"
           ]
+        },
+        "transcription_unicode_workaround": {
+          "type": "mapping",
+          "mappings": [
+            "i\\u032f => i",
+            "u\\u032f => u",
+            "\\u0131\\u0357 => \\ua7bd",
+            "I\\u0357 => \\ua7bd",
+            "h\\u032d => \\u0125",
+            "H\\u032d => \\u0125"
+          ]
         }
       },
       "analyzer": {
@@ -79,6 +90,7 @@
           "char_filter": [
 			"whitespaces_compressor",
 			"transcription_unicode_normalizer",
+			"transcription_unicode_workaround",
 			"transcription_special_signs_filter",
             "transcription_brackets_filter",
             "transcription_suffix_filter"
