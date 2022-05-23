@@ -66,10 +66,10 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 			transcription = transcription.replace("i\u032f", "i"); 
 			transcription = transcription.replace("u\u032f", "u"); 
 			transcription = transcription.replace("\u0131\u0357", "\ua7bd");  // BTS, right half ring above
+			transcription = transcription.replace("i\u0357", "\ua7bd");  // right half ring above, variant; BTS, capital switched to lowercase
 			transcription = transcription.replace("h\u032d", "\u0125"); 
 
 			// Other Unicode mapping for special chars
-			transcription = transcription.replace("i\u0357", "\ua7bd");  // right half ring above, variant
 			transcription = transcription.replace("\u1ec9", "\ua7bd");   // Ifao yod
 			transcription = transcription.replace("\u021d", "\ua723");   // Ifao alif
 			transcription = transcription.replace("\u02bf", "\ua725");   // ayn
