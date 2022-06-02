@@ -46,6 +46,14 @@ public class ObjectReference implements Resolvable, Comparable<Resolvable> {
     @EqualsAndHashCode.Include
     @Field(type = FieldType.Text)
     private String name;
+    
+    @EqualsAndHashCode.Include
+    @Field(type = FieldType.Text)
+    private int pos;
+    
+    @EqualsAndHashCode.Include
+    @Field(type = FieldType.Text)
+    private int variants;
 
     /**
      * An optional collection of ranges within the referenced object to which

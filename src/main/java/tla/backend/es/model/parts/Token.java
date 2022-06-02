@@ -55,7 +55,7 @@ public class Token {
     public Token(String glyphs, Transcription transcription) {
         super();
         this.glyphs = new Glyphs();
-        this.glyphs.setMdc(glyphs);
+        this.glyphs.setMdcCompact(glyphs);;
         this.transcription = transcription;
     }
 
@@ -114,14 +114,21 @@ public class Token {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Glyphs {
+    	 @JsonAlias({"mdc_compact"})
         @Field(type = FieldType.Text, analyzer = "hieroglyph_analyzer", searchAnalyzer = "hieroglyph_analyzer")
-        private String mdc;
-
+        private String mdcCompact;
+    	 @JsonAlias({"unicode_tla"})
         @Field(type = FieldType.Text)
-        private String unicode;
-
+        private String unicodeTla;
+    	 @JsonAlias({"mdc_original_safe"})
         @Field(type = FieldType.Text)
-        private String orig;
+        private String mdcOriginalSafe;
+    	 @JsonAlias({"mdc_original"})
+        @Field(type = FieldType.Text)
+        private String mdcOriginal;
+    	 @JsonAlias({"mdc_artificially_aligned"})
+        @Field(type = FieldType.Boolean)
+        private boolean mdcArtificiallyAligned;
 
         @Field(type = FieldType.Long)
         private List<Long> order;
