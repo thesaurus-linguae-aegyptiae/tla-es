@@ -117,7 +117,7 @@ public class Token {
     	 @JsonAlias({"mdc_compact"})
         @Field(type = FieldType.Text, analyzer = "hieroglyph_analyzer", searchAnalyzer = "hieroglyph_analyzer")
         private String mdcCompact;
-    	 @JsonAlias({"unicode_tla"})
+    	 @JsonAlias({"unicode"})
         @Field(type = FieldType.Text)
         private String unicodeTla;
     	 @JsonAlias({"mdc_original_safe"})
