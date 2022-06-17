@@ -24,6 +24,8 @@ import lombok.experimental.SuperBuilder;
 import tla.backend.es.model.meta.TLAEntity;
 import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Translations;
+import tla.backend.es.model.parts.Transcription;
+import tla.backend.es.model.parts.Glyphs;
 import tla.domain.dto.LemmaDto;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
@@ -45,7 +47,13 @@ public class LemmaEntity extends TLAEntity {
     @Field(type = FieldType.Keyword)
     @JsonAlias({"sortString", "sort_string", "sort_key"})
     private String sortKey;
-
+    
+    @Field(type = FieldType.Object)
+    private Glyphs glyphs;
+  
+    @Field(type = FieldType.Object)
+    private Transcription transcription;
+    
     @Field(type = FieldType.Object)
     private Translations translations;
 

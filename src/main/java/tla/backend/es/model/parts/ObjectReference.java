@@ -30,11 +30,15 @@ import tla.domain.model.meta.Resolvable;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ObjectReference implements Resolvable, Comparable<Resolvable> {
 
-    @NonNull
+
     @EqualsAndHashCode.Include
     @Field(type = FieldType.Keyword)
     private String id;
 
+    @EqualsAndHashCode.Include
+    @Field(type = FieldType.Text)
+    private String _class;
+    
     @EqualsAndHashCode.Include
     @Field(type = FieldType.Keyword)
     private String eclass;
@@ -46,6 +50,14 @@ public class ObjectReference implements Resolvable, Comparable<Resolvable> {
     @EqualsAndHashCode.Include
     @Field(type = FieldType.Text)
     private String name;
+    
+    @EqualsAndHashCode.Include
+    @Field(type = FieldType.Text)
+    private int pos;
+    
+    @EqualsAndHashCode.Include
+    @Field(type = FieldType.Text)
+    private int variants;
 
     /**
      * An optional collection of ranges within the referenced object to which
