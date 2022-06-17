@@ -66,10 +66,10 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 			transcription = transcription.replace("i\u032f", "i"); 
 			transcription = transcription.replace("u\u032f", "u"); 
 			transcription = transcription.replace("\u0131\u0357", "\ua7bd");  // BTS, right half ring above
+			transcription = transcription.replace("i\u0357", "\ua7bd");  // BTS, right half ring above, capital switched to lowercase
 			transcription = transcription.replace("h\u032d", "\u0125"); 
 
 			// Other Unicode mapping for special chars
-			transcription = transcription.replace("i\u0357", "\ua7bd");  // right half ring above, variant
 			transcription = transcription.replace("\u1ec9", "\ua7bd");   // Ifao yod
 			transcription = transcription.replace("\u021d", "\ua723");   // Ifao alif
 			transcription = transcription.replace("\u02bf", "\ua725");   // ayn
@@ -111,11 +111,12 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
         BoolQueryBuilder query = boolQuery();
         if (wordClass != null) {
             if (wordClass.getType() != null) {
-                if (wordClass.getType().equals("excl_namestitlesepithets")) { // TODO
+                if (wordClass.getType().equals("excl_namestitlesepithets")) {
                     query.mustNot(termQuery("type", "entity_name"));
                     query.mustNot(termQuery("type", "epitheton_title"));
-                } else if (wordClass.getType().equals("excl_names")) { // TODO
-                    query.mustNot(termQuery("type", "entity_name"));
+                } else if (wordClass.getType().equals("excl_names")) {
+                    query.mustNot(termQuery("subtype", "person_name"));
+                    query.mustNot(termQuery("subtype", "kings_name"));
                 } else if (wordClass.getType().equals("any")) {
                 } else if (!wordClass.getType().isBlank()) {
                     query.must(termQuery("type", wordClass.getType()));
