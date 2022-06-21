@@ -106,8 +106,13 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 				transcription = transcription + ".*"; // right: any signs may follow
 			}
 			
-			// find words in the middle too
-			transcription = "(.+[\\-\\s])?" + transcription; // left: anything at beginnig of lemma or after blank and "-" 
+			// treatment of left end
+			if (transcription.startsWith("^")) { // "^": search at beginning of lemma transliteration
+				transcription = transcription.replace("^", ""); // remove "^" (all, just to be sure)
+			} else {
+				// find words in the middle too
+				transcription = "(.+[\\- ])?" + transcription; // left: anything at beginnig of lemma or after "-" or blank 
+			} 
        }
 		return transcription;
     }
