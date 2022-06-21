@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.Operator;
+//import org.elasticsearch.index.query.RegexpFlag;
 
 import lombok.Getter;
 import tla.backend.es.model.LemmaEntity;
@@ -20,6 +21,8 @@ import tla.domain.model.Script;
 @Getter
 @ModelClass(LemmaEntity.class)
 public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLingQueryBuilder {
+
+    //public static final int DEFAULT_FLAGS_VALUE = RegexpFlag.INTERSECTION.value();
 
     static List<FacetSpec> facetSpecs = List.of(
         FacetSpec.field("wordClass.type", "type"),
@@ -100,9 +103,12 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 			if (transcription.endsWith("$")) { // "$": wirkliches String-Ende
 				transcription = transcription.replace("$", ""); // remove "$" (all, just to be sure)
 			} else {
-				transcription = transcription + ".*"; // rechts beliebiger Anschluss
+				transcription = transcription + ".*"; // right: any signs may follow
 			}
-        }
+			
+			// find words in the middle too
+			transcription = "(.+[\\-\\s])?" + transcription; // left: anything at beginnig of lemma or after blank and "-" 
+       }
 		return transcription;
     }
 
