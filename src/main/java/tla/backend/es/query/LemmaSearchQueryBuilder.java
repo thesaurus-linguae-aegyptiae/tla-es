@@ -69,8 +69,8 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 			transcription = transcription.replace("d\u0331", "ḏ");   // non-atomic encodings
 			transcription = transcription.replace("t\u0331", "ṯ");  
 			transcription = transcription.replace("h\u0323", "ḥ");
- 			transcription = transcription.replace("t\u0331", "ṭ");
- 			transcription = transcription.replace("k\u0331", "ḳ");
+ 			transcription = transcription.replace("t\u0323", "ṭ");
+ 			transcription = transcription.replace("k\u0323", "ḳ");
 			
 			transcription = transcription.replace("ṭ", "d");   // Schenkel's transliteration
 			transcription = transcription.replace("č\u0323", "ḏ");   
