@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.Operator;
+//import org.elasticsearch.index.query.RegexpFlag;
 
 import lombok.Getter;
 import tla.backend.es.model.LemmaEntity;
@@ -20,6 +21,8 @@ import tla.domain.model.Script;
 @Getter
 @ModelClass(LemmaEntity.class)
 public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLingQueryBuilder {
+
+    //public static final int DEFAULT_FLAGS_VALUE = RegexpFlag.INTERSECTION.value();
 
     static List<FacetSpec> facetSpecs = List.of(
         FacetSpec.field("wordClass.type", "type"),
@@ -48,8 +51,7 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 
     public void setTranscription(String transcription) {
         if (transcription != null) {
-            //this.must(matchQuery("words.transcription.unicode", transcription));
-			this.must(regexpQuery("words.transcription.unicode", maskRegExTranscription(transcription)));
+			this.must(regexpQuery("transcription.unicode", maskRegExTranscription(transcription)));
 			// works with Unicode only?
         }
     }
@@ -60,35 +62,56 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 
 			// case insensitive search (ES analyzer also indexes lowercase)
 			transcription = transcription.toLowerCase(); 
-			transcription = transcription.replace("h\u0331", "\u1e96"); // no atomic char in uppercase, merge in lowercase manually
+			transcription = transcription.replace("h\u0331", "ẖ"); // no atomic char as capital, now lowercase
+			transcription = transcription.replace("i\u0357", "\u0131\u0357");  // BTS yod capital, now lowercase
 
-			// no atomic char in transliteration => atomic workarounds
-			transcription = transcription.replace("i\u032f", "i"); 
-			transcription = transcription.replace("u\u032f", "u"); 
-			transcription = transcription.replace("\u0131\u0357", "\ua7bd");  // BTS, right half ring above
-			transcription = transcription.replace("i\u0357", "\ua7bd");  // BTS, right half ring above, capital switched to lowercase
-			transcription = transcription.replace("h\u032d", "\u0125"); 
-
-			// Other Unicode mapping for special chars
-			transcription = transcription.replace("\u1ec9", "\ua7bd");   // Ifao yod
-			transcription = transcription.replace("\u021d", "\ua723");   // Ifao alif
-			transcription = transcription.replace("\u02bf", "\ua725");   // ayn
+			// Other Unicode mapping for special chars; normalization
+			transcription = transcription.replace("d\u0331", "ḏ");   // non-atomic encodings
+			transcription = transcription.replace("t\u0331", "ṯ");  
+			transcription = transcription.replace("h\u0323", "ḥ");
+ 			transcription = transcription.replace("t\u0331", "ṭ");
+ 			transcription = transcription.replace("k\u0331", "ḳ");
 			
+			transcription = transcription.replace("ṭ", "d");   // Schenkel's transliteration
+			transcription = transcription.replace("č\u0323", "ḏ");   
+			transcription = transcription.replace("č", "ṯ");   
+			
+			transcription = transcription.replace("ś", "s");    // traditional s
+			transcription = transcription.replace("ḳ", "q");   // traditional qaf
+			
+			transcription = transcription.replace("⸗", "=");   // double oblique hyphen
+            transcription = transcription.replace("〈", "〈");  // U+27E8 => U+2329, BTS, obsolet 
+            transcription = transcription.replace("〉", "〉"); 
+            transcription = transcription.replace("⌈", "⸢");  // U+2308, obsolet => U+2E22 
+            transcription = transcription.replace("⌉", "⸣"); 
+			
+			transcription = transcription.replace("\u1ec9", "\u0131\u0357");   // Ifao yod => BTS yod
+			transcription = transcription.replace("i\u0486", "\u0131\u0357");   // yod with psili pneumata 
+			transcription = transcription.replace("i\u0313", "\u0131\u0357");   // yod with superscript comma 
+			transcription = transcription.replace("\u021d", "\ua723");   // Ifao alif
+			transcription = transcription.replace("\u02bf", "\ua725");   // ayn workaround
+		
+			// no atomic char in transliteration => atomic workarounds
+			transcription = transcription.replace("i\u032f", "i");  // atomic workaround for ult.-inf.-i
+			transcription = transcription.replace("u\u032f", "u");  // atomic workaround for ult.-inf.-u
+			transcription = transcription.replace("\u0131\u0357", "\ua7bd");  // BTS yod => Egyptological Yod
+			transcription = transcription.replace("h\u032d", "\u0125"); // atomic workaround for demotic h
+
 			// Maskieren (nicht ignorieren)
             transcription = transcription.replace(".", "\\."); 
             transcription = transcription.replace("-", "\\-"); 
             transcription = transcription.replace("+", "\\+"); 
 						
-            // reatment of "(  )" als Options-Marker
+            // treatment of "(  )" als Options-Marker
             // transcription = transcription.replace("(", ""); 
             transcription = transcription.replace(")", ")?"); // ### to do: abfangen, wenn Klammern nicht ordentlich öffnen/schließen															
 
             // ignorieren: query und ES-Indizierung
             transcription = transcription.replace("{", ""); 
             transcription = transcription.replace("}", ""); 
-            transcription = transcription.replace("⸢", ""); 
+            transcription = transcription.replace("⸢", "");  // U+2E22
             transcription = transcription.replace("⸣", ""); 
-            transcription = transcription.replace("〈", ""); 
+            transcription = transcription.replace("〈", "");  // U+2329, BTS, obsolet
             transcription = transcription.replace("〉", ""); 
             transcription = transcription.replace("⸮", ""); 
             // "?", "[" , and "]" are part of allowed RegEx syntax
@@ -101,9 +124,17 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 			if (transcription.endsWith("$")) { // "$": wirkliches String-Ende
 				transcription = transcription.replace("$", ""); // remove "$" (all, just to be sure)
 			} else {
-				transcription = transcription + ".*"; // rechts beliebiger Anschluss
+				transcription = transcription + ".*"; // right: any signs may follow
 			}
-        }
+			
+			// treatment of left end
+			if (transcription.startsWith("^")) { // "^": search at beginning of lemma transliteration
+				transcription = transcription.replace("^", ""); // remove "^" (all, just to be sure)
+			} else {
+				// find words in the middle too
+				transcription = "(.+[\\- ])?" + transcription; // left: anything at beginnig of lemma or after "-" or blank 
+			} 
+       }
 		return transcription;
     }
 
