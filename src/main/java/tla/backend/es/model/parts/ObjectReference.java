@@ -36,7 +36,7 @@ public class ObjectReference implements Resolvable, Comparable<Resolvable> {
     private String id;
 
     @EqualsAndHashCode.Include
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword, index = false)
     private String _class;
     
     @EqualsAndHashCode.Include
@@ -70,7 +70,18 @@ public class ObjectReference implements Resolvable, Comparable<Resolvable> {
 
     @Override
     public int compareTo(Resolvable arg0) {
-        return this.id.compareTo(arg0.getId());
+    	//System.out.println("ID "+this.id);
+    	//System.out.println("Arg0 "+arg0.getId());
+    	int resultCompare=-2;
+    	//System.out.println("Compare result before"+ resultCompare);
+    	if((this.id!=null)&&(arg0.getId()!=null))
+          resultCompare= this.id.compareTo(arg0.getId());
+    	else if((this.id==null)&&(arg0.getId()==null))
+    		resultCompare= 0;
+    	else resultCompare= -1;
+    	if (this.id==null) this.id="composed";
+    	//System.out.println("Compare result "+ resultCompare);
+    	return resultCompare;
     }
 
     /**
