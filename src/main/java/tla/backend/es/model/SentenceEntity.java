@@ -24,6 +24,7 @@ import tla.backend.es.model.meta.LinkedEntity;
 import tla.backend.es.model.parts.Token;
 import tla.backend.es.model.parts.Transcription;
 import tla.backend.es.model.parts.Translations;
+import tla.backend.es.model.parts.Glyphs;
 import tla.domain.dto.SentenceDto;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
@@ -57,7 +58,10 @@ public class SentenceEntity extends LinkedEntity implements Indexable {
 
     @Field(type = FieldType.Object)
     private Translations translations;
-
+    
+    @Field(type = FieldType.Object)
+    private Glyphs glyphs;
+    
     @Field(type = FieldType.Object)
     private Transcription transcription;
 

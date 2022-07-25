@@ -74,6 +74,7 @@ public abstract class BaseEntity extends LinkedEntity implements Indexable {
      * Creates an {@link tla.domain.model.ObjectReference} (DTO model) object identifying this instance.
      */
     public tla.domain.model.ObjectReference toDTOReference() {
+    
         return tla.domain.model.ObjectReference.builder()
             .id(this.getId())
             ._class(this.get_class())

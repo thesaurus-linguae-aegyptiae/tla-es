@@ -53,11 +53,11 @@ public class ObjectReference implements Resolvable, Comparable<Resolvable> {
     
     @EqualsAndHashCode.Include
     @Field(type = FieldType.Text)
-    private int pos;
+    private String pos;
     
     @EqualsAndHashCode.Include
     @Field(type = FieldType.Text)
-    private int variants;
+    private String variants;
 
     /**
      * An optional collection of ranges within the referenced object to which
