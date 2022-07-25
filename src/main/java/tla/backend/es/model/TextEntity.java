@@ -44,7 +44,7 @@ public class TextEntity extends UserFriendlyEntity implements Recursable {
 
     @Field(type = FieldType.Object)
     private WordCount wordCount;
-
+    
     @Getter
     @Setter
     @NoArgsConstructor
