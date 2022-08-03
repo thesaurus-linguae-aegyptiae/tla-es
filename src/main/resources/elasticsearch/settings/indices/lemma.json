@@ -18,8 +18,8 @@
           "type": "char_group",
           "tokenize_on_chars": [
             "whitespace",
-            "_-",
             "-",
+            "_",
             ":",
             "/",
             "*",
