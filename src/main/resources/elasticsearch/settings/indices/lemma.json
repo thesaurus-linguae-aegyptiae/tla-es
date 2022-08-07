@@ -30,6 +30,20 @@
           ]
         }
       },
+      "filter": {
+        "english_stemmer": {
+          "type":       "stemmer",
+          "language":   "german"
+        },
+        "german_stemmer": {
+          "type":       "stemmer",
+          "language":   "german"
+        },
+        "french_stemmer": {
+          "type":       "stemmer",
+          "language":   "german"
+        }
+	  },
       "char_filter": {
         "whitespaces_compressor": {
           "type": "pattern_replace",
@@ -85,14 +99,14 @@
         "transcription_analyzer": {
           "type": "custom",
           "tokenizer": "keyword",
-		  "filter": [
-			"lowercase"
-			],
+           "filter": [
+            "lowercase"
+            ],
           "char_filter": [
-			"whitespaces_compressor",
-			"transcription_unicode_normalizer",
-			"transcription_unicode_workaround",
-			"transcription_special_signs_filter",
+            "whitespaces_compressor",
+            "transcription_unicode_normalizer",
+            "transcription_unicode_workaround",
+            "transcription_special_signs_filter",
             "transcription_brackets_filter",
             "transcription_suffix_filter"
           ]
@@ -100,6 +114,30 @@
         "hieroglyph_analyzer": {
           "type": "custom",
           "tokenizer": "hieroglyph_tokenizer"
+        },
+        "english_without_stopwords": {
+          "type":"custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "english_stemmer"
+          ]
+        },
+        "german_without_stopwords": {
+          "type":"custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "german_stemmer"
+          ]
+        },
+        "french_without_stopwords": {
+          "type":"custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "french_stemmer"
+          ]
         }
       }
     }
