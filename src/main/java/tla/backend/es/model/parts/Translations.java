@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import org.modelmapper.AbstractConverter;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+//import org.springframework.data.elasticsearch.annotations.Setting;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,15 +26,16 @@ import tla.domain.model.Language;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
+//@Setting(settingPath = "/elasticsearch/settings/indices/translation.json")
 public class Translations {
 
-    @Field(type = FieldType.Text, analyzer = "german")
+    @Field(type = FieldType.Text, analyzer = "german_without_stopwords")
     private List<String> de;
 
-    @Field(type = FieldType.Text, analyzer = "english")
+    @Field(type = FieldType.Text, analyzer = "english_without_stopwords")
     private List<String> en;
 
-    @Field(type = FieldType.Text, analyzer = "french")
+    @Field(type = FieldType.Text, analyzer = "french_without_stopwords")
     private List<String> fr;
 
     @Field(type = FieldType.Text, analyzer = "arabic")

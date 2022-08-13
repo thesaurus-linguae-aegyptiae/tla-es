@@ -18,27 +18,46 @@
             "tokenize_on_chars": [
               "whitespace",
               "-",
+              "_",
               ":",
               "/",
-              "*"
+              "*",
+              "^",
+              "&",
+              "(",
+			  ")"
             ]
           }
+        },
+         "filter": {
+           "english_stemmer": {
+             "type":       "stemmer",
+             "language":   "german"
+           },
+           "german_stemmer": {
+             "type":       "stemmer",
+             "language":   "german"
+           },
+           "french_stemmer": {
+             "type":       "stemmer",
+             "language":   "german"
+           }
         },
         "char_filter": {
           "transcription_brackets_filter": {
             "type": "pattern_replace",
-            "pattern": "\\.[^- ]*|[\\(\\)\\[\\]⸢⸮?⸣]|\\{\\S*\\}",
+            "pattern": "[\\[\\]\\(\\)?\\u2e2e\\u2e22\\u2e23\\u2329\\u232a]|\\{\\S*\\}",
             "replacement": ""
           },
           "transcription_suffix_filter": {
             "type": "mapping",
             "mappings": [
-              "pl => w",
               ",t,pl => ,wt",
               ",tpl => ,wt",
               "t,du => ,tj",
               ",tdu => ,tj",
               "du => wj",
+              "pl => w",
               ",  => ."
             ]
           }
@@ -55,7 +74,31 @@
           "hieroglyph_analyzer": {
             "type": "custom",
             "tokenizer": "hieroglyph_tokenizer"
-          }
+          },
+           "english_without_stopwords": {
+             "type":"custom",
+             "tokenizer": "standard",
+             "filter": [
+               "lowercase",
+               "english_stemmer"
+             ]
+           },
+           "german_without_stopwords": {
+             "type":"custom",
+             "tokenizer": "standard",
+             "filter": [
+               "lowercase",
+               "german_stemmer"
+             ]
+           },
+           "french_without_stopwords": {
+             "type":"custom",
+             "tokenizer": "standard",
+             "filter": [
+               "lowercase",
+               "french_stemmer"
+             ]
+           }
         }
       }
     }

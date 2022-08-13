@@ -38,12 +38,14 @@ import tla.domain.model.meta.TLADTO;
 public abstract class BaseEntity extends LinkedEntity implements Indexable {
 
     @Id
-    @NonNull
     @Field(type = FieldType.Keyword)
     private String id;
 
     @Field(type = FieldType.Keyword)
     private String type;
+    
+    @Field(type = FieldType.Keyword)
+    private String _class;
 
     @Field(type = FieldType.Keyword)
     private String subtype;
@@ -72,8 +74,10 @@ public abstract class BaseEntity extends LinkedEntity implements Indexable {
      * Creates an {@link tla.domain.model.ObjectReference} (DTO model) object identifying this instance.
      */
     public tla.domain.model.ObjectReference toDTOReference() {
+    
         return tla.domain.model.ObjectReference.builder()
             .id(this.getId())
+            ._class(this.get_class())
             .eclass(this.getEclass())
             .type(this.getType())
             .name(this.getName())

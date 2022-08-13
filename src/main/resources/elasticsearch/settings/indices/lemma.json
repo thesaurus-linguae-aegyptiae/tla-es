@@ -19,21 +19,54 @@
           "tokenize_on_chars": [
             "whitespace",
             "-",
+            "_",
             ":",
             "/",
-            "*"
+            "*",
+            "^",
+            "&",
+            "(",
+            ")"
           ]
         }
       },
+      "filter": {
+        "english_stemmer": {
+          "type":       "stemmer",
+          "language":   "german"
+        },
+        "german_stemmer": {
+          "type":       "stemmer",
+          "language":   "german"
+        },
+        "french_stemmer": {
+          "type":       "stemmer",
+          "language":   "german"
+        }
+	  },
       "char_filter": {
+        "whitespaces_compressor": {
+          "type": "pattern_replace",
+          "pattern": "\\s+",
+          "replacement": " "
+        },
+        "transcription_special_signs_filter": {
+          "type": "pattern_replace",
+          "pattern": "[\\*]",
+          "replacement": ""
+        },
         "transcription_brackets_filter": {
           "type": "pattern_replace",
-          "pattern": "[\\(\\)\\[\\]⸢⸮?⸣]|\\{\\S*\\}",
+          "pattern": "[\\[\\]\\(\\)?\\u2e2e\\u2e22\\u2e23\\u2329\\u232a]|\\{\\S*\\}",
           "replacement": ""
         },
         "transcription_suffix_filter": {
           "type": "mapping",
           "mappings": [
+            ".t.pl => .wt",
+            ".tpl => .wt",
+            "t.du => .tj",
+            ".tdu => .tj",
             ",t,pl => ,wt",
             ",tpl => ,wt",
             "t,du => ,tj",
@@ -42,13 +75,38 @@
             "pl => w",
             ",  => ."
           ]
+        },
+        "transcription_unicode_normalizer": {
+          "type": "mapping",
+          "mappings": [
+            "h\\u0331 => \\u1e96",
+            "H\\u0331 => \\u1e96"
+          ]
+        },
+        "transcription_unicode_workaround": {
+          "type": "mapping",
+          "mappings": [
+            "i\\u032f => i",
+            "u\\u032f => u",
+            "\\u0131\\u0357 => \\ua7bd",
+            "I\\u0357 => \\ua7bd",
+            "h\\u032d => \\u0125",
+            "H\\u032d => \\u0125"
+          ]
         }
       },
       "analyzer": {
         "transcription_analyzer": {
           "type": "custom",
-          "tokenizer": "whitespace",
+          "tokenizer": "keyword",
+           "filter": [
+            "lowercase"
+            ],
           "char_filter": [
+            "whitespaces_compressor",
+            "transcription_unicode_normalizer",
+            "transcription_unicode_workaround",
+            "transcription_special_signs_filter",
             "transcription_brackets_filter",
             "transcription_suffix_filter"
           ]
@@ -56,6 +114,30 @@
         "hieroglyph_analyzer": {
           "type": "custom",
           "tokenizer": "hieroglyph_tokenizer"
+        },
+        "english_without_stopwords": {
+          "type":"custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "english_stemmer"
+          ]
+        },
+        "german_without_stopwords": {
+          "type":"custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "german_stemmer"
+          ]
+        },
+        "french_without_stopwords": {
+          "type":"custom",
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "french_stemmer"
+          ]
         }
       }
     }

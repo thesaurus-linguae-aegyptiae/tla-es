@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,7 @@ import tla.domain.model.meta.TLADTO;
 @BTSeClass("BTSText")
 @TLADTO(TextDto.class)
 @Document(indexName = "text")
+@Setting(settingPath = "/elasticsearch/settings/indices/text.json")
 public class TextEntity extends UserFriendlyEntity implements Recursable {
 
     @Field(type = FieldType.Search_As_You_Type, name = "hash")
@@ -44,7 +46,7 @@ public class TextEntity extends UserFriendlyEntity implements Recursable {
 
     @Field(type = FieldType.Object)
     private WordCount wordCount;
-
+    
     @Getter
     @Setter
     @NoArgsConstructor

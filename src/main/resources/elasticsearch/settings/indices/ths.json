@@ -11,7 +11,49 @@
                     }
                 }
             }
-        }
+        },
+       "analysis": {
+         "filter": {
+           "english_stemmer": {
+             "type":       "stemmer",
+             "language":   "german"
+           },
+           "german_stemmer": {
+             "type":       "stemmer",
+             "language":   "german"
+           },
+           "french_stemmer": {
+             "type":       "stemmer",
+             "language":   "german"
+           }
+         },
+         "analyzer": {
+           "english_without_stopwords": {
+             "type":"custom",
+             "tokenizer": "standard",
+             "filter": [
+               "lowercase",
+               "english_stemmer"
+             ]
+           },
+           "german_without_stopwords": {
+             "type":"custom",
+             "tokenizer": "standard",
+             "filter": [
+               "lowercase",
+               "german_stemmer"
+             ]
+           },
+           "french_without_stopwords": {
+             "type":"custom",
+             "tokenizer": "standard",
+             "filter": [
+               "lowercase",
+               "french_stemmer"
+             ]
+           }
+         }
+       }
     }
 }
   

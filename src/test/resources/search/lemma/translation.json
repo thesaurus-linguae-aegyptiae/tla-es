@@ -35,6 +35,44 @@
     ]
   },
   {
+    "name": "german translation finds stopwords, 'sein' finds lemmata with 'sein' (German stop word) but not others without 'sein'",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "translation": {
+        "lang": [
+          "de"
+        ],
+        "text": "sein"
+      },
+      "sort": "sortKey_desc"
+    },
+    "valid": [
+      "49"
+    ],
+    "invalid": [
+      "51"
+    ]
+  }, 
+  {
+    "name": "translation finds many words under AND condition, 'ausstrecken darreichen' does not find 'ausstrecken' or 'darreichen' without the other",
+    "cmd": {
+      "@class": "tla.domain.command.LemmaSearch",
+      "translation": {
+        "lang": [
+          "de"
+        ],
+        "text": "ausstrecken darreichen"
+      },
+      "sort": "sortKey_desc"
+    },
+    "valid": [
+      "51"
+    ],
+    "invalid": [
+      "146190"
+    ]
+  }, 
+  {
     "name": "german translation matches umlauts",
     "cmd": {
       "@class": "tla.domain.command.LemmaSearch",
