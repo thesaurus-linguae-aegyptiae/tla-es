@@ -16,6 +16,8 @@ import lombok.Getter;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.service.ModelClass;
 import tla.domain.command.TypeSpec;
+import tla.domain.command.TranscriptionSpec;
+//import tla.domain.command.RootSpec;
 import tla.domain.model.Script;
 
 @Getter
@@ -49,13 +51,38 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
         this.filter(scriptFilter);
     }
 
-    public void setTranscription(String transcription) {
-        if (transcription != null) {
-			this.must(regexpQuery("transcription.unicode", maskRegExTranscription(transcription)));
+    public void setTranscription(TranscriptionSpec transcription) {
+    	System.out.println("Sent to query ");
+        if (transcription.getText() != null) {
+        	//int posEnc=transcription.indexOf("|");
+        	//String encod=transcription.substring(posEnc+1);
+        	System.out.println("Sent to query "+transcription.getEnc()[0]);
+        	if (transcription.getEnc()[0].equals("mdc")){
+        		
+        		this.must(regexpQuery("transcription.mdc", maskRegExTranscription(transcription.getText())));
+        	}
+        	else this.must(regexpQuery("transcription.unicode", maskRegExTranscription(transcription.getText())));
 			// works with Unicode only?
         }
+        
     }
 
+  /*  public void setRoot(RootSpec root) {
+    	
+        if (root != null) {
+        	//int posEnc=transcription.indexOf("|");
+        	//String encod=transcription.substring(posEnc+1);
+        	
+        	if (root.getEnc()[0].equals("mdc")){
+        		
+        		this.must(regexpQuery("relations.root.name", maskRegExTranscription(root.getText())));
+        	}
+        	else this.must(regexpQuery("relations.root.name", maskRegExTranscription(root.getText())));
+			// works with Unicode only?
+        }
+       
+    }*/
+    
     public String maskRegExTranscription(String transcription) {
         if (transcription != null) {
 			transcription = transcription.trim(); // cut whitespaces
