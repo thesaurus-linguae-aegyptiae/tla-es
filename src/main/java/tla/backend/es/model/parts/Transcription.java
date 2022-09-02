@@ -22,7 +22,7 @@ public class Transcription {
     @Field(type = FieldType.Text, analyzer = "transcription_analyzer", searchAnalyzer = "transcription_analyzer")
     private String unicode;
 
-    @Field(type = FieldType.Text, analyzer = "transcription_analyzer", searchAnalyzer = "transcription_analyzer")
+    @Field(type = FieldType.Text, analyzer = "mdc_analyzer", searchAnalyzer = "mdc_analyzer")
     private String mdc;
 
 }

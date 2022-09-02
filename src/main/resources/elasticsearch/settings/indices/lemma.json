@@ -64,8 +64,10 @@
           "type": "mapping",
           "mappings": [
             ".t.pl => .wt",
+            ".t:pl => .wt",
             ".tpl => .wt",
             "t.du => .tj",
+            "t:du => .tj",
             ".tdu => .tj",
             ",t,pl => ,wt",
             ",tpl => ,wt",
@@ -106,6 +108,16 @@
             "whitespaces_compressor",
             "transcription_unicode_normalizer",
             "transcription_unicode_workaround",
+            "transcription_special_signs_filter",
+            "transcription_brackets_filter",
+            "transcription_suffix_filter"
+          ]
+        },
+        "mdc_analyzer": {
+          "type": "custom",
+          "tokenizer": "keyword",
+          "char_filter": [
+            "whitespaces_compressor",
             "transcription_special_signs_filter",
             "transcription_brackets_filter",
             "transcription_suffix_filter"
