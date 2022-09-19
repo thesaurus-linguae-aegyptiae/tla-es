@@ -63,18 +63,6 @@
         "transcription_suffix_filter": {
           "type": "mapping",
           "mappings": [
-            ".t.pl => .wt",
-            ".t:pl => .wt",
-            ".tpl => .wt",
-            "t.du => .tj",
-            "t:du => .tj",
-            ".tdu => .tj",
-            ",t,pl => ,wt",
-            ",tpl => ,wt",
-            "t,du => ,tj",
-            ",tdu => ,tj",
-            "du => wj",
-            "pl => w",
             ",  => ."
           ]
         },
