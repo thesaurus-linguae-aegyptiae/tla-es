@@ -146,14 +146,17 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
             transcription = transcription.replace("⸮", ""); 
             // "?", "[" , and "]" are part of allowed RegEx syntax
             
-            // BTS wildcards (any sign)
+            // leagacy TLA wildcards
             transcription = transcription.replace("§", "."); // "§" in legacyTLA 
-            transcription = transcription.replace("*", "."); // "*" new in newTLA 
+            
+            // Usual wildcards
+            transcription = transcription.replace("_", "."); // any sigle sign 
+            transcription = transcription.replace("*", ".*"); // zero or more signs
             
             // treatment of right end
 			if (transcription.endsWith("$")) { // "$": wirkliches String-Ende
 				transcription = transcription.replace("$", ""); // remove "$" (all, just to be sure)
-			} else {
+			} else if (!transcription.endsWith(".*")) { // redundant if already ends with ".*"
 				transcription = transcription + ".*"; // right: any signs may follow
 			}
 			
