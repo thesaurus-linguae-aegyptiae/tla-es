@@ -28,7 +28,7 @@ services:
         environment:
             - ES_HOST=es
             - ES_PORT=9201
-            - SAMPLE_URL=https://nubes.bbaw.de/remote.php/webdav/IT_DH/Datentransformation/Stand%2021%20September%202022/full.tar.gz
+            - SAMPLE_URL=https://nubes.bbaw.de/s/TcEWS9wZTmCT3CA/download/full.tar.gz
         tty: true
         command: "ingest"
 
