@@ -15,6 +15,8 @@ import lombok.Getter;
 import tla.backend.es.model.LemmaEntity;
 import tla.backend.service.ModelClass;
 import tla.domain.command.TypeSpec;
+import tla.domain.command.TranscriptionSpec;
+//import tla.domain.command.RootSpec;
 import tla.domain.model.Script;
 
 @Getter
@@ -46,18 +48,40 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
         this.filter(scriptFilter);
     }
 
-    public void setTranscription(String transcription) {
-        if (transcription != null) {
-			this.must(regexpQuery("transcription.unicode", maskRegExTranscription(transcription)));
+    public void setTranscription(TranscriptionSpec transcription) {
+    	  //System.out.println("Sent to query ");
+        if (transcription.getText() != null) {
+        	//System.out.println("Sent to query "+transcription.getEnc()[0]);
+        	if (transcription.getEnc()[0].equals("mdc")){
+					this.must(regexpQuery("transcription.mdc", maskRegExTranscription(transcription.getText())));
+        	}
+        	else {
+					this.must(regexpQuery("transcription.unicode", maskRegExTranscription(normalizeUnicode(transcription.getText()))));
+			}
 			// works with Unicode only?
         }
+        
     }
 
-    public String maskRegExTranscription(String transcription) {
-        if (transcription != null) {
-			transcription = transcription.trim(); // cut whitespaces
-			transcription = transcription.replaceAll("\\s+", " ");
+  /*  public void setRoot(RootSpec root) {
+    	
+        if (root != null) {
+        	//int posEnc=transcription.indexOf("|");
+        	//String encod=transcription.substring(posEnc+1);
+        	
+        	if (root.getEnc()[0].equals("mdc")){
+        		
+        		this.must(regexpQuery("relations.root.name", maskRegExTranscription(root.getText())));
+        	}
+        	else this.must(regexpQuery("relations.root.name", maskRegExTranscription(root.getText())));
+			// works with Unicode only?
+        }
+       
+    }*/
 
+
+	public String normalizeUnicode(String transcription) {
+        if (transcription != null) {
 			// case insensitive search (ES analyzer also indexes lowercase)
 			transcription = transcription.toLowerCase(); 
 			transcription = transcription.replace("h\u0331", "ẖ"); // no atomic char as capital, now lowercase
@@ -94,16 +118,24 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 			transcription = transcription.replace("u\u032f", "u");  // atomic workaround for ult.-inf.-u
 			transcription = transcription.replace("\u0131\u0357", "\ua7bd");  // BTS yod => Egyptological Yod
 			transcription = transcription.replace("h\u032d", "\u0125"); // atomic workaround for demotic h
+       }
+		return transcription;
+	}
+	
+    public String maskRegExTranscription(String transcription) {
+        if (transcription != null) {
+			transcription = transcription.trim(); // cut whitespaces
+			transcription = transcription.replaceAll("\\s+", " ");
 
-			// Maskieren (nicht ignorieren)
+            // Maskieren (nicht ignorieren)
             transcription = transcription.replace(".", "\\."); 
             transcription = transcription.replace("-", "\\-"); 
             transcription = transcription.replace("+", "\\+"); 
-						
+            
             // treatment of "(  )" als Options-Marker
             // transcription = transcription.replace("(", ""); 
             transcription = transcription.replace(")", ")?"); // ### to do: abfangen, wenn Klammern nicht ordentlich öffnen/schließen															
-
+            
             // ignorieren: query und ES-Indizierung
             transcription = transcription.replace("{", ""); 
             transcription = transcription.replace("}", ""); 
@@ -113,26 +145,28 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
             transcription = transcription.replace("〉", ""); 
             transcription = transcription.replace("⸮", ""); 
             // "?", "[" , and "]" are part of allowed RegEx syntax
-			
-			// BTS wildcards (any sign)
+            
+            // leagacy TLA wildcards
             transcription = transcription.replace("§", "."); // "§" in legacyTLA 
-            transcription = transcription.replace("*", "."); // "*" new in newTLA 
-			
-			// treatment of right end
+            
+            // Usual wildcards
+            transcription = transcription.replace("_", "."); // any sigle sign 
+            transcription = transcription.replace("*", ".*"); // zero or more signs
+            
+            // treatment of right end
 			if (transcription.endsWith("$")) { // "$": wirkliches String-Ende
 				transcription = transcription.replace("$", ""); // remove "$" (all, just to be sure)
-			} else {
+			} else if (!transcription.endsWith(".*")) { // redundant if already ends with ".*"
 				transcription = transcription + ".*"; // right: any signs may follow
 			}
 			
 			// treatment of left end
-			if (transcription.startsWith("^")) { // "^": search at beginning of lemma transliteration
-				transcription = transcription.replace("^", ""); // remove "^" (all, just to be sure)
+			if (transcription.startsWith(">")) { // ">": search at beginning or in the middle of lemma transliteration
+				transcription = transcription.replace(">", ""); // remove "^" (all, just to be sure)
+				// find words in the middle too
+				transcription = "(.+[\\- ])?" + transcription; // left: anything at beginnig of lemma or after "-" or blank
 			} else if (transcription.startsWith("\\-")) { // "-": search of non-first lemma
 				transcription = "(.+)?" + transcription; // left: anything may occur before the '-'
-			} else {
-				// find words in the middle too
-				transcription = "(.+[\\- ])?" + transcription; // left: anything at beginnig of lemma or after "-" or blank 
 			} 
        }
 		return transcription;

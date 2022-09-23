@@ -37,6 +37,8 @@ import tla.domain.command.PassportSpec;
 import tla.domain.command.SentenceSearch;
 import tla.domain.command.TextSearch;
 import tla.domain.command.TranslationSpec;
+import tla.domain.command.TranscriptionSpec;
+//import tla.domain.command.RootSpec;
 import tla.domain.dto.AnnotationDto;
 import tla.domain.dto.CorpusObjectDto;
 import tla.domain.dto.LemmaDto;
@@ -71,6 +73,20 @@ public class ModelConfig {
             return source;
         }
     }
+    
+    public static class TranscriptionSpecConverter extends AbstractConverter<TranscriptionSpec, TranscriptionSpec> {
+        @Override
+        protected TranscriptionSpec convert(TranscriptionSpec source) {
+            return source;
+        }
+    }
+    
+   /* public static class RootSpecConverter extends AbstractConverter<RootSpec, RootSpec> {
+        @Override
+        protected RootSpec convert(RootSpec source) {
+            return source;
+        }
+    }*/
     /**
      * Container for configurations that can be attributed to an eClass specified
      * via {@link BTSeClass} annotation on top of an {@link TLAEntity} instance:
@@ -290,12 +306,33 @@ public class ModelConfig {
                 SentenceSearch::getPassport, SentenceSearchQueryBuilder::setPassport
             )
         );
+       /* modelMapper.createTypeMap(LemmaSearch.class, LemmaSearchQueryBuilder.class).addMappings(
+                m -> m.using(new TranslationSpecConverter()).map(
+                    LemmaSearch::getTranslation, LemmaSearchQueryBuilder::setTranslation
+                )
+            );*/
+        
+       
+        
         modelMapper.createTypeMap(TranslationSpec.class, TranslationSpec.class);
         modelMapper.createTypeMap(LemmaSearch.class, LemmaSearchQueryBuilder.class).addMappings(
             m -> m.using(new TranslationSpecConverter()).map(
                 LemmaSearch::getTranslation, LemmaSearchQueryBuilder::setTranslation
             )
         );
+       modelMapper.createTypeMap(TranscriptionSpec.class, TranscriptionSpec.class);
+        modelMapper.getTypeMap(LemmaSearch.class, LemmaSearchQueryBuilder.class).addMappings(
+                m -> m.using(new TranscriptionSpecConverter()).map(
+                    LemmaSearch::getTranscription, LemmaSearchQueryBuilder::setTranscription
+                )
+            );
+        
+      /*  modelMapper.createTypeMap(RootSpec.class, RootSpec.class);
+        modelMapper.getTypeMap(LemmaSearch.class, LemmaSearchQueryBuilder.class).addMappings(
+                m -> m.using(new RootSpecConverter()).map(
+                    LemmaSearch::getRoot, LemmaSearchQueryBuilder::setRoot
+                )
+            );*/
         modelMapper.getTypeMap(SentenceSearch.class, SentenceSearchQueryBuilder.class).addMappings(
             m -> m.using(new TranslationSpecConverter()).map(
                 SentenceSearch::getTranslation, SentenceSearchQueryBuilder::setTranslation
