@@ -38,7 +38,7 @@ public class ObjectReference implements Resolvable, Comparable<Resolvable> {
     @EqualsAndHashCode.Include
     @Field(type = FieldType.Keyword, index = false)
     private String _class;
-
+    
     @EqualsAndHashCode.Include
     @Field(type = FieldType.Keyword)
     private String eclass;

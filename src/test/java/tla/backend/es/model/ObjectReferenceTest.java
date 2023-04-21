@@ -51,7 +51,7 @@ public class ObjectReferenceTest {
             .paths(
                 new ObjectPath[]{
                     ObjectPath.of(
-                        new ObjectReference("ID2", "BTSThsEntry", "date", "Thut")
+                        new ObjectReference("ID2", null,"BTSThsEntry", "date", "Thut", null,null,null)
                     )
                 }
             ).build();
