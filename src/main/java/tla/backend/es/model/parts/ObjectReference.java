@@ -59,6 +59,14 @@ public class ObjectReference implements Resolvable, Comparable<Resolvable> {
     @Field(type = FieldType.Text)
     private String variants;
 
+    @EqualsAndHashCode.Include
+    @Field(type = FieldType.Text)
+    private String pos;
+
+    @EqualsAndHashCode.Include
+    @Field(type = FieldType.Text)
+    private String variants;
+
     /**
      * An optional collection of ranges within the referenced object to which
      * the reference's subject refers to specifically. Only be used by
@@ -67,6 +75,13 @@ public class ObjectReference implements Resolvable, Comparable<Resolvable> {
     @JsonPropertyOrder(alphabetic = true)
     @Field(type = FieldType.Object, index = false)
     private List<Resolvable.Range> ranges;
+
+    public ObjectReference(String id, String eclass, String type, String name) {
+        this.id = id;
+        this.eclass = eclass;
+        this.type = type;
+        this.name = name;
+    }
 
     @Override
     public int compareTo(Resolvable arg0) {
