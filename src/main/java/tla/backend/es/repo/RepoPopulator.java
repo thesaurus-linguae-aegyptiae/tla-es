@@ -15,6 +15,14 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.elasticsearch.client.RestHighLevelClient;
+
+import org.elasticsearch.rest.RestStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.flush.FlushRequest;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +64,21 @@ import tla.domain.model.meta.AbstractBTSBaseClass;
  */
 @Slf4j
 public class RepoPopulator {
+  @Autowired
+ private RestHighLevelClient esClient;
+
+//Delete old indices
+	public void deleteIndices() throws IOException {
+		String[] indices = { "annotation", "comment", "lemma", "meta", "object", "sentence", "text", "ths" };
+		for (int i = 0; i < indices.length; i++) {
+			try {
+				DeleteIndexRequest request = new DeleteIndexRequest(indices[i]);
+				esClient.indices().delete(request, RequestOptions.DEFAULT);
+			} catch (ElasticsearchException exception) {
+				//Wird der Index nicht gefunden, so ist er nicht (mehr) vorhanden -> erwünschter Zustand
+			}
+		}
+	}
 
     /**
      * Batch indexer capable of deserializing JSON strings into instances of the
