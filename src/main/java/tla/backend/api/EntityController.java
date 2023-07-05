@@ -2,6 +2,7 @@ package tla.backend.api;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.http.HttpStatus;
@@ -106,9 +107,10 @@ public abstract class EntityController<T extends Indexable, D extends AbstractDt
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<SearchResultsWrapper<?>> search(@RequestBody SearchCommand<D> command, Pageable page) {
-        log.info("page: {}", tla.domain.util.IO.json(page));
+        Pageable page10 = PageRequest.of(page.getPageNumber(), 10); //sets page size to 10
+        log.info("page: {}", tla.domain.util.IO.json(page10));
         log.info("command: {}", tla.domain.util.IO.json(command));
-        var result = this.getService().runSearchCommand(command, page);
+        var result = this.getService().runSearchCommand(command, page10);
         return new ResponseEntity<SearchResultsWrapper<?>>(
             result.orElseThrow(
                 () -> new ObjectNotFoundException(getService().getModelClass().getName())
