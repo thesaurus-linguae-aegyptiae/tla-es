@@ -3,9 +3,11 @@ package tla.backend.es.query;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -88,16 +90,19 @@ public class ESQueryResult<T extends Indexable> {
 	 * return total number of results.
 	 */
 	public long getHitCount() {
-		int i = 0;
+		Set<String> idSet = new HashSet<>();
+		int index;
 		Iterator<SearchHit<T>> iterator = hits.iterator();
 		while (iterator.hasNext()) {
 			SearchHit searchHit = (SearchHit) iterator.next();
 			String source = searchHit.getId();
-			if (!source.contains("-") || source.contains("-00")) {
-				i++;
+			index = source.indexOf("-");
+			if (index != -1) {
+				source = source.substring(0, index);
 			}
+			idSet.add(source);
 		}
-		return (long) i;
+		return (long) idSet.size();
 	}
 
 	/**
