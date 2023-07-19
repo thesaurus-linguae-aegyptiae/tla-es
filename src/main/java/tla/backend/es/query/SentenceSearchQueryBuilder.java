@@ -20,7 +20,44 @@ import tla.domain.command.PassportSpec;
 public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiLingQueryBuilder {
 
     public final static String AGG_ID_TEXT_IDS = "text_ids";
+    
+	@Override
+public void setId(String[] ids) {
+    if (ids != null) {
+    	 BoolQueryBuilder idQuery = boolQuery();
+        log.info("add {} IDs to query", ids.length);
+        for ( int i = 0; i < ids.length; i++) {
+        	idQuery.must(
+                    QueryBuilders.nestedQuery(
+                            "tokens",
+                            QueryBuilders.termQuery("tokens.id", ids[i]),
+                            ScoreMode.None
+                        )
+                    );
 
+        }
+       // idQuery.must().add(QueryBuilders.termQuery("_index", "sentence"));        
+    this.filter(idQuery);
+}
+	}
+    
+
+    
+/*@Override
+public void setId(String[] ids) {
+    if (ids != null) {
+    	 BoolQueryBuilder idQuery = boolQuery();
+        log.info("add {} IDs to query", ids.length);
+        for ( int i = 0; i < ids.length; i++) {
+        	idQuery.must(QueryBuilders.termQuery("context.textId",ids[i]));
+
+        }
+       // idQuery.must().add(QueryBuilders.termQuery("_index", "sentence"));        
+    this.filter(idQuery);
+}
+	}  
+
+*/
     public void setTokens(Collection<TokenSearchQueryBuilder> tokenQueries) {
         BoolQueryBuilder tokenQuery = boolQuery();
         if (tokenQueries != null) {

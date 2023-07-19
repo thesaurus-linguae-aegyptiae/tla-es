@@ -27,6 +27,7 @@ public class TokenService extends EntityService<SentenceEntity, ElasticsearchRep
     /**
      * make sure containing text gets included.
      */
+ 
     @Override
     protected EntityRetrieval.BulkEntityResolver retrieveRelatedDocs(SentenceEntity document) {
         EntityRetrieval.BulkEntityResolver relatedDocuments = super.retrieveRelatedDocs(document);
@@ -36,7 +37,7 @@ public class TokenService extends EntityService<SentenceEntity, ElasticsearchRep
         relatedDocuments.merge(
             super.retrieveReferencedThesaurusEntries(text)
         );
-        return null;
+        return relatedDocuments;
     }
 
     @Override

@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.meta.Indexable;
 import tla.backend.service.EntityService;
 import tla.domain.command.SearchCommand;
+import tla.domain.command.SentenceSearch;
 import tla.domain.dto.extern.SearchResultsWrapper;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.dto.meta.AbstractDto;
@@ -116,5 +117,12 @@ public abstract class EntityController<T extends Indexable, D extends AbstractDt
             HttpStatus.OK
         );
     }
+
+	public ResponseEntity<SearchResultsWrapper<?>> search(SentenceSearch command, Pageable page) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 
 }
