@@ -62,6 +62,7 @@ public abstract class EntityController<T extends Indexable, D extends AbstractDt
     }
 
 
+
     @CrossOrigin
     @RequestMapping(
         value = "/complete",
@@ -106,9 +107,11 @@ public abstract class EntityController<T extends Indexable, D extends AbstractDt
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<SearchResultsWrapper<?>> search(@RequestBody SearchCommand<D> command, Pageable page) {
-        log.info("page: {}", tla.domain.util.IO.json(page));
-        log.info("command: {}", tla.domain.util.IO.json(command));
+        log.info("**page: {}", tla.domain.util.IO.json(page));
+        log.info("**command: {}", tla.domain.util.IO.json(command));
+       
         var result = this.getService().runSearchCommand(command, page);
+        log.info("**result: {}", result);
         return new ResponseEntity<SearchResultsWrapper<?>>(
             result.orElseThrow(
                 () -> new ObjectNotFoundException(getService().getModelClass().getName())
@@ -116,5 +119,6 @@ public abstract class EntityController<T extends Indexable, D extends AbstractDt
             HttpStatus.OK
         );
     }
-
+    
+    
 }

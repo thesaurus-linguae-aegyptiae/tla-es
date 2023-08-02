@@ -99,6 +99,11 @@ public class ESQueryResult<T extends Indexable> {
      * about an ES search result.
      */
     public static PageInfo pageInfo(SearchHits<?> hits, Pageable pageable) {
+    	System.out.println("Default "+ SEARCH_RESULT_PAGE_SIZE);
+    	System.out.println("Total Hits "+ (int) hits.getTotalHits());
+    	System.out.println("No pages " +  (int) hits.getTotalHits() / SEARCH_RESULT_PAGE_SIZE + (
+                    hits.getTotalHits() % SEARCH_RESULT_PAGE_SIZE < 1 ? 0 : 1
+                ));
         return PageInfo.builder()
             .number(pageable.getPageNumber())
             .totalElements(hits.getTotalHits())

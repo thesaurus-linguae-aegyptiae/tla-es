@@ -42,4 +42,6 @@ public class SentencesContainingLemmaOccurrenceQueryBuilder extends SentenceSear
         );
         return tokenQuery;
     }
+    
+    
 }

@@ -1,5 +1,12 @@
 package tla.backend.es.query;
 
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+
+import java.util.Collection;
+
+import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 
@@ -29,6 +36,22 @@ public class TextSearchQueryBuilder extends PassportIncludingQueryBuilder implem
         );
     }
 
+    public void setSentences(Collection<SentenceSearchQueryBuilder> sentenceQueries) {
+        BoolQueryBuilder sentenceQuery = boolQuery();
+        if (sentenceQueries != null) {
+            sentenceQueries.forEach(
+                query -> sentenceQuery.must(
+                    QueryBuilders.nestedQuery(
+                        "sentence",
+                        query.getNativeRootQueryBuilder(),
+                      
+                        ScoreMode.None
+                    )
+                )
+            );
+        }
+        this.filter(sentenceQuery);
+    }
     @Override
     public void setExpansion(boolean expansion) {
         log.info("text query: set IDs aggregation");

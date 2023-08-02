@@ -20,6 +20,10 @@ import tla.domain.command.PassportSpec;
 public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiLingQueryBuilder {
 
     public final static String AGG_ID_TEXT_IDS = "text_ids";
+    private final BoolQueryBuilder queryBuilder;
+    public SentenceSearchQueryBuilder() {
+        queryBuilder = QueryBuilders.boolQuery();
+    }
 
     public void setTokens(Collection<TokenSearchQueryBuilder> tokenQueries) {
         BoolQueryBuilder tokenQuery = boolQuery();
@@ -61,6 +65,10 @@ public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiL
                 )
             );
         }
+    }
+   
+    public BoolQueryBuilder getQueryBuilder() {
+        return queryBuilder;
     }
 
 }

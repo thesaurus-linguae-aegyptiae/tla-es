@@ -37,6 +37,7 @@ import tla.domain.command.PassportSpec;
 import tla.domain.command.SentenceSearch;
 import tla.domain.command.TextSearch;
 import tla.domain.command.TranslationSpec;
+import tla.domain.command.ContextSpec;
 import tla.domain.command.TranscriptionSpec;
 //import tla.domain.command.RootSpec;
 import tla.domain.dto.AnnotationDto;
@@ -74,13 +75,19 @@ public class ModelConfig {
         }
     }
     
+    public static class ContextSpecConverter extends AbstractConverter<ContextSpec, ContextSpec> {
+        @Override
+        protected ContextSpec convert(ContextSpec source) {
+            return source;
+        }
+    }
     public static class TranscriptionSpecConverter extends AbstractConverter<TranscriptionSpec, TranscriptionSpec> {
         @Override
         protected TranscriptionSpec convert(TranscriptionSpec source) {
             return source;
         }
     }
-    
+ 
    /* public static class RootSpecConverter extends AbstractConverter<RootSpec, RootSpec> {
         @Override
         protected RootSpec convert(RootSpec source) {

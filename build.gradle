@@ -51,7 +51,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-    implementation 'com.github.thesaurus-linguae-aegyptiae:tla-common:master-SNAPSHOT'
+   // implementation 'com.github.thesaurus-linguae-aegyptiae:tla-common:0.0.905'
+    implementation files('/build/libs/tla-common-0.0.905.jar')
     implementation 'org.modelmapper:modelmapper:3.1.0'
     implementation 'org.apache.commons:commons-compress:1.21'
     implementation 'org.yaml:snakeyaml:1.30'

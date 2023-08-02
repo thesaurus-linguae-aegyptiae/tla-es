@@ -1,5 +1,4 @@
 ---
-
 logging:
     file:
         name: app.log

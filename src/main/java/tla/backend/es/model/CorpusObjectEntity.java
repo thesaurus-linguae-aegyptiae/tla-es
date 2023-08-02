@@ -3,6 +3,7 @@ package tla.backend.es.model;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ import tla.domain.model.meta.TLADTO;
 @BTSeClass("BTSTCObject")
 @TLADTO(CorpusObjectDto.class)
 @Document(indexName = "object")
+
 public class CorpusObjectEntity extends UserFriendlyEntity {
 
     @Field(type = FieldType.Keyword, name = "hash")
