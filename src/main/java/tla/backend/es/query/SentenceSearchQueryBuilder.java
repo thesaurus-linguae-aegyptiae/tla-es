@@ -11,6 +11,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.SentenceEntity;
+import tla.backend.es.model.SentenceEntity.Context;
 import tla.backend.service.ModelClass;
 import tla.domain.command.PassportSpec;
 
@@ -20,10 +21,22 @@ import tla.domain.command.PassportSpec;
 public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiLingQueryBuilder {
 
     public final static String AGG_ID_TEXT_IDS = "text_ids";
-    private final BoolQueryBuilder queryBuilder;
-    public SentenceSearchQueryBuilder() {
-        queryBuilder = QueryBuilders.boolQuery();
-    }
+
+    public void setContext(Context context) {
+   	 BoolQueryBuilder textQuery = boolQuery();
+   	String textId = context.getTextId();
+   	   if (textId != null) {
+              log.info("sentence query: receive {} text IDs", textId);
+              textQuery.must(
+                      QueryBuilders.termQuery(
+                      "context.textId",
+                      textId
+                  )
+              );
+              this.filter(textQuery);
+          }
+
+   }
 
     public void setTokens(Collection<TokenSearchQueryBuilder> tokenQueries) {
         BoolQueryBuilder tokenQuery = boolQuery();
