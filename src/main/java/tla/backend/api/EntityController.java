@@ -107,7 +107,7 @@ public abstract class EntityController<T extends Indexable, D extends AbstractDt
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<SearchResultsWrapper<?>> search(@RequestBody SearchCommand<D> command, Pageable page) {
-        Pageable page10 = PageRequest.of(page.getPageNumber(), 10); //sets page size to 10
+        Pageable page10 = PageRequest.of(page.getPageNumber(), 10, page.getSort()); //sets page size to 10
         log.info("page: {}", tla.domain.util.IO.json(page10));
         log.info("command: {}", tla.domain.util.IO.json(command));
         var result = this.getService().runSearchCommand(command, page10);
