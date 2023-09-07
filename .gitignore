@@ -17,6 +17,5 @@ settings.gradle
 /*.json
 gradlew
 gradle/wrapper/gradle-wrapper.properties
-gradle/wrapper/gradle-wrapper.properties
 src/main/java/tla/domain
 src/main/java/tla/error
