@@ -6,20 +6,21 @@ import tla.domain.model.SentenceToken.Lemmatization;
 
 public class TokenSearchQueryBuilder extends ESQueryBuilder implements MultiLingQueryBuilder {
 
-    @Override
-    public String nestedPath() {
-        return "tokens.";
-    }
+	@Override
+	public String nestedPath() {
+		return "tokens.";
+	}
+//TODO where is this function called
+	public void setTokenId(String tokenId) {
+		if (tokenId != null) {
+			this.must(QueryBuilders.termQuery(String.format("%sid", this.nestedPath()), tokenId));
+		}
+	}
 
-    public void setLemma(Lemmatization lemma) {
-        if (lemma != null && !lemma.isEmpty()) {
-            this.must(
-                QueryBuilders.termQuery(
-                    String.format("%slemma.id", this.nestedPath()),
-                    lemma.getId()
-                )
-            );
-        }
-    }
+	public void setLemma(Lemmatization lemma) {
+		if (lemma != null && !lemma.isEmpty()) {
+			this.must(QueryBuilders.termQuery(String.format("%slemma.id", this.nestedPath()), lemma.getId()));
+		}
+	}
 
 }
