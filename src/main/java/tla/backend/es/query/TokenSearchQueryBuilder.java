@@ -10,7 +10,7 @@ public class TokenSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 	public String nestedPath() {
 		return "tokens.";
 	}
-
+//TODO where is this function called
 	public void setTokenId(String tokenId) {
 		if (tokenId != null) {
 			this.must(QueryBuilders.termQuery(String.format("%sid", this.nestedPath()), tokenId));
