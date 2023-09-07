@@ -35,8 +35,7 @@ public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiL
 
 	}
 
-	public void setTokenID(Collection<Token> tokens) {
-		System.out.println("tesst");
+/*	public void setTokens(Collection<Token> tokens) {
 		if (tokens != null) {
 			BoolQueryBuilder tokenQuery = boolQuery();
 			String tokenId = tokens.iterator().next().getId();
@@ -47,7 +46,8 @@ public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiL
 				this.filter(tokenQuery);
 			}
 		}
-	}
+	} */
+	
 
 	public void setTokens(Collection<TokenSearchQueryBuilder> tokenQueries) {
 		BoolQueryBuilder tokenQuery = boolQuery();
@@ -57,6 +57,7 @@ public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiL
 		}
 		this.filter(tokenQuery);
 	}
+
 
 	public void setPassport(PassportSpec spec) {
 		log.info("set sentence search passport specs");
@@ -72,7 +73,7 @@ public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiL
 	// TODO
 	public void setTextIds(Collection<String> textIds) {
 		if (textIds != null) {
-			log.info("sentence query: receive {} text999999999999 IDs", textIds.size());
+			log.info("sentence query: receive {} text IDs", textIds.size());
 			this.filter(QueryBuilders.termsQuery("context.textId", textIds));
 		}
 	}
