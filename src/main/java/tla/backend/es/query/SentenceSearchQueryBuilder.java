@@ -29,7 +29,8 @@ public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiL
 		String textId = context.getTextId();
 		if (textId != null) {
 			log.info("sentence query: receive {} textIDs", textId);
-			textQuery.must(QueryBuilders.termQuery("context.textId", textId));
+			textQuery.must(QueryBuilders.termQuery("context.textId", textId)); // Set text ID of which sentences should be retrieved
+         textQuery.mustNot(QueryBuilders.regexpQuery("id", ".*\\-([0-9][1-9]|[0-9]+[0-9][0-9])")); // Sort out all sentence reading variants except for "-00" 
 			this.filter(textQuery);
 		}
 
