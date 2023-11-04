@@ -72,7 +72,7 @@ Requirements:
 
 1. This method requires you to provide a running Elasticsearch instance. 
    Either you install it as an independent application from 
-   https://www.elastic.co/downloads/elasticsearch (e.g., as MSI)
+   https://www.elastic.co/downloads/elasticsearch (https://www.elastic.co/de/downloads/past-releases/elasticsearch-7-15-2; e.g., as MSI)
    or, if you have Docker Compose, you can simply start one in a
    container by using the configuration coming with this repository:
    ```
