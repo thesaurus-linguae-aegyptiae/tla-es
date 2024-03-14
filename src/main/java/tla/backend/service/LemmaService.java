@@ -68,32 +68,32 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
         if (lemma == null) {
             return null;
         }
-        SingleDocumentWrapper<?> wrapper = super.getDetails(id);
-        ((LemmaDto) wrapper.getDoc()).setAttestations(
-            this.computeAttestedTimespans((LemmaDto) wrapper.getDoc())
-        );
+       SingleDocumentWrapper<?> wrapper = super.getDetails(id);
+       ((LemmaDto) wrapper.getDoc()).setAttestations(
+           this.computeAttestedTimespans((LemmaDto) wrapper.getDoc())
+        ); 
         return wrapper;
     }
 
     /**
      * count sentences and texts containing the specified lemma.
      */
-    public List<AttestedTimespan> computeAttestedTimespans(LemmaDto dto) {
+   public List<AttestedTimespan> computeAttestedTimespans(LemmaDto dto) {
         ESQueryResult<?> sentenceSearchResult = searchService.register(
             new SentencesContainingLemmaOccurrenceQueryBuilder(dto.getId())
         ).run(SearchService.UNPAGED);
         Period attestedPeriod = dto.getTimeSpan();
-        AttestationStats counts = AttestationStats.builder().count(
-            sentenceSearchResult.getAggregation(SentenceSearchQueryBuilder.AGG_ID_TEXT_IDS).size()
-        ).texts(
-            sentenceSearchResult.getAggregation(SentenceSearchQueryBuilder.AGG_ID_TEXT_IDS).size()
+        AttestationStats counts = AttestationStats.builder().count(0
+            //sentenceSearchResult.getAggregation(SentenceSearchQueryBuilder.AGG_ID_TEXT_IDS).size()
+        ).texts(0
+            //sentenceSearchResult.getAggregation(SentenceSearchQueryBuilder.AGG_ID_TEXT_IDS).size()
         ).sentences(
             sentenceSearchResult.getHitCount()
         ).build();
         return List.of(
             AttestedTimespan.builder().period(attestedPeriod).attestations(counts).build()
         );
-    }
+    } 
 
     public Map<String, Long> getMostFrequent(int limit) {
         SearchResponse response = this.searchService.query(SentenceEntity.class, matchAllQuery(),

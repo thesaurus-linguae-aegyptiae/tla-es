@@ -190,7 +190,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     public SingleDocumentWrapper<? extends AbstractDto> getDetails(String id) {
         T document = this.retrieve(id);
         if (document == null) {
-           document = this.retrieve(id.concat("-00")); // try again as an instance of a sentence variant
+           document = this.retrieve(id.concat("-0")); // try again as an instance of a sentence variant
         }
         final SingleDocumentWrapper<?> container;
         if (document != null) {
