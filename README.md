@@ -8,7 +8,7 @@
 
 Thesaurus Linguae Aegyptiae (TLA) backend.
 
-Copyright (C) 2019-2021 Berlin-Brandenburgische Akademie der Wissenschaften
+Copyright (C) 2019-2023 Berlin-Brandenburgische Akademie der Wissenschaften
 
 
 ## Overview
