@@ -108,7 +108,7 @@ public class SentenceEntity extends LinkedEntity implements Indexable {
         @Field(type = FieldType.Text)
         private String paragraph;
         /**
-         * This sentence's positon in the containing text's array of sentences, starting
+         * This sentence's position in the containing text's array of sentences, starting
          * with <code>0</code>.
          */
         @JsonAlias("pos")
@@ -118,7 +118,17 @@ public class SentenceEntity extends LinkedEntity implements Indexable {
          * How many variants of a single sentences exist (due to ambivalences).
          */
         @Field(type = FieldType.Integer)
-        private int variants;
+        private int variants;     
+        /**
+         * Latest possible date
+         */
+        @Field(type = FieldType.Integer)
+        private int notAfter;  
+        /**
+         * Earliest possible date
+         */
+        @Field(type = FieldType.Integer)
+        private int notBefore;       
     }
 
 }

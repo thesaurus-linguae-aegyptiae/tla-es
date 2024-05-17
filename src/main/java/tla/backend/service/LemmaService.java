@@ -32,9 +32,7 @@ import tla.domain.dto.LemmaDto;
 import tla.domain.dto.extern.SingleDocumentWrapper;
 import tla.domain.dto.meta.AbstractDto;
 import tla.domain.model.Language;
-import tla.domain.model.extern.AttestedTimespan;
-import tla.domain.model.extern.AttestedTimespan.AttestationStats;
-import tla.domain.model.extern.AttestedTimespan.Period;
+
 
 @Service
 @ModelClass(value = LemmaEntity.class, path = "lemma")
@@ -60,7 +58,7 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
      * that lemma attestations are computed from occurrences and put into the
      * wrapped lemma DTO.
      *
-     * @see {@link #computeAttestedTimespans(String)}
+     * @see {@link #setAttestationsAndPeriod(String)}
      */
     @Override
     public SingleDocumentWrapper<? extends AbstractDto> getDetails(String id) {
@@ -68,32 +66,9 @@ public class LemmaService extends EntityService<LemmaEntity, ElasticsearchReposi
         if (lemma == null) {
             return null;
         }
-       SingleDocumentWrapper<?> wrapper = super.getDetails(id);
-       ((LemmaDto) wrapper.getDoc()).setAttestations(
-           this.computeAttestedTimespans((LemmaDto) wrapper.getDoc())
-        ); 
+       SingleDocumentWrapper<?> wrapper = super.getDetails(id); 
         return wrapper;
     }
-
-    /**
-     * count sentences and texts containing the specified lemma.
-     */
-   public List<AttestedTimespan> computeAttestedTimespans(LemmaDto dto) {
-        ESQueryResult<?> sentenceSearchResult = searchService.register(
-            new SentencesContainingLemmaOccurrenceQueryBuilder(dto.getId())
-        ).run(SearchService.UNPAGED);
-        Period attestedPeriod = dto.getTimeSpan();
-        AttestationStats counts = AttestationStats.builder().count(0
-            //sentenceSearchResult.getAggregation(SentenceSearchQueryBuilder.AGG_ID_TEXT_IDS).size()
-        ).texts(0
-            //sentenceSearchResult.getAggregation(SentenceSearchQueryBuilder.AGG_ID_TEXT_IDS).size()
-        ).sentences(
-            sentenceSearchResult.getHitCount()
-        ).build();
-        return List.of(
-            AttestedTimespan.builder().period(attestedPeriod).attestations(counts).build()
-        );
-    } 
 
     public Map<String, Long> getMostFrequent(int limit) {
         SearchResponse response = this.searchService.query(SentenceEntity.class, matchAllQuery(),

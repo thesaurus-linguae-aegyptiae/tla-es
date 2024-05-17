@@ -27,11 +27,11 @@ import tla.backend.es.model.parts.Translations;
 import tla.backend.es.model.parts.Transcription;
 import tla.backend.es.model.parts.Glyphs;
 import tla.domain.dto.LemmaDto;
+import tla.domain.dto.LemmaDto.TimeSpan;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
 
 @Data
-@SuperBuilder
 @TLADTO(LemmaDto.class)
 @BTSeClass("BTSLemmaEntry")
 @ToString(callSuper = true)
@@ -59,7 +59,7 @@ public class LemmaEntity extends TLAEntity {
 
     @Field(type = FieldType.Object)
     @JsonAlias({"time_span"})
-    private AttestedTimeSpan timeSpan;
+    private TimeSpan timeSpan;
     
     @Field(type = FieldType.Keyword)
     private Integer attestedSentencesCount;
@@ -70,19 +70,5 @@ public class LemmaEntity extends TLAEntity {
 
     public LemmaEntity() {
         this.words = Collections.emptyList();
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @JsonInclude(Include.NON_NULL)
-    public static class AttestedTimeSpan {
-
-        @Field(type = FieldType.Integer)
-        private Integer begin;
-
-        @Field(type = FieldType.Integer)
-        private Integer end;
     }
 }

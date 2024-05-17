@@ -54,7 +54,7 @@ public abstract class ESQueryBuilder implements TLAQueryBuilder {
         ).withTrackTotalHits(
             page.isPaged()
         ).withSorts(
-            this.getSortSpec().primary()
+           this.sortSpec.Sorting()
         );
         log.info("query: {}", this.getNativeRootQueryBuilder());
         this.getNativeAggregationBuilders().forEach(

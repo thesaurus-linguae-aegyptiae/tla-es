@@ -10,9 +10,11 @@ import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.search.sort.SortOrder;
 
 import lombok.Getter;
 import tla.backend.es.model.LemmaEntity;
+import tla.backend.es.query.SortSpec.FieldOrder;
 import tla.backend.service.ModelClass;
 import tla.domain.command.TypeSpec;
 import tla.domain.command.TranscriptionSpec;
@@ -228,10 +230,12 @@ public class LemmaSearchQueryBuilder extends ESQueryBuilder implements MultiLing
 
     public void setSort(String sort) {
         super.setSort(sort);
-        if (sortSpec.field.equals("root")) {
-            sortSpec.field = "relations.root.name";
+        if (sortSpec.FieldOrders.get(0).equals("root")) {
+            sortSpec.FieldOrders.get(0).field = "relations.root.name";
         }
-		// nicht einheitlich/elegant gel?st: die anderen vier Suchf?lle sind so gel?st, 
+        sortSpec.addFieldOrder(new FieldOrder("sortKey", SortOrder.ASC));
+        
+        // nicht einheitlich/elegant gel?st: die anderen vier Suchf?lle sind so gel?st, 
 		// dass in der URL der Name der Variablen erscheint ("sortKey" bzw. "timeSpan.begin", 
 		// gefolgt von "_asc"/"_desc", aber nicht hier bei "relations.root.name"
 		// die Angaben in der URL sollten generell sprechend sein "transliteration_asc", ..., "timespan_asc", ...

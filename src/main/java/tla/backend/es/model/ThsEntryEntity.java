@@ -26,7 +26,6 @@ import tla.backend.es.model.parts.ObjectPath;
 import tla.backend.es.model.parts.Translations;
 import tla.domain.dto.ThsEntryDto;
 import tla.domain.model.Passport;
-import tla.domain.model.extern.AttestedTimespan;
 import tla.domain.model.meta.BTSeClass;
 import tla.domain.model.meta.TLADTO;
 
@@ -143,17 +142,5 @@ public class ThsEntryEntity extends UserFriendlyEntity implements Recursable {
         );
         Collections.sort(years);
         return years;
-    }
-
-    /**
-    * creates a DTO object representing the timespan covered by a thesaurus term.
-    */
-    public AttestedTimespan.Period toAttestedPeriod() {
-        List<Integer> years = this.extractTimespan();
-        return AttestedTimespan.Period.builder()
-            .begin(years.get(0))
-            .end(years.get(1))
-            .ref(this.toDTOReference())
-            .build();
     }
 }

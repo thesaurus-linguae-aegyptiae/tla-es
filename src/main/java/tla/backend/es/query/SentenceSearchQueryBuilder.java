@@ -7,12 +7,14 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import tla.backend.es.model.SentenceEntity;
 import tla.backend.es.model.SentenceEntity.Context;
 import tla.backend.es.model.parts.Token;
+import tla.backend.es.query.SortSpec.FieldOrder;
 import tla.backend.service.ModelClass;
 import tla.domain.command.PassportSpec;
 import tla.domain.command.SentenceSearch.TokenSpec;
@@ -23,6 +25,13 @@ import tla.domain.command.SentenceSearch.TokenSpec;
 public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiLingQueryBuilder {
 
 	public final static String AGG_ID_TEXT_IDS = "text_ids";
+	
+    public void setSort(String sort) {
+        super.setSort(sort);
+        sortSpec.addFieldOrder(new FieldOrder("context.textId", SortOrder.ASC));
+        sortSpec.addFieldOrder(new FieldOrder("context.position", SortOrder.ASC));   
+    }
+
 
 	public void setContext(Context context) {
 		BoolQueryBuilder textQuery = boolQuery();
@@ -35,6 +44,8 @@ public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiL
 		}
 
 	}
+	
+	
 
 /*	public void setTokens(Collection<Token> tokens) {
 		if (tokens != null) {
