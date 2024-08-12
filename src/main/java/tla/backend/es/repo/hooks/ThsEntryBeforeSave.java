@@ -18,9 +18,7 @@ public class ThsEntryBeforeSave implements BeforeConvertCallback<ThsEntryEntity>
 
     @Override
     public ThsEntryEntity onBeforeConvert(ThsEntryEntity entity, IndexCoordinates index) {
-        entity.setTranslations(
-            entity.getTranslations()
-        );
+    	//TODO remove entire step
         return entity;
     }
     

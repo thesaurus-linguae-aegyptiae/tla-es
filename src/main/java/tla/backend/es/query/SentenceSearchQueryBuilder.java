@@ -28,6 +28,7 @@ public class SentenceSearchQueryBuilder extends ESQueryBuilder implements MultiL
 	
     public void setSort(String sort) {
         super.setSort(sort);
+        setTimeSpanCriterias(sort);
         sortSpec.addFieldOrder(new FieldOrder("context.textId", SortOrder.ASC));
         sortSpec.addFieldOrder(new FieldOrder("context.position", SortOrder.ASC));   
     }

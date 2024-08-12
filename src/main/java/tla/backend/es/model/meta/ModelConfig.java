@@ -256,11 +256,7 @@ public class ModelConfig {
                 LemmaEntity::getRevisionState, LemmaDto::setReviewState
             );
         modelMapper.createTypeMap(ThsEntryEntity.class, ThsEntryDto.class)
-            .addMappings(
-                m -> m.using(translationsToMapConverter).map(
-                    ThsEntryEntity::getTranslations, ThsEntryDto::setTranslations
-                )
-            ).addMapping(
+            .addMapping(
                 ThsEntryEntity::getRevisionState, ThsEntryDto::setReviewState
             );
         modelMapper.createTypeMap(TextEntity.class, TextDto.class)

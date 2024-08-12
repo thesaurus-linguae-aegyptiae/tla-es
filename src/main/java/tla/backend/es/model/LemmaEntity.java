@@ -61,8 +61,8 @@ public class LemmaEntity extends TLAEntity {
     @JsonAlias({"time_span"})
     private TimeSpan timeSpan;
     
-    @Field(type = FieldType.Keyword)
-    private Integer attestedSentencesCount;
+    @Field(type = FieldType.Integer)
+    private int attestedSentencesCount;
 
     @Singular
     @Field(type = FieldType.Object)

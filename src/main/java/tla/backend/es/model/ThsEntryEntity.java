@@ -61,67 +61,7 @@ public class ThsEntryEntity extends UserFriendlyEntity implements Recursable {
     private String SUID;
 
     @Field(type = FieldType.Object)
-    private Translations translations;
-
-    @Field(type = FieldType.Object)
     private ObjectPath[] paths;
-
-    /**
-     * Returns translations of a thesaurus entry's label. If no explicit translations exist, this method
-     * attempts to extract translations from the <code>synonym_group</code> field of the passport.
-     */
-    public Translations getTranslations() {
-        if (this.translations != null) {
-            return this.translations;
-        } else {
-            return this.extractTranslationsFromPassport();
-        }
-    }
-
-    /**
-     * Convert multilingual synonyms extracted from passport to {@link Translations} object.
-     *
-     * @return {@link Translations} instance or <code>null</code> if no synonyms are in passport
-     */
-    private Translations extractTranslationsFromPassport() {
-        Translations res = null;
-        if (this.getPassport() != null) {
-            List<Passport> nodes = this.getPassport().extractProperty(
-                SYNONYMS_PASSPORT_PATH
-            );
-            Map<String, List<String>> synonyms = new HashMap<>();
-            nodes.stream().filter(
-                n -> n.containsKey(SYNONYM_LANG_PATH) && n.containsKey(SYNONYM_VALUE_PATH)
-            ).forEach(
-                n -> {
-                    List<String> translations = n.extractProperty(SYNONYM_VALUE_PATH).stream().map(
-                        leafNode -> leafNode.getLeafNodeValue()
-                    ).collect(
-                        Collectors.toList()
-                    );
-                    n.extractProperty(SYNONYM_LANG_PATH).forEach(
-                        langValueNode -> {
-                            String lang = langValueNode.getLeafNodeValue();
-                            if (synonyms.containsKey(lang)) {
-                                synonyms.get(lang).addAll(translations);
-                            } else {
-                                synonyms.put(lang, new ArrayList<String>(translations));
-                            }
-                        }
-                    );
-                }
-            );
-            try {
-                res = objectMapper.readValue(
-                    objectMapper.writeValueAsString(synonyms),
-                    Translations.class
-                );
-            } catch (Exception e) {
-                log.error("something went wrong during synonum extraction", e);
-            }
-        }
-        return res;
-    }
 
     /**
      * Returns the timespan represented by a thesaurus entry in the form of a list

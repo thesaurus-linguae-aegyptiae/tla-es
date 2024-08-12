@@ -56,6 +56,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     private ModelMapper modelMapper;
 
     private Class<T> modelClass = null;
+    private String modelPath = null;
     private Class<D> dtoClass = null;
     protected static Map<Class<? extends Indexable>, EntityService<? extends Indexable, ? extends ElasticsearchRepository<?,?>, ? extends AbstractDto>> modelClassServices = new HashMap<>();
     protected static Map<Class<? extends Indexable>, AbstractDto> modelClassDtos = new HashMap<>();
@@ -68,6 +69,7 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
     protected EntityService() {
         for (Annotation a : this.getClass().getAnnotationsByType(ModelClass.class)) {
             this.modelClass = (Class<T>) ((ModelClass) a).value();
+            this.modelPath = (String) ((ModelClass) a).path();
             modelClassServices.put(
                 this.modelClass,
                 this
@@ -93,10 +95,18 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
 
     /**
      * Returns the domain class a service is taking care of (extracted from its
-     * {@link ModelClass} annotation.
+     * {@link ModelClass} annotation).
      */
     public Class<T> getModelClass() {
         return this.modelClass;
+    }
+    
+    /**
+     * Returns the domain path a service is taking care of (extracted from its
+     * {@link ModelPath} annotation).
+     */
+    public String getModelPath() {
+        return this.modelPath;
     }
 
     /**
@@ -220,6 +230,12 @@ public abstract class EntityService<T extends Indexable, R extends Elasticsearch
         }
         return container;
     }
+    
+	public Boolean existsById(String id) { //TODO in unterklassen verschieben/anpassen für Token
+		Boolean exists = false;
+		exists = this.getRepo().existsById(id);
+		return exists;
+	}
 
     /**
      * If a document is an instance of {@link LinkedEntity}, go through its

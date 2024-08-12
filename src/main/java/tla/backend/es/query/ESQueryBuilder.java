@@ -4,8 +4,10 @@ import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.idsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
@@ -42,7 +44,22 @@ public abstract class ESQueryBuilder implements TLAQueryBuilder {
         this.nativeAggregationBuilders = new LinkedList<>();
         this.dependencies = new LinkedList<>();
     }
-
+    static final Map<String, String> criterias; 
+    static { criterias = new HashMap<String, String>();
+	criterias.put("timeSpan.begin_asc", "timeSpan.end_asc");
+	criterias.put("timeSpan.begin_desc","timeSpan.end_desc");
+	criterias.put("timeSpan.end_asc",  "timeSpan.begin_asc");
+	criterias.put("timeSpan.end_desc", "timeSpan.begin_desc");
+	//TODO Sortierkriterien vom Frontend mappen und nicht direkt auf ES zugreifen lassen
+	//TODO Mapping for other criterias  sortKey,attestedSentenceCounts
+    };
+    
+    public void setTimeSpanCriterias(String criteria) {
+    	if(criterias.containsKey(criteria)) {
+    	this.sortSpec.addSortingByString(criterias.get(criteria));
+    	}
+    }
+    
     /**
      * Put together an actual Elasticsearch query ready for execution.
      */

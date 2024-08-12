@@ -41,6 +41,10 @@ public class SortSpec {
 	public void addFieldOrder(FieldOrder FieldOrder) {
 		this.FieldOrders.add(FieldOrder);
 	}
+	
+	public void addSortingByString(String criteria) {
+		this.addFieldOrder(SortSpec.from(criteria).FieldOrders.get(0));
+	}
 
 	public static class FieldOrder {
 		/**
@@ -68,7 +72,6 @@ public class SortSpec {
 		if (source != null) {
 			String[] segm = source.split(DELIMITER);
 			String field = String.join(DELIMITER, Arrays.asList(segm).subList(0, segm.length - 1));
-			;
 			if (segm.length > 1) {
 				if (segm[segm.length - 1].equals("asc")) {
 					return new SortSpec(new FieldOrder(field, SortOrder.ASC));

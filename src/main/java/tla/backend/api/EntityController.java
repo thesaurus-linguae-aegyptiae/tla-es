@@ -61,7 +61,23 @@ public abstract class EntityController<T extends Indexable, D extends AbstractDt
         log.error("could not find entity {}", id);
         throw new ObjectNotFoundException(id, this.getService().getModelClass().getSimpleName());
     }
-
+    
+    
+	/**
+	 * Returns a //TODO a single document and all documents it references.
+	 */
+	public Boolean existsById(String id) {
+		Boolean result = false;
+		result = getService().existsById(id);
+		return result;
+	}
+	
+	/**
+	 * Returns the path of the service.
+	 */
+	public String getPath() {
+		return this.getService().getModelPath();
+	}
 
     @CrossOrigin
     @RequestMapping(

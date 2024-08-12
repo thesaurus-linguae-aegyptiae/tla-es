@@ -38,8 +38,18 @@ public class SentenceService extends EntityService<SentenceEntity, Elasticsearch
         );
         return relatedDocuments;
     }
+    
 
-    @Override
+	public Boolean exists(String id) {
+		Boolean exists = false;
+		exists = this.getRepo().existsById(id);
+		if (exists == false) {
+			exists = this.getRepo().existsById(id.concat("-0")); // try again as an instance of a sentence variant
+		}
+		return exists;
+	}
+
+
     public Class<? extends ESQueryBuilder> getSearchCommandAdapterClass(SearchCommand<SentenceDto> command) {
         return SentenceSearchQueryBuilder.class;
     }
